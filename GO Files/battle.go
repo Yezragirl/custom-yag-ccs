@@ -1,0 +1,38 @@
+{{$db := dbGet 0 "Battle"}}
+
+{{$battle := sdict}}{{range $k,$v := $db.Value}}{{$battle.Set $k $v}}{{end}}
+{{$player1 := ""}}
+{{$player2 := ""}}
+
+{{if $db}}
+{{$player1 = (userArg $battle.p1)}}
+{{$player2 = (userArg $battle.p2)}}
+Sorry, there is already a battle in progress between {{$player1.Username}} and {{$player2.Username}}. Please wait til that battle is complete before starting another.
+{{else}}
+{{$player1 = .User}}
+{{$player2 = (index .Message.Mentions 0)}}
+{{$P1MAX := toInt ((dbGet $player1.ID "BattleHP").Value)}}{{if $P1MAX}}{{else}}{{$P1MAX = 25}}{{end}}
+{{$P2MAX := toInt ((dbGet $player2.ID "BattleHP").Value)}}{{if $P2MAX}}{{else}}{{$P2MAX = 25}}{{end}}
+{{$P1HP := $P1MAX}}
+{{$P2HP := $P2MAX}}
+{{$action := (joinStr "" (toString $player1.Username) " challenged " (toString $player2.Username) " to a battle!")}}
+{{$embed := cembed 
+"Title" "It's BATTLE Time!"
+"description" "When it's your turn, you can choose to either attack with a <:sword:633311599020736531>,  a <:Club:670664127324356608>,  or a <:Railgun:670664127588466708>. Or you can defend with a <:shield:667754698639540254>, or <:Riot_Shield:670664127806570496>. You could also drink a <:Medical_Brew:670664127701581829>. Each option has its own benefits and drawbacks. See `?battle` for more info."
+			"fields" (cslice 
+		(sdict "name" (toString $player1.Username) "value" (joinStr "" "HP: " (toString $P1HP)) "inline" true)
+		(sdict "name" (toString $player2.Username) "value" (joinStr "" "HP: " (toString $P2HP)) "inline" true)
+		(sdict "name" "Action" "value" $action "inline" false)
+(sdict "name" "Who's Turn Is it?" "value" (toString $player2.Username) "inline" false) )
+"thumbnail" (sdict "url" "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/lg/57/crossed-swords_2694.png") }}
+{{$game := sendMessageRetID nil $embed}}
+{{addMessageReactions nil $game ":attack:633311599020736531" ":shield:667754698639540254" ":Riot_Shield:670664127806570496" ":Club:670664127324356608" ":Railgun:670664127588466708" ":Medical_Brew:670664127701581829" }}
+{{giveRoleID $player2 667754372456775680}}{{/*give turn role*/}}
+{{$battle := sdict}}{{$battle.Set "game" (toString $game)}}{{$battle.Set "p1" (toString $player1.ID)}}{{$battle.Set "p2" (toString $player2.ID)}}{{$battle.Set "wp" (toString $player1.ID)}}{{$battle.Set "cp" (toString $player2.ID)}}{{$battle.Set "hp1" $P1HP}}{{$battle.Set "hp2" $P2HP}}{{$battle.Set "action" $action}}
+{{$battle.Set "shield" "no"}}{{$battle.Set "riot" "no"}}{{$battle.Set "rail1" "no"}}{{$battle.Set "rail2" "no"}}{{$battle.Set "club" "no"}}
+{{dbSet 0 "Battle" $battle}}{{dbSet $player1.ID "BattleHP" $P1MAX}}{{dbSet $player2.ID "BattleHP" $P2MAX}}
+{{end}}
+
+
+
+

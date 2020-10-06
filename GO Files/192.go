@@ -1,0 +1,167 @@
+{{/*set editor, channel, and start event sdict*/}}
+{{$startOfCmd := currentTime}}
+{{$editor := (dbGet 0 "eventeditor").Value }}
+{{$channel := "573897276569813012"}}
+{{$timeString := ""}}
+{{$formattedTime := currentTime}}
+{{$step := (dbGet 0 "EventEditing").Value}}
+{{$ReminderOne := toDuration (dbGet 0 "EventReminderOne").Value}}
+{{$ReminderTwo := toDuration (dbGet 0 "EventReminderTwo").Value}}
+{{if eq $editor (toString .User.ID)}}
+	{{$evdb := (dbGet 0 "currenteventediting").Value }}
+	{{$db := dbGet (toInt64 $evdb) "event"}}
+	{{$event := sdict}}{{range $k,$v := $db.Value}}{{$event.Set $k $v}}{{end}}
+
+	{{/*set variables*/}}
+	{{$number := $event.number}}
+	{{$pcount := 0}}
+	{{$name := $event.name}}
+	{{$desc  := $event.desc}}
+	{{$color  := $event.color}}
+	{{$style := $event.style}}
+	{{$mapname := $event.mapname}}
+	{{$team  := $event.team}}
+	{{$types  := $event.types}}
+	{{$max := $event.max}}
+	{{$start := $event.start}}
+	{{$time := $event.time}}
+	{{$runner  := $event.runner}}
+	{{$participants := $event.participants}}
+	{{$waitlist := $event.waitlist}}
+	{{$step := (dbGet 0 "EventEditing").Value}}
+	{{$msgID := (dbGet 0 "currenteventediting").Value}}
+	{{$tz := "America/New_York" }}
+	{{$location := (newDate 0 0 0 0 0 0 $tz).Location }} 
+	{{$timeLeft := (toDuration "1h")}}
+	{{$til := humanizeDurationMinutes $timeLeft}}
+
+	{{/*Questions*/}}
+	{{if eq (toString $step) "name"}}
+		{{sendMessage nil "Enter short event description." }}
+		{{$step = "desc"}}
+	{{else if eq (toString $step) "desc"}}
+		{{$desc = (toString .Message.Content)}}
+		{{sendMessage nil "What is the type of this event? PVE or PVP?" }}
+		{{$step = "style"}}
+	{{else if eq (toString $step) "style"}}
+		{{$style = (toString .Message.Content)}}
+		{{if eq $style "PVP"}}
+			{{$color = 15158332}}
+		{{else}}
+			{{$color = 3447003}}
+		{{end}}
+		{{sendMessage nil "How many people on a team? Enter a number only" }}
+		{{$step = "team"}}
+	{{else if eq (toString $step) "team"}}
+		{{$team = (toInt .Message.Content)}}
+		{{sendMessage nil "What is the Maximum number of Participants?" }}
+		{{$step = "max"}}
+		{{else if eq (toString $step) "max"}}
+		{{$max = (toInt .Message.Content)}}
+		{{sendMessage nil "What type of event is this? List all types, separated by commas. (i.e. Maze, Puzzle, etc.)" }}
+		{{$step = "types"}}
+		{{else if eq (toString $step) "types"}}
+		{{$types = (toString .Message.Content)}}
+		{{sendMessage nil "What map will this event take place on?" }}
+		{{$step = "map"}}
+	{{else if eq (toString $step) "map"}}
+		{{$mapname = (toString .Message.Content)}}
+		{{sendMessage nil "When will this event start? Format Date and Time for your timezone if you have set it using setz." }}
+		{{$step = "start"}}
+	{{else if eq (toString $step) "start"}}
+		{{$timeString = (toString .Message.Content)}}
+		{{$step = "time"}}
+		{{execCC 185 nil 1 (sdict "timeString" $timeString "CC" .CCID) }}
+	{{else if eq (toString $step) "time"}}
+		{{/*Time Conversion*/}}
+		{{if .ExecData}}
+			{{$formattedTime = .ExecData.timeConverted}}
+		{{end}}
+		{{$time = $formattedTime.In $location }}
+		{{$start = formatTime $time "Mon Jan 2, 2006 3:04 PM MST" }}
+		{{$timeLeft = $time.Sub currentTime}}
+		{{$til = humanizeDurationMinutes $timeLeft}}
+		{{$step = "complete"}}
+		{{$editor = "None"}}
+	{{end}}
+
+
+{{/*Generate New Embed*/}}
+{{if eq $step "complete"}}
+{{$runner = (cslice).AppendSlice $runner}}
+{{$participants = (cslice).AppendSlice $participants}}
+{{$waitlist = (cslice).AppendSlice $waitlist}}
+{{$runnerslist := "\u180E"}}
+{{$participantslist := "\u180E"}}
+{{$waitlistlist := "\u180E"}}
+	{{range $event.runner}}
+	{{$username := (getMember .).Nick}}
+	{{$runnerslist = print $username "\n" $runnerslist}}
+	{{end}}
+	{{range $event.participants}}
+	{{$username := (getMember .).Nick}}
+	{{$participantslist = print $username "\n" $participantslist}}
+	{{$pcount = add $pcount 1}}
+	{{end}}
+	{{range $event.waitlist}}
+	{{$username := (getMember .).Nick}}
+	{{$waitlistlist = print $username "\n" $waitlistlist}}
+	{{end}}
+{{$embed := cembed 
+    "title" (joinStr "" $number " - **" $name "**")
+    "description" $desc 
+    "color" $color 
+    "fields" (cslice 
+        (sdict "name" "Style" "value" (toString $style) "inline" true) 
+        (sdict "name" "Team Size" "value" (toString $team) "inline" true) 
+		(sdict "name" "Type" "value" (toString $types) "inline" true) 
+		(sdict "name" "Map" "value" (toString $mapname) "inline" true) 
+        (sdict "name" "Date/Time" "value" (toString $start) "inline" false)
+		(sdict "name" "Time Until" "value" (toString $til) "inline" false) 
+        (sdict "name" "Event Runner" "value" (toString (joinStr "" "```" $runnerslist "```")) "inline" false) 
+		(sdict "name" (joinStr "" "Particiants " $pcount "/" $max) "value" (toString (joinStr "" "```" $participantslist "```")) "inline" false)
+		(sdict "name" "Waitlist" "value" (toString (joinStr "" "```" $waitlistlist "```")) "inline" false)) 
+    "footer" (sdict "text" "Event starts") 
+	"timestamp" $time }}
+{{editMessage $channel (toInt64 $msgID) $embed}}
+{{addMessageReactions $channel (toInt64 $msgID) "🌟" "✅" "❔"}} 
+
+
+{{$newtime1 := $time.Add (toDuration (mult -1 $ReminderOne))}}
+{{$newtime2 := $time.Add (toDuration (mult -1 $ReminderTwo))}}
+	{{$timeloc1 := $newtime1.In $location}}
+	{{$timeloc2 := $newtime2.In $location}}
+	{{$timeLeft1 := (toDuration ($timeloc1.Sub currentTime))}}
+	{{$timeLeft2 := (toDuration ($timeloc2.Sub currentTime))}}
+	{{scheduleUniqueCC 198 573896118719610880 $timeLeft1.Seconds (joinStr "" $msgID "-1") (sdict "id" $msgID)}}
+	{{scheduleUniqueCC 198 573896118719610880 $timeLeft2.Seconds (joinStr "" $msgID "-2") (sdict "id" $msgID)}}
+{{end}}
+
+{{/*save all variables to sdict*/}}
+{{$event.Set "number" $number}}
+{{$event.Set "name" $name}}
+{{$event.Set "desc"  $desc}}
+{{$event.Set "color"  $color}}
+{{$event.Set "style" $style}}
+{{$event.Set "mapname" $mapname}}
+{{$event.Set "team"  $team}}
+{{$event.Set "max" $max}}
+{{$event.Set "types"  $types}}
+{{$event.Set "start" $start}}
+{{$event.Set "time" $time}}
+{{$event.Set "runner" $runner}}
+{{$event.Set "participants" $participants}}
+{{$event.Set "waitlist" $waitlist}}
+
+{{/*save sdict to db, save the current event being edited to db*/}}
+{{dbSet (toInt64 $msgID) "event" $event}}
+{{dbSet 0 "eventeditor" $editor}}
+{{dbSet 0 "currenteventediting" $msgID}}
+{{dbSet 0 "EventEditing" $step}}
+{{execCC 194 nil 30 (sdict "MessageID" (toInt64 $msgID) "TimeLeft" $time) }}
+{{end}}
+
+{{ $dur := currentTime.Sub $startOfCmd }}
+{{ if gt $dur.Seconds 5.0 }}
+    {{ sendMessage 587858995012698137 (print "CC #" .CCID " took longer than 5 seconds to run.\n**Duration:** " $dur "\n**Command executed:* `" .Message.Content "`") }}
+{{ end }}	

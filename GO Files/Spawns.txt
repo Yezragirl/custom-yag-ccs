@@ -1,0 +1,17 @@
+bAutoUnlockAllEngrams=true
+ConfigAddNPCSpawnEntriesContainer=(NPCSpawnEntriesContainerClassString="DinoSpawnEntriesSnowShoreline_PGM",NPCSpawnEntries=((AnEntryName="IceJumpers",EntryWeight=0.05,NPCsToSpawnStrings=("IceJumper_Character_BP_C")),(AnEntryName="SnowOwls",EntryWeight=0.09,NPCsToSpawnStrings=("Owl_Character_BP_C"))),NPCSpawnLimits=((NPCClassString="IceJumper_Character_BP_C",MaxPercentageOfDesiredNumToAllow=0.01),(NPCClassString="Owl_Character_BP_C",MaxPercentageOfDesiredNumToAllow=0.02)))
+ConfigAddNPCSpawnEntriesContainer=(NPCSpawnEntriesContainerClassString="DinoSpawnEntriesJungle",NPCSpawnEntries=((AnEntryName="ExtinGacha",EntryWeight=0.01,NPCsToSpawnStrings=("Gacha_Character_BP_C"))),NPCSpawnLimits=((NPCClassString="Gacha_Character_BP_C",MaxPercentageOfDesiredNumToAllow=0.02)))
+ConfigAddNPCSpawnEntriesContainer=(NPCSpawnEntriesContainerClassString="DinoSpawnEntriesSE_DinoSpawnEntriesOasis",NPCSpawnEntries=((AnEntryName="LiteGote",EntryWeight=0.5,NPCsToSpawnStrings=("LanternGoat_Character_BP_C"))),NPCSpawnLimits=((NPCClassString="LanternGoat_Character_BP_C",MaxPercentageOfDesiredNumToAllow=0.25)))
+ConfigAddNPCSpawnEntriesContainer=(NPCSpawnEntriesContainerClassString="DinoSpawnEntriesSE_DinoSpawnEntriesSE_GreenDesert",NPCSpawnEntries=((AnEntryName="LiteGote",EntryWeight=0.5,NPCsToSpawnStrings=("LanternGoat_Character_BP_C"))),NPCSpawnLimits=((NPCClassString="LanternGoat_Character_BP_C",MaxPercentageOfDesiredNumToAllow=0.25)))
+ConfigOverrideItemMaxQuantity=(ItemClassString="PrimalItemConsumable_RawMeat_C",Quantity=(MaxItemQuantity=500.0, bIgnoreMultiplier=true)
+ConfigOverrideItemMaxQuantity=(ItemClassString="PrimalItemConsumable_RawPrimeMeat_C",Quantity=(MaxItemQuantity=500.0, bIgnoreMultiplier=true)
+ConfigOverrideItemMaxQuantity=(ItemClassString="PrimalItemResource_Wood_C",Quantity=(MaxItemQuantity=1000.0, bIgnoreMultiplier=true)
+ConfigOverrideItemMaxQuantity=(ItemClassString="PrimalItemResource_Thatch_C",Quantity=(MaxItemQuantity=1000.0, bIgnoreMultiplier=true)
+ConfigOverrideItemMaxQuantity=(ItemClassString="PrimalItemResource_Fibers_C",Quantity=(MaxItemQuantity=1000.0, bIgnoreMultiplier=true)
+ConfigOverrideItemMaxQuantity=(ItemClassString="PrimalItemResource_MetalIngot_C",Quantity=(MaxItemQuantity=500.0, bIgnoreMultiplier=true)
+ConfigOverrideItemMaxQuantity=(ItemClassString="PrimalItemResource_Metal_C",Quantity=(MaxItemQuantity=500.0, bIgnoreMultiplier=true)
+ConfigOverrideItemMaxQuantity=(ItemClassString="PrimalItemConsumable_Mutton_C",Quantity=(MaxItemQuantity=50.0, bIgnoreMultiplier=true)
+ConfigOverrideItemMaxQuantity=(ItemClassString="PrimalItemConsumable_CookedPrimeMeat_C",Quantity=(MaxItemQuantity=500.0, bIgnoreMultiplier=true)
+ConfigOverrideItemMaxQuantity=(ItemClassString="PrimalItemConsumable_CookedMeat_C",Quantity=(MaxItemQuantity=500.0, bIgnoreMultiplier=true)
+This is my text. basic settings with ini input into the engine settings. everything works apart from the LanternGoat ie the shinehorn
+Please please please pick up on whats wrong as i said the other dinos i have in code spawns without issue
