@@ -32,12 +32,12 @@
 {{dbSet .User.ID "Q" $Q}}
 {{addMessageReactions nil $msg ":yes:658376626639339533" ":no:658376639322783745"}}
 {{else if and (eq .Reaction.Emoji.Name ":yes:658376626639339533") (eq (toString $Q) "First Tribe")}}
-
+Change First Tribe
 {{else if and (eq .Reaction.Emoji.Name ":no:658376639322783745") (eq (toString $Q) "First Tribe")}}
 
 
 {{else if and (eq .Reaction.Emoji.Name "2️⃣") (eq (toString $Q) "Edit Tribe")}}
-{{$msg := SendMessageRetID nil (joinStr "" "Great! Your second tribe is currently **"" (index $tribe 1) "**. Would you like to change this tribe?")}}
+{{$msg := SendMessageRetID nil (joinStr "" "Your second tribe is currently **"" (index $tribe 1) "**. Would you like to change this tribe?")}}
 {{$Q = "Second Tribe"}}
 {{dbSet .User.ID "Q" $Q}}
 {{addMessageReactions nil $msg ":yes:658376626639339533" ":no:658376639322783745"}}

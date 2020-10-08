@@ -50,7 +50,17 @@
 					{{$ticket.Set "claimer" .User.ID}}
 					{{$ticketcount = add $ticketcount 1}}
 					{{dbSet (toInt64 .Channel.ID) "ticket_control" $ticket}}
-					{{dbSet .User.ID "tickets" $ticketcount}}
+					{{if hasRoleID 588749231150465049}} 
+						{{if eq (toInt $ticketcount) 3}}
+						{{$points := dbIncr .User.ID "AdminPoints" 1}}
+						{{sendMessage 653058600230584353 (joinStr "" (getMember .User.ID).Nick " earned 1 point for tickets.")}}
+						{{sendMessage 654151821039894547 (joinStr "" .User.Mention " earned 1 point for tickets.")}}
+						{{sendMessage 654151821039894547 (joinStr "" .User.Mention " now has " (toString (toInt $points)) " points.")}}
+						{{dbSet .User.ID "tickets" 0}}
+						{{else}}
+						{{dbSet .User.ID "tickets" $ticketcount}}
+						{{end}}
+					{{end}}
 				{{end}}
 			{{else}}
 				{{sendMessage 653058600230584353 (joinStr "" .Member.Nick " has claimed ticket " (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1) )}}
@@ -60,16 +70,16 @@
 				{{$ticketcount = add $ticketcount 1}}
 				{{dbSet (toInt64 .Channel.ID) "ticket_control" $ticket}}
 				{{if hasRoleID 588749231150465049}} 
-				{{if eq (toInt $ticketcount) 3}}
+					{{if eq (toInt $ticketcount) 3}}
 					{{$points := dbIncr .User.ID "AdminPoints" 1}}
 					{{sendMessage 653058600230584353 (joinStr "" (getMember .User.ID).Nick " earned 1 point for tickets.")}}
 					{{sendMessage 654151821039894547 (joinStr "" .User.Mention " earned 1 point for tickets.")}}
 					{{sendMessage 654151821039894547 (joinStr "" .User.Mention " now has " (toString (toInt $points)) " points.")}}
 					{{dbSet .User.ID "tickets" 0}}
-				{{else}}
+					{{else}}
 					{{dbSet .User.ID "tickets" $ticketcount}}
+					{{end}}
 				{{end}}
-			{{end}}
 			{{end}}
 		{{end}}
 	{{else if eq .Reaction.Emoji.ID 660605465721569334}}
@@ -79,7 +89,6 @@
 	{{sendMessage 634442883440836609 (joinStr "" .Member.Nick " has closed ticket " .Channel.Name "." )}}
 	{{dbDel (toInt64 .Channel.ID) "ticket_control"}}
 	{{exec "tickets close" (joinStr "" "Ticket closed by " .User.Username)}}
-
 	{{else if eq .Reaction.Emoji.ID 631218688099614724}}
 		{{if $ticket.hold}}
 			{{editChannelName nil (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1)}}
