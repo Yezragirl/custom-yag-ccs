@@ -10,6 +10,7 @@
 {{if ($public)}}
 {{deleteMessage 658352884701724733 $public 86400}}
 {{end}}
+
 {{if $name}}
 {{$message := sendMessageRetID 573860427721605120 (joinStr "" $name " has left the discord. Pod their dinos for auction and clear their bases.")}}
 {{addMessageReactions 573860427721605120 $message "✔️" "❌"}}
