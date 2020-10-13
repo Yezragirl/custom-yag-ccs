@@ -2,6 +2,7 @@
 {{ $start := currentTime }}
 {{$pattern := `([^-]+-[^-]+)(.+)?` -}}
 {{$db := dbGet (toInt64 .Channel.ID) "ticket_control"}}
+{{$ticketnum := (dbGet 0 "ticketnum").Value}}
 {{$ticket := sdict}}{{range $k,$v := $db.Value}}{{$ticket.Set $k $v}}{{end}}
 
 {{$ticketcount := (dbGet .User.ID "tickets").Value}}
@@ -85,6 +86,9 @@
 	{{else if eq .Reaction.Emoji.ID 660605465721569334}}
 	{{sendMessage nil (joinStr "" .Member.Nick " has closed this ticket. If you have further issues, please open a new ticket. This channel will be deleted in 30 seconds.")}}
 	{{sleep 30}}
+	{{$ticketnum = sub $ticketnum 1}}
+	{{dbSet 0 "ticketnum" $ticketnum}}
+	{{editMessage 660329324976799754 765226303569264680 (joinStr "" "There are currently " $ticketnum " open tickets.")}}	
 	{{sendMessage 653058600230584353 (joinStr "" .Member.Nick " has closed ticket " (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1) "." )}}
 	{{sendMessage 634442883440836609 (joinStr "" .Member.Nick " has closed ticket " .Channel.Name "." )}}
 	{{dbDel (toInt64 .Channel.ID) "ticket_control"}}

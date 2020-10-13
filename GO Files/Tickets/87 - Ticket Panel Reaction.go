@@ -6,6 +6,7 @@
 {{$panel := (toString .ReactionMessage.ID)}}
 {{$emoji := ""}}
 {{$days := 0}}
+{{$ticketnum := (dbGet 0 "ticketnum").Value}}
 
 {{if eq .Reaction.Emoji.Name "1️⃣"}}
 {{if (eq .Channel.ID 575676562872074290)}} 
@@ -78,6 +79,9 @@
 {{deleteAllMessageReactions nil $panel}}
 {{addMessageReactions nil $panel $emoji}}
 {{else}}
+{{$ticketnum = add $ticketnum 1}}
+{{dbSet 0 "ticketnum" $ticketnum}}
+{{editMessage 660329324976799754 765226303569264680 (joinStr "" "There are currently " $ticketnum " open tickets.")}}
 {{$capture = exec "ticket open" $type}}
 {{$ID = reFind `\d+` (reFind `<#\d+>` $capture)}}
 {{$ticket := sendMessageNoEscapeRetID $ID (joinStr "" .User.Mention $message)}}

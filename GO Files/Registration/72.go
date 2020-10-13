@@ -10,19 +10,25 @@
 {{$ref := (dbGet .User.ID "ref").Value}}
 {{$parentguardian := (dbGet .User.ID "parentguardian").Value}}
 {{$tribe := (dbGet .User.ID "tribe").Value}}
+{{$ticketnum := (dbGet 0 "ticketnum").Value}}
 {{if and (eq .Reaction.Emoji.ID 658376626639339533) (eq (toString $Q) "Ref")}}
 {{deleteAllMessageReactions nil $msgID}}
 {{$Q = "Ref2"}}{{dbSet .User.ID "Q" $Q}}
 {{sendMessage nil (joinStr "" .User.Mention ", who referred you?")}}
 {{else if and (eq .Reaction.Emoji.ID 658376639322783745) (eq (toString $Q) "Ref")}}
 {{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Pin"}}{{dbSet .User.ID "Q" $Q}}{{$ref = "None"}}{{dbSet .User.ID "ref" "None"}}
+{{$Q = "Pin"}}{{dbSet .User.ID "Q" $Q}}{{$ref = "None"}}{{dbSet .User.ID "ref" $ref}}
 {{sendMessage nil (joinStr "" .User.Mention ", what 4 digit pin would you like used whenever a pin may be required? (Quest Vaults, or other situations.)")}}
 {{else if and (eq .Reaction.Emoji.ID 640697096814592040) (eq (toString $Q) "Starter")}}
 {{deleteAllMessageReactions nil $msgID}}
 {{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
 {{execCC 71 nil 0 ""}}
 {{sendMessage nil "Selected Artemis"}}
+{{else if and (eq .Reaction.Emoji.ID 748895819331141674) (eq (toString $Q) "Starter")}}
+{{deleteAllMessageReactions nil $msgID}}
+{{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
+{{execCC 71 nil 0 ""}}
+{{sendMessage nil "Selected Osiris"}}
 {{else if and (eq .Reaction.Emoji.ID 640697193052766218) (eq (toString $Q) "Starter")}}
 {{deleteAllMessageReactions nil $msgID}}
 {{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
@@ -79,6 +85,9 @@
 {{execCC 71 nil 0 (sdict "starter" "none")}}
 {{sendMessage nil "You are off and running! The <#613585635026141185> channel should now be visible to you. This channel will close in 60 seconds."}} {{sleep 60}}
 {{exec "tickets close" "Registration Complete-No Starter Needed"}}
+{{$ticketnum = sub $ticketnum 1}}
+{{dbSet 0 "ticketnum" $ticketnum}}
+{{editMessage 660329324976799754 765226303569264680 (joinStr "" "There are currently " $ticketnum " open tickets.")}}
 {{else if and (eq .Reaction.Emoji.ID 658376626639339533) (eq (toString $Q) "ParentGuardian")}}
 {{deleteAllMessageReactions nil $msgID}}
 {{$Q = "ParentGuardian2"}}{{dbSet .User.ID "Q" $Q}}
@@ -90,11 +99,15 @@
 {{sleep 10}}
 {{execAdmin "kick" .User.ID "Under age."}}
 {{execAdmin "tickets close underage"}}
-
+{{$ticketnum = sub $ticketnum 1}}
+{{dbSet 0 "ticketnum" $ticketnum}}
+{{editMessage 660329324976799754 765226303569264680 (joinStr "" "There are currently " $ticketnum " open tickets.")}}
 
 {{else if (eq .Reaction.Emoji.Name "gcrystal")}}
 {{deleteAllMessageReactions nil $msgID}}
 {{exec "tickets close" "Picked up Items"}}
-
+{{$ticketnum = sub $ticketnum 1}}
+{{dbSet 0 "ticketnum" $ticketnum}}
+{{editMessage 660329324976799754 765226303569264680 (joinStr "" "There are currently " $ticketnum " open tickets.")}}
 {{end}}
 {{end}}
