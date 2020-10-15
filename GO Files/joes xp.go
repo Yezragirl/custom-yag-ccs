@@ -1,0 +1,47 @@
+{{$name := .User.Username}}
+{{if .Member.Nick}}
+	{{$name = .Member.Nick}}
+{{end}}
+
+{{ $settings := 0 }} {{/* Instantiate settings at nil value */}}
+{{ $roleRewards := sdict "type" "stack" }} {{/* Default role reward settings */}}
+{{ with (dbGet 0 "xpSettings") }} {{ $settings = sdict .Value }} {{ end }} {{/* If in db, then we update value */}}
+{{ with (dbGet 0 "roleRewards") }} {{ $roleRewards = sdict .Value }} {{ end }} {{/* See above */}}
+
+{{ $cooldown := false }} {{/* We presume that user is not on cooldown */}}
+{{ if (dbGet .User.ID "xpCooldown") }} {{ $cooldown = true }} {{ end }} {{/* Make user on cooldown if there is cooldown DB entry */}}
+
+{{ if and (not $cooldown) $settings }} {{/* Make sure that both the user is not on cooldown and settings exist */}}
+	{{ $amtToGive := randInt $settings.min $settings.max }} {{/* Amount of XP to give */}}
+	{{ $currentXp := 0 }} {{/* User current XP */}}
+	{{ with (dbGet .User.ID "xp") }}
+		{{ $currentXp = .Value }}
+	{{ end }} {{/* Update XP amount if present */}}
+
+	{{ $currentLvl := roundFloor (mult 0.1 (sqrt $currentXp)) }} {{/* Calculate level */}}
+	{{ $newXp := dbIncr .User.ID "xp" $amtToGive }} {{/* Increment the xp */}}
+	{{ $newLvl := roundFloor (mult 0.1 (sqrt $newXp)) }} {{/* Calculate new level */}}
+	{{ $channel := or $settings.channel .Channel.ID }}
+	{{ if not (getChannel $channel) }} {{ $channel = .Channel.ID }} {{ end }}
+
+	{{ if ne $newLvl $currentLvl }} {{/* If the level changed / user ranked up */}}
+			{{ $typex := $roleRewards.typex }} {{/* Type of role giving (highest / stack) */}}
+			{{ $toAdd := or ($roleRewards.Get (json $newLvl)) 0 }} {{/* Try to get the role reward for this level */}}
+			{{- range $level, $reward := $roleRewards -}} {{/* Loop over role rewards */}}
+					{{ if and (ge (toInt $newLvl) (toInt $level)) (not (hasRoleID $reward)) (eq $typex "stack") (ne $level "type") }} {{ addRoleID $reward }}
+					{{ else if and (hasRoleID $reward) (eq $typex "highest") $toAdd }} {{ removeRoleID $reward }} {{ end }}
+			{{- end -}}
+			{{ if $toAdd }} 
+		{{ $embed := cembed 
+			"title" "❯ Level up!"
+			"thumbnail" (sdict "url" "https://webstockreview.net/images/emoji-clipart-celebration-4.png")
+			"description" (printf "Congratulations **%s**! You’ve been promoted to <@&%d> and leveled up to level %d!" $name $toAdd (toInt $newLvl))
+			"color" 14232643
+		
+		}}
+		{{ sendMessage $channel (complexMessage "content" .User.Mention "embed" $embed) }}{{ addRoleID $toAdd }}{{/* Send levelup notification */}}{{ end }}
+	{{ end }}
+
+	{{ $cooldownSeconds := div $settings.cooldown 1000000000 }} {{/* Convert cooldown to seconds */}}
+	{{ dbSetExpire .User.ID "xpCooldown" true $cooldownSeconds }} {{/* Set cooldown entry */}}
+{{ end }}
