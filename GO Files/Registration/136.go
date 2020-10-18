@@ -8,9 +8,10 @@
 {{$public := (dbGet .User.ID "public").Value}}
 {{$ref := (dbGet .User.ID "ref").Value}}
 {{$parentguardian := (dbGet .User.ID "parentguardian").Value}}
-{{$tribe_db := (dbGet .User.ID "tribe").Value}}
-{{$tribe := sdict $tribe_db}}
-
+{{$tribe := (dbGet .User.ID "tribe").Value}}{{if not $tribe}}{{$tribe = "Unregistered"}}{{dbSet .User.ID "tribe" $tribe}}{{end}}
+{{$tribe2 := (dbGet .User.ID "tribe2").Value}}{{if not $tribe2}}{{$tribe2 = "Unregistered"}}{{dbSet .User.ID "tribe2" $tribe2}}{{end}}
+{{$color := randInt 111111 999999 }}
+{{$ticketnum := (dbGet 0 "ticketnum").Value}}
 {{if (eq .Channel.ParentID 635305499600093214)}} 
 {{/*RegEdit*/}}
 {{if (hasRoleID 607041870966685706)}}{{/*Has Registered Role*/}}
@@ -23,39 +24,71 @@
 {{$Q = "Edit Tribe"}}
 {{dbSet .User.ID "Q" $Q}}
 {{deleteAllMessageReactions nil $msgID}}
-{{$msg := sendMessageRetID nil (joinStr "" .User.Mention ", are you :one: joining/changing your first tribe, :two: joining/changing a secondary tribe, or :three: creating a new tribe?")}}
-{{addMessageReactions nil $msg "1️⃣" "2️⃣" "3️⃣"}}
-
+{{$embed := cembed 
+	"color" $color
+	"Title" "Tribe Edit Menu"
+	"description" "Please select the tribe information you would like to edit by reacting to the number associated."
+	"fields" (cslice 
+	(sdict "name" ":one: Tribe 1" "value" (toString $tribe) ) 
+	(sdict "name" ":two: Tribe 2" "value" (toString $tribe2) ) 
+	(sdict "name" ":three: Done Editing" "value" "Use this to stop editing your registration information." ))
+	"thumbnail" (sdict "url" (.User.AvatarURL "1024"))}}
+	{{$msg := sendMessageRetID nil $embed}}
+	{{addMessageReactions nil $msg "1️⃣" "2️⃣" "3️⃣"}}
+	{{deleteAllMessageReactions nil $msgID}}
 {{else if and (eq .Reaction.Emoji.Name "1️⃣") (eq (toString $Q) "Edit Tribe")}}
-{{$msg := SendMessageRetID nil (joinStr "" "Great! Your first tribe is currently **"" (index $tribe 0) "**. Would you like to change this tribe?")}}
+{{$embed := cembed 
+	"color" $color
+	"Title" "Tribe Edit Menu"
+	"description" "Please select the tribe information you would like to edit by reacting to the number associated."
+	"fields" (cslice 
+	(sdict "name" "Current Tribe 1" "value" (toString $tribe) ) 
+	(sdict "name" ":one: Join/Change Tribe 1" "value" "" ) 
+	(sdict "name" ":two: Leave Tribe 1" "value" "" ) 
+	(sdict "name" ":three: Create New Tribe" "value" "" ) 
+	(sdict "name" ":four: Done Editing" "value" "Use this to stop editing your registration information." ))
+	"thumbnail" (sdict "url" (.User.AvatarURL "1024"))}}
+	{{$msg := sendMessageRetID nil $embed}}
+	{{addMessageReactions nil $msg "1️⃣" "2️⃣" "3️⃣" "4️⃣"}}
 {{$Q = "First Tribe"}}
 {{dbSet .User.ID "Q" $Q}}
-{{addMessageReactions nil $msg ":yes:658376626639339533" ":no:658376639322783745"}}
-{{else if and (eq .Reaction.Emoji.Name ":yes:658376626639339533") (eq (toString $Q) "First Tribe")}}
-Change First Tribe
-{{else if and (eq .Reaction.Emoji.Name ":no:658376639322783745") (eq (toString $Q) "First Tribe")}}
-
-
+{{deleteAllMessageReactions nil $msgID}}
 {{else if and (eq .Reaction.Emoji.Name "2️⃣") (eq (toString $Q) "Edit Tribe")}}
-{{$msg := SendMessageRetID nil (joinStr "" "Your second tribe is currently **"" (index $tribe 1) "**. Would you like to change this tribe?")}}
+{{$embed := cembed 
+	"color" $color
+	"Title" "Tribe Edit Menu"
+	"description" "Please select the tribe information you would like to edit by reacting to the number associated."
+	"fields" (cslice 
+	(sdict "name" "Current Tribe 2" "value" (toString $tribe2) ) 
+	(sdict "name" ":one: Join/Change Tribe 2" "value" "" ) 
+	(sdict "name" ":two: Leave Tribe 2" "value" "" ) 
+	(sdict "name" ":three: Create New Tribe" "value" "" ) 
+	(sdict "name" ":four: Done Editing" "value" "Use this to stop editing your registration information." ))
+	"thumbnail" (sdict "url" (.User.AvatarURL "1024"))}}
+	{{$msg := sendMessageRetID nil $embed}}
+	{{addMessageReactions nil $msg "1️⃣" "2️⃣" "3️⃣" "4️⃣"}}
 {{$Q = "Second Tribe"}}
 {{dbSet .User.ID "Q" $Q}}
-{{addMessageReactions nil $msg ":yes:658376626639339533" ":no:658376639322783745"}}
-{{else if and (eq .Reaction.Emoji.Name ":yes:658376626639339533") (eq (toString $Q) "Second Tribe")}}
+{{deleteAllMessageReactions nil $msgID}}
 
-{{else if and (eq .Reaction.Emoji.Name ":no:658376639322783745") (eq (toString $Q) "Second Tribe")}}
-
-
-
-
-
-{{else if and (eq .Reaction.Emoji.Name "3️⃣") (eq (toString $Q) "Edit Tribe")}}
-{{$msg := SendMessageRetID nil (joinStr "" "Great! What would you like to call your tribe?")}}
-{{$Q = "Create Tribe"}}
-{{dbSet .User.ID "Q" $Q}}
-
-
-
+{{else if and (eq .Reaction.Emoji.Name "1️⃣") (eq (toString $Q) "First Tribe")}}
+{{execCC 222 nil 0 (sdict "tribe" "first" "step" "join")}}
+{{deleteAllMessageReactions nil $msgID}}
+{{else if and (eq .Reaction.Emoji.Name "2️⃣") (eq (toString $Q) "First Tribe")}}
+{{execCC 222 nil 0 (sdict "tribe" "first" "step" "leave")}}
+{{deleteAllMessageReactions nil $msgID}}
+{{else if and (eq .Reaction.Emoji.Name "3️⃣") (eq (toString $Q) "First Tribe")}}
+{{execCC 222 nil 0 (sdict "tribe" "first" "step" "create")}}
+{{deleteAllMessageReactions nil $msgID}}
+{{else if and (eq .Reaction.Emoji.Name "1️⃣") (eq (toString $Q) "Second Tribe")}}
+{{execCC 222 nil 0 (sdict "tribe" "second" "step" "join")}}
+{{deleteAllMessageReactions nil $msgID}}
+{{else if and (eq .Reaction.Emoji.Name "2️⃣") (eq (toString $Q) "Second Tribe")}}
+{{execCC 222 nil 0 (sdict "tribe" "second" "step" "leave")}}
+{{deleteAllMessageReactions nil $msgID}}
+{{else if and (eq .Reaction.Emoji.Name "3️⃣") (eq (toString $Q) "Second Tribe")}}
+{{execCC 222 nil 0 (sdict "tribe" "second" "step" "create")}}
+{{deleteAllMessageReactions nil $msgID}}
 
 {{else if and (eq .Reaction.Emoji.Name "3️⃣") (eq (toString $Q) "Edit")}}
 {{$Q = "Edit GT"}}
@@ -67,7 +100,7 @@ Change First Tribe
 {{dbSet .User.ID "Q" $Q}}
 {{deleteAllMessageReactions nil $msgID}}
 {{sendMessage nil (joinStr "" .User.Mention ", what's your *new* **Pin**?")}}
-{{else if and (eq .Reaction.Emoji.Name "5️⃣") (eq (toString $Q) "Edit")}}
+{{else if or (and (eq .Reaction.Emoji.Name "5️⃣") (eq (toString $Q) "Edit")) (and (eq .Reaction.Emoji.Name "3️⃣") (eq (toString $Q) "Edit Tribe")) (and (eq .Reaction.Emoji.Name "4️⃣") (eq (toString $Q) "First Tribe")) (and (eq .Reaction.Emoji.Name "4️⃣") (eq (toString $Q) "Second Tribe"))}}
 {{deleteAllMessageReactions nil $msgID}}
 {{$Q = "Done"}}
 {{dbSet .User.ID "Q" $Q}}
@@ -75,6 +108,8 @@ Change First Tribe
 {{removeRoleID 658469834589208616}}
 {{sleep 3}}
 {{exec "tickets close" "Done Editing Registration"}}
+{{$ticketnum = sub $ticketnum 1}}
+{{dbSet 0 "ticketnum" $ticketnum}}
 {{/*Would you like to edit something else?*/}}
 {{else if and (eq .Reaction.Emoji.ID 658376626639339533) (eq (toString $Q) "End Edit")}}{{/*yes*/}}
 {{deleteAllMessageReactions nil $msgID}}

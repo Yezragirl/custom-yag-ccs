@@ -212,3 +212,62 @@ len (toRune $x)  - for length of nickname
 
 
 
+
+
+
+
+{{$string1 := "GILY"}}
+{{$string2 := "GEELY"}}
+
+
+{{$out := dict 1 $string1 2 $string2}}
+{{template "levenshtein" $out}}
+
+{{with $out.err}} `error:` {{.}}
+{{else}} `distance:` {{$out.dist}}
+{{end}}
+
+{{define "levenshtein"}}
+    {{$a := .Get 1}} {{$b := .Get 2}} {{$m := cslice 0}} {{$last := 0}} {{$x := 1}} {{$y := 1}}
+    {{if and $a $b}}
+        {{if ne $a $b}}
+            {{$a = toRune $a}} {{$b = toRune $b}}
+            {{$lena := len $a}} {{$lenb := len $b}}
+            {{range seq 1 (add $lena 1)}} {{- $m = $m.Append . -}} {{end}}
+            {{range $v := $b}}
+                {{- $m.Set 0 $x -}}
+                {{- $last = sub $x 1 -}}
+                {{- $y = 1 -}}
+                {{- range $a -}}
+                    {{- $third := 1 -}}
+                    {{- if eq . $v -}} {{- $third = 0 -}} {{- end -}}
+                    {{- $min3 := cslice (add (index $m $y) 1) (add (index $m (sub $y 1)) 1) (add $last $third) -}}
+                    {{- $last = index $m $y}}
+                    {{- template "min3" $min3 -}}
+                    {{- $m.Set $y (index $min3 0) -}}
+                    {{- $y = add $y 1 -}}
+                {{- end -}}
+                {{- $x = add $x 1 -}}
+            {{end}}
+            {{.Set "dist" (index $m $lena)}}
+        {{else}}
+            {{.Set "dist" 0}}
+        {{end}}
+    {{else}}
+        {{.Set "err" "You dint provide 2 strings to compare."}}
+    {{end}}
+{{end}}
+
+{{define "min"}}
+    {{if gt (index . 0) (index . 1)}}
+        {{.Set 0 (index . 1)}}
+    {{end}}
+{{end}}
+
+{{define "min3"}}
+    {{$inner := cslice (index . 1) (index . 2)}}
+    {{template "min" $inner}}
+    {{$outter := cslice (index . 0) (index $inner 0)}}
+    {{template "min" $outter}}
+    {{.Set 0 (index $outter 0)}}
+{{end}}

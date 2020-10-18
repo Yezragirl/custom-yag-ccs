@@ -10,6 +10,7 @@
 {{$ref := (dbGet .User.ID "ref").Value}}
 {{$parentguardian := (dbGet .User.ID "parentguardian").Value}}
 {{$tribe := (dbGet .User.ID "tribe").Value}} {{if not $tribe}}{{$tribe = "Unregistered"}}{{dbSet .User.ID "tribe" $tribe}}{{end}}
+{{$tribe2 := (dbGet .User.ID "tribe2").Value}} {{if not $tribe2}}{{$tribe2 = "Unregistered"}}{{dbSet .User.ID "tribe2" $tribe2}}{{end}}
 {{$color := randInt 111111 999999 }}
 {{$Q = "Edit"}}{{dbSet .User.ID "Q" $Q}}
 {{if hasRoleID 645404993863811072}}
@@ -20,7 +21,7 @@
 	"fields" (cslice 
 	(sdict "name" "Discord Name" "value" .User.String ) 
 	(sdict "name" ":one: In Game Name" "value" (toString $name) ) 
-	(sdict "name" ":two: Tribe Name" "value" (toString $tribe) ) 
+	(sdict "name" ":two: Tribe Name" "value" (joinStr "" (toString $tribe) ", " (toString $tribe2)) ) 
 	(sdict "name" ":three: Gamer Tag" "value" (toString $gt) ) 
 	(sdict "name" ":four: Pin" "value" (toString $pin) )
 	(sdict "name" ":five: Age" "value" (toString (toInt $age)) )
@@ -38,7 +39,7 @@
 	"fields" (cslice 
 	(sdict "name" "Discord Name" "value" .User.String "inline" false) 
 	(sdict "name" ":one: In Game Name" "value" (toString $name) "inline" false) 
-	(sdict "name" ":two: Tribe Name" "value" (toString $tribe) "inline" false) 
+	(sdict "name" ":two: Tribe Name" "value" (joinStr "" (toString $tribe) ", " (toString $tribe2)) ) 
 	(sdict "name" ":three: Gamer Tag" "value" (toString $gt) "inline" false) 
 	(sdict "name" ":four: Pin" "value" (toString $pin) "inline" false)
 	(sdict "name" ":five: Done Editing" "value" "Use this to stop editing your registration information." "inline" false))

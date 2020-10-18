@@ -7,7 +7,7 @@
 {{if eq $time.Day 25}}
 {{sendMessage 573220101977800704 "It's Coupon Buy Back Day! If you want to trade in your coupons for BBS, make sure you get your ticket submitted today!"}}
 
-{{if or (eq $time.Day 2) (eq $time.Day 15)}}
+{{else if or (eq $time.Day 2) (eq $time.Day 15)}}
 
 {{$ad = (randInt 1 5)}}
 	{{if eq $ad 1}}
