@@ -1,4 +1,4 @@
-{{$args := parseArgs 2 "correct syntax is `addv rule# who`"
+{{$args := parseArgs 2 "correct syntax is `remv rule# who`"
     (carg "int" "Rule Number")
     (carg "user" "Violator")}}
 {{$countofviolations := dbIncr ($args.Get 1).ID ($args.Get 0) -1}}
