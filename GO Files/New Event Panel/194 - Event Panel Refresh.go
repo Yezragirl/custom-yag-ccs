@@ -1,6 +1,5 @@
 {{/*Event Panel Refresh*/}}
 {{$channel := "573897276569813012"}}
-{{$t := .ExecData.TimeLeft}}
 {{$msgID := .ExecData.MessageID}}
 {{$ts := .TimeSecond}}
 {{$db := dbGet (toInt64 $msgID) "event"}}
@@ -23,16 +22,15 @@
 	{{$waitlist := $event.waitlist}}
 	{{$tz := "America/New_York" }}
 	{{$location := (newDate 0 0 0 0 0 0 $tz).Location }} 
-	{{$timeLeft := $t.Sub currentTime}}
+	{{$timeLeft := $time.Sub currentTime}}
 	{{$til := humanizeDurationMinutes $timeLeft}}
 	{{$runnerslist := "\u180E"}}
 			{{$participantslist := "\u180E"}}
 			{{$waitlistlist := "\u180E"}}
 
  	{{if lt $timeLeft (mult .TimeSecond 30)}}
-   			{{$timeLeft := $t.Sub currentTime}}
+   			{{$timeLeft := $time.Sub currentTime}}
 			{{$til = humanizeDurationMinutes $timeLeft}}
-
 			{{range $event.runner}}
 				{{$username := (getMember .).Nick}}
 				{{$runnerslist = print $username "\n" $runnerslist}}
@@ -57,7 +55,7 @@
 			(sdict "name" "Map" "value" (toString $mapname) "inline" true) 
     	    (sdict "name" "Date/Time" "value" (toString $start) "inline" false)
 			(sdict "name" "Time Until" "value" "Event Begins in Less than 30 Seconds" "inline" false) 
-       		(sdict "name" "Event Runner" "value" (toString (joinStr "" "```" $runnerslist "```")) "inline" false) 
+       		(sdict "name" "Event Host" "value" (toString (joinStr "" "```" $runnerslist "```")) "inline" false) 
 			(sdict "name" (joinStr "" "Participants " $pcount "/" $max) "value" (toString (joinStr "" "```" $participantslist "```")) "inline" false)
 			(sdict "name" "Waitlist" "value" (toString (joinStr "" "```" $waitlistlist "```")) "inline" false)) 
     		"footer" (sdict "text" "Event starts") 
@@ -91,7 +89,7 @@
 				 (sdict "name" "Map" "value" (toString $mapname) "inline" true) 
 				 (sdict "name" "Date/Time" "value" (toString $start) "inline" false)
 				 (sdict "name" "Time Until" "value" "**Event has Begun**" "inline" false) 
-				 (sdict "name" "Event Runner" "value" (toString (joinStr "" "```" $runnerslist "```")) "inline" false) 
+				 (sdict "name" "Event Host" "value" (toString (joinStr "" "```" $runnerslist "```")) "inline" false) 
 				 (sdict "name" (joinStr "" "Participants " $pcount "/" $max) "value" (toString (joinStr "" "```" $participantslist "```")) "inline" false)
 				 (sdict "name" "Waitlist" "value" (toString (joinStr "" "```" $waitlistlist "```")) "inline" false)) 
 			 "footer" (sdict "text" "Event starts") 
@@ -125,7 +123,7 @@
 		(sdict "name" "Map" "value" (toString $mapname) "inline" true) 
         (sdict "name" "Date/Time" "value" (toString $start) "inline" false)
 		(sdict "name" "Time Until" "value" (toString $til) "inline" false) 
-        (sdict "name" "Event Runner" "value" (toString (joinStr "" "```" $runnerslist "```")) "inline" false) 
+        (sdict "name" "Event Host" "value" (toString (joinStr "" "```" $runnerslist "```")) "inline" false) 
 		(sdict "name" (joinStr "" "Participants " $pcount "/" $max) "value" (toString (joinStr "" "```" $participantslist "```")) "inline" false)
 		(sdict "name" "Waitlist" "value" (toString (joinStr "" "```" $waitlistlist "```")) "inline" false)) 
     	"footer" (sdict "text" "Event starts") 
@@ -133,6 +131,8 @@
 		{{editMessage $channel (toInt64 $msgID) $embed}}
 		{{addMessageReactions $channel (toInt64 $msgID) "🌟" "✅" "❔"}} 
 	{{end}}
+
+
 		{{if .ExecData}}
 			{{execCC 194 nil 30 .ExecData}}
 		{{else}}

@@ -30,8 +30,11 @@
 		{{sendMessage 573245421066125324 (joinStr "" "Let's all welcome " .User.Mention " to the Cluster!")}}
 		{{sendDM "Welcome to Yez's Ark Cluster! The password can be found on the #current-server-password channel, which you should now have access to. Please be aware that giving out this password is a ***bannable offense*** as is allowing people to piggyback off your login. To find the server make sure you are on unofficial PC sessions and have the password box checked. Do a search for Yez. Please be sure to read over the rules in the #pve-rules channel.\n\n__**Quests**__\nEvery week we offer *quests*, where you *collect*, **craft**, and __tame__ in order to receive rewards like bbs, coupons, element, and max level tames! We also offer ***new player quests*** until you hit level 100, which are designed to teach you how to play this game. If you are interested in participating, head over to #quest-rules, where you can read about how they work, and request a quest vault. \n\n__**Roles**__\nTo keep from pinging everyone, all the time, we've created various *Roles* for each of the things we usually ping people over. You can self-assign these roles by going to the #roles channel.\n\n__**Discord**__\nOur currency system is entirely Discord based, so having Discord is essential. **Leaving the Discord is seen as leaving the server.** If you leave the discord without contacting an admin, we will assume you have left, clearing your bases and confiscating your dinos for auction.\n\nWe hope you enjoy your time here at Yez's Ark Cluster. If you need any assistance, you can head over to #make-a-ticket."}}
 		{{if .ExecData}}
-		{{else}}
-			{{sendMessageNoEscape nil (joinStr "" .User.Mention ": Stay turned to this channel! A member of the <@&634598489732546588> will be along as soon as possible to give you the information on how to get your starter.")}}
+			{{if eq .ExecData.starter "none"}}
+
+			{{else}}
+				{{sendMessageNoEscape nil (joinStr "" .User.Mention ": Stay turned to this channel! A member of the <@&634598489732546588> will be along as soon as possible to give you the information on how to get your starter.")}}
+			{{end}}
 		{{end}}
 		{{if not (eq $ref "None")}}
 			{{$message := sendMessageRetID 573860427721605120 (joinStr "" "Pay referral fee to " $ref " for " $name)}}{{addMessageReactions 573860427721605120 $message "✔️" "❌"}}

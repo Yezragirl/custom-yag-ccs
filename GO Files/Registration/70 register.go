@@ -23,7 +23,6 @@
 {{sendMessage $ID (joinStr "" .User.Mention ", how old are you?")}}
 {{$ticketnum = add $ticketnum 1}}
 {{dbSet 0 "ticketnum" $ticketnum}}
-{{editMessage 660329324976799754 765226303569264680 (joinStr "" "There are currently " $ticketnum " open tickets.")}}
 
 {{else}}
 {{removeRoleID 645404993863811072}}
@@ -46,7 +45,39 @@
 {{sendMessage $ID (joinStr "" .User.Mention ", how old are you?")}}
 {{$ticketnum = add $ticketnum 1}}
 {{dbSet 0 "ticketnum" $ticketnum}}
-{{editMessage 660329324976799754 765226303569264680 (joinStr "" "There are currently " $ticketnum " open tickets.")}}
 
 
+{{end}}
+
+
+
+
+
+
+
+
+
+{{$admin := (dbGet .User.ID "admin").Value}}
+{{$name := (dbGet .User.ID "name").Value}}
+{{$public := (dbGet .User.ID "public").Value}}
+{{$names_db := (dbGet 0 "names").Value}}
+{{$names := (cslice).AppendSlice $names_db}}
+{{$names_new := cslice}}
+{{if ($admin)}}
+{{deleteMessage 658354135221141533 $admin 86400}}
+{{end}}
+{{if ($public)}}
+{{deleteMessage 658352884701724733 $public 86400}}
+{{end}}
+{{if $name}}
+{{sendMessage 587858995012698137 (joinStr "" "Deleting registration information for " $name "...")}}
+{{range $names}}
+{{if ne . $name}}
+{{$names_new = $names_new.Append .}}
+{{end}}{{end}}
+{{dbSet 0 "names" $names_new}}
+{{dbDel .User.ID "name"}}{{dbDel .User.ID "gt"}}{{dbDel .User.ID "tribe"}}{{dbDel .User.ID "pin"}}{{dbDel .User.ID "parentguardian"}}{{dbDel .User.ID "admin"}}{{dbDel .User.ID "public"}}{{dbDel .User.ID "age"}}{{dbDel .User.ID "ref"}}{{dbDel .User.ID "tribe"}}{{dbDel .User.ID "tribe2"}}{{dbDel .User.ID "bday"}}
+{{else}}
+{{sendMessage 587858995012698137 (joinStr "" "Deleting registration information for " .User.Username "...")}}
+{{dbDel .User.ID "name"}}{{dbDel .User.ID "gt"}}{{dbDel .User.ID "tribe"}}{{dbDel .User.ID "pin"}}{{dbDel .User.ID "parentguardian"}}{{dbDel .User.ID "admin"}}{{dbDel .User.ID "public"}}{{dbDel .User.ID "age"}}{{dbDel .User.ID "ref"}}{{dbDel .User.ID "tribe"}}{{dbDel .User.ID "tribe2"}}{{dbDel .User.ID "bday"}}
 {{end}}

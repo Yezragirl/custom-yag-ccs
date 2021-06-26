@@ -20,67 +20,12 @@
 {{deleteAllMessageReactions nil $msgID}}
 {{$Q = "Pin"}}{{dbSet .User.ID "Q" $Q}}{{$ref = "None"}}{{dbSet .User.ID "ref" $ref}}
 {{sendMessage nil (joinStr "" .User.Mention ", what 4 digit pin would you like used whenever a pin may be required? (Quest Vaults, or other situations.)")}}
-{{else if and (eq .Reaction.Emoji.ID 640697096814592040) (eq (toString $Q) "Starter")}}
+{{else if and (eq .Reaction.Emoji.ID 658376626639339533) (eq (toString $Q) "Starter")}}
 {{deleteAllMessageReactions nil $msgID}}
 {{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
 {{execCC 71 nil 0 ""}}
-{{sendMessage nil "Selected Artemis"}}
-{{else if and (eq .Reaction.Emoji.ID 748895819331141674) (eq (toString $Q) "Starter")}}
-{{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
-{{execCC 71 nil 0 ""}}
-{{sendMessage nil "Selected Osiris"}}
-{{else if and (eq .Reaction.Emoji.ID 640697193052766218) (eq (toString $Q) "Starter")}}
-{{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
-{{execCC 71 nil 0 ""}}
-{{sendMessage nil "Selected Manticore"}}
-{{else if and (eq .Reaction.Emoji.ID 640697148807184384) (eq (toString $Q) "Starter")}}
-{{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
-{{execCC 71 nil 0 ""}}
-{{sendMessage nil "Selected Gryphon"}}
-{{else if and (eq .Reaction.Emoji.ID 640698387506921523) (eq (toString $Q) "Starter")}}
-{{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
-{{execCC 71 nil 0 ""}}
-{{sendMessage nil "Selected Elysian"}}
-{{else if and (eq .Reaction.Emoji.ID 640697492274544643) (eq (toString $Q) "Starter")}}
-{{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
-{{execCC 71 nil 0 ""}}
-{{sendMessage nil "Selected Zelda"}}
-{{else if and (eq .Reaction.Emoji.ID 640698407199178771) (eq (toString $Q) "Starter")}}
-{{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
-{{execCC 71 nil 0 ""}}
-{{sendMessage nil "Selected Phoenix"}}
-{{else if and (eq .Reaction.Emoji.ID 640697225684713473) (eq (toString $Q) "Starter")}}
-{{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
-{{execCC 71 nil 0 ""}}
-{{sendMessage nil "Selected Medusa"}}
-{{else if and (eq .Reaction.Emoji.ID 640697323143561276) (eq (toString $Q) "Starter")}}
-{{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
-{{execCC 71 nil 0 ""}}
-{{sendMessage nil "Selected Titan"}}
-{{else if and (eq .Reaction.Emoji.ID 655954199476961300) (eq (toString $Q) "Starter")}}
-{{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
-{{execCC 71 nil 0 ""}}
-{{sendMessage nil "Selected Raiden"}}
-{{else if and (eq .Reaction.Emoji.ID 796127204164632638) (eq (toString $Q) "Starter")}}
-{{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
-{{execCC 71 nil 0 ""}}
-{{sendMessage nil "Selected Beowulf"}}
-{{else if and (eq .Reaction.Emoji.ID 655954171844886558) (eq (toString $Q) "Starter")}}
-{{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
-{{execCC 71 nil 0 ""}}
-{{sendMessage nil "Selected Silvestria"}}
-{{else if and (eq .Reaction.Emoji.Name "⛔") (eq (toString $Q) "Starter")}}
+{{sendMessage nil (joinStr "" .User.Mention ": Stay turned to this channel! A member of the <@&634598489732546588> will be along as soon as possible to give you the information on how to get your starter.")}}
+{{else if and (eq .Reaction.Emoji.ID 658376639322783745) (eq (toString $Q) "Starter")}}
 {{deleteAllMessageReactions nil $msgID}}
 {{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
 {{execCC 71 nil 0 (sdict "starter" "none")}}

@@ -13,29 +13,16 @@
 {{if eq $target.ID .User.ID}}
 {{sendMessage nil "You can't steal things from yourself, silly."}}
 {{else}}
-
-
-
 {{if le $prob 100}}
 {{sendMessage nil "***Triple Steal!***"}}
-
 {{$item = (joinStr "" (index ($singlelist) (randInt $maxsingle)) ", " (index ($singlelist) (randInt $maxsingle)) ", and " (index ($singlelist) (randInt $maxsingle)))}}
-
-
 {{else if le $prob 300}}
 {{sendMessage nil "***Double Steal!***"}}
-
 {{$item = (joinStr "" (index ($singlelist) (randInt $maxsingle)) ", and " (index ($singlelist) (randInt $maxsingle)))}}
-
 {{else if le $prob 1000}}
 {{$item = (index ($singlelist) (randInt $maxsingle))}}
-
-
 {{end}}
-
 {{sendMessage nil (joinStr "" $target.Mention ", " .User.Mention " stole " (lower $item) "!")}}
-
-
 {{end}}
 
 

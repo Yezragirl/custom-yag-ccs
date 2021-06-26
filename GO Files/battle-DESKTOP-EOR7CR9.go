@@ -1,4 +1,4 @@
-{{if (hasRoleID 667754372456775680)}}{{/*Has turn role*/}}
+{{if (hasRoleID 667754372456775680)}}	
 {{$db := dbGet 0 "Battle"}}
 {{$battle := sdict}}{{range $k,$v := $db.Value}}{{$battle.Set $k $v}}{{end}}
 {{$game := $battle.game}}

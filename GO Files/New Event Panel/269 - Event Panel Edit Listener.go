@@ -1,0 +1,69 @@
+{{$msgID := .Reaction.MessageID}}
+{{$Step := toInt (dbGet 0 "Event Panel").Value}}
+{{$EventID := (dbGet 0 "Editing Event").Value}}
+{{$db := dbGet (toInt64 $EventID) "event"}}
+{{$event := sdict}}{{range $k,$v := $db.Value}}{{$event.Set $k $v}}{{end}}
+ 
+	{{$number := $event.number}}
+	{{$name := $event.name}}
+	{{$desc  := $event.desc}}
+	{{$color  := $event.color}}
+	{{$style := $event.style}}
+	{{$mapname := $event.mapname}}
+	{{$team  := $event.team}}
+	{{$types  := $event.types}}
+	{{$start := $event.start}}
+	{{$time := $event.time}}
+	{{$max := $event.max}}
+
+	{{if and (eq .Reaction.Emoji.Name "1️⃣") (eq $Step 1)}}
+	{{$Step = 1}}
+	{{dbSet 0 "Event Panel" $Step}}
+	{{deleteAllMessageReactions nil $msgID}}
+	{{sendMessage nil (joinStr "" .User.Mention ", what is the events *new* **Name**?")}}
+	{{else if and (eq .Reaction.Emoji.Name "2️⃣") (eq $Step 1)}}
+	{{$Step = 2}}
+	{{dbSet 0 "Event Panel" $Step}}
+	{{deleteAllMessageReactions nil $msgID}}
+	{{sendMessage nil (joinStr "" .User.Mention ", what is the events *new* **Desciption**?")}}
+	{{else if and (eq .Reaction.Emoji.Name "3️⃣") (eq $Step 1)}}
+	{{$Step = 3}}
+	{{dbSet 0 "Event Panel" $Step}}
+	{{deleteAllMessageReactions nil $msgID}}
+	{{sendMessage nil (joinStr "" .User.Mention ", what is the events *new* **Style** (PVE or PVP)?")}}
+	{{else if and (eq .Reaction.Emoji.Name "4️⃣") (eq $Step 1)}}
+	{{$Step = 4}}
+	{{dbSet 0 "Event Panel" $Step}}
+	{{deleteAllMessageReactions nil $msgID}}
+	{{sendMessage nil (joinStr "" .User.Mention ", what is the events *new* **Team Size** (number only)?")}}
+	{{else if and (eq .Reaction.Emoji.Name "5️⃣") (eq $Step 1)}}
+	{{$Step = 5}}
+	{{dbSet 0 "Event Panel" $Step}}
+	{{deleteAllMessageReactions nil $msgID}}
+	{{sendMessage nil (joinStr "" .User.Mention ", what is the events *new* **Type** (Maze, Puzzle, etc. You can add as many as you like, separated by commas)?")}}
+	{{else if and (eq .Reaction.Emoji.Name "6️⃣") (eq $Step 1)}}
+	{{$Step = 6}}
+	{{dbSet 0 "Event Panel" $Step}}
+	{{deleteAllMessageReactions nil $msgID}}
+	{{sendMessage nil (joinStr "" .User.Mention ", what is the events *new* **Map**?")}}
+	{{else if and (eq .Reaction.Emoji.Name "7️⃣") (eq $Step 1)}}
+	{{$Step = 7}}
+	{{dbSet 0 "Event Panel" $Step}}
+	{{deleteAllMessageReactions nil $msgID}}
+	{{sendMessage nil (joinStr "" .User.Mention ", what is the events *new* **Max Participants** (Number Only)?")}}
+	{{else if and (eq .Reaction.Emoji.Name "8️⃣") (eq $Step 1)}}
+	{{$Step = 8}}
+	{{dbSet 0 "Event Panel" $Step}}
+	{{deleteAllMessageReactions nil $msgID}}
+	{{sendMessage nil (joinStr "" .User.Mention ", what is the events *new* **Date/Time** (Uses your local time if set)?")}}
+	{{else if and (eq .Reaction.Emoji.Name "❌") (eq $Step 1)}}
+	{{sendMessage nil "Event edit cancelled."}}	
+	{{dbSet 0 "Event Panel" 0}}
+	{{dbSet 0 "Editing Event" ""}}
+	{{removeRoleID 856607038872223764}}
+	{{end}}
+
+
+
+
+

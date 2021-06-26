@@ -271,3 +271,27 @@ len (toRune $x)  - for length of nickname
     {{template "min" $outter}}
     {{.Set 0 (index $outter 0)}}
 {{end}}
+
+
+{{$color := 32768 }}
+	{{$embed := cembed 
+	"Title" "Player Shop Rating"
+	"color" $color
+	"Description" "Please use the reactions below to describe your experience with this shop.\n🥇 for Great Service\n🥈 for Decent Service\n🥉 for Ok Service\n👎 for Bad Service"
+	"footer" (sdict "text" "Yez's Ark Cluster")}}
+{{$msg := sendMessageRetID nil $embed}}
+{{addMessageReactions nil $msg "🥇" "🥈" "🥉" "👎"}}
+
+-se -color "#FDFFFD" -title "Player Shop Rating" -desc "Please use the reactions below to describe your experience with this shop.
+:first_place: for Great Service
+:second_place: for Decent Service
+:third_place: for Ok Service
+:thumbsdown: for Bad Service" -footer "Yez's Ark Cluster"
+
+
+{{$color := randInt 111111 999999 }}
+	{{$embed := cembed 
+	"Title" "How to Tip your Admins"
+	"color" $color
+	"Description" "It's not expected, but if you *want* to tip your admins, they aren't likely to refuse. You can do so by using the give-money command. `~give-money @who amount`. Keep in mind you can only give money that is in your **cash** balance. If you need to get cash from your bank, you can use the `~withdrawl amount` command. Please confine these commands to the Inventory and Balance Checking channel, or inside an open ticket so we don't clutter up the other channels. If you already closed to ticket, you can also use the Compliments and Complaints channel, as a tip is definitely a compliment!"
+	"footer" (sdict "text" "Yez's Ark Cluster")}}

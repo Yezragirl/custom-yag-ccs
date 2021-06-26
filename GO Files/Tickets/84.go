@@ -1,6 +1,8 @@
+{{/*Ticket Claimer Reaction*/}}
 {{ $start := currentTime }}
 {{$pattern := `([^-]+-[^-]+)(.+)?` -}}
 {{$db := dbGet (toInt64 .Channel.ID) "ticket_control"}}
+{{$ticketnum := (dbGet 0 "ticketnum").Value}}
 {{$ticket := sdict}}{{range $k,$v := $db.Value}}{{$ticket.Set $k $v}}{{end}}
 
 {{$ticketcount := (dbGet .User.ID "tickets").Value}}
@@ -49,7 +51,17 @@
 					{{$ticket.Set "claimer" .User.ID}}
 					{{$ticketcount = add $ticketcount 1}}
 					{{dbSet (toInt64 .Channel.ID) "ticket_control" $ticket}}
-					{{dbSet .User.ID "tickets" $ticketcount}}
+					{{if hasRoleID 588749231150465049}} 
+						{{if eq (toInt $ticketcount) 3}}
+						{{$points := dbIncr .User.ID "AdminPoints" 1}}
+						{{sendMessage 653058600230584353 (joinStr "" (getMember .User.ID).Nick " earned 1 point for tickets.")}}
+						{{sendMessage 654151821039894547 (joinStr "" .User.Mention " earned 1 point for tickets.")}}
+						{{sendMessage 654151821039894547 (joinStr "" .User.Mention " now has " (toString (toInt $points)) " points.")}}
+						{{dbSet .User.ID "tickets" 0}}
+						{{else}}
+						{{dbSet .User.ID "tickets" $ticketcount}}
+						{{end}}
+					{{end}}
 				{{end}}
 			{{else}}
 				{{sendMessage 653058600230584353 (joinStr "" .Member.Nick " has claimed ticket " (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1) )}}
@@ -59,26 +71,27 @@
 				{{$ticketcount = add $ticketcount 1}}
 				{{dbSet (toInt64 .Channel.ID) "ticket_control" $ticket}}
 				{{if hasRoleID 588749231150465049}} 
-				{{if eq (toInt $ticketcount) 3}}
+					{{if eq (toInt $ticketcount) 3}}
 					{{$points := dbIncr .User.ID "AdminPoints" 1}}
 					{{sendMessage 653058600230584353 (joinStr "" (getMember .User.ID).Nick " earned 1 point for tickets.")}}
 					{{sendMessage 654151821039894547 (joinStr "" .User.Mention " earned 1 point for tickets.")}}
 					{{sendMessage 654151821039894547 (joinStr "" .User.Mention " now has " (toString (toInt $points)) " points.")}}
 					{{dbSet .User.ID "tickets" 0}}
-				{{else}}
+					{{else}}
 					{{dbSet .User.ID "tickets" $ticketcount}}
+					{{end}}
 				{{end}}
-			{{end}}
 			{{end}}
 		{{end}}
 	{{else if eq .Reaction.Emoji.ID 660605465721569334}}
 	{{sendMessage nil (joinStr "" .Member.Nick " has closed this ticket. If you have further issues, please open a new ticket. This channel will be deleted in 30 seconds.")}}
 	{{sleep 30}}
+	{{$ticketnum = sub $ticketnum 1}}
+	{{dbSet 0 "ticketnum" $ticketnum}}
 	{{sendMessage 653058600230584353 (joinStr "" .Member.Nick " has closed ticket " (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1) "." )}}
 	{{sendMessage 634442883440836609 (joinStr "" .Member.Nick " has closed ticket " .Channel.Name "." )}}
 	{{dbDel (toInt64 .Channel.ID) "ticket_control"}}
 	{{exec "tickets close" (joinStr "" "Ticket closed by " .User.Username)}}
-
 	{{else if eq .Reaction.Emoji.ID 631218688099614724}}
 		{{if $ticket.hold}}
 			{{editChannelName nil (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1)}}
@@ -110,7 +123,7 @@
 
 {{$channel := (getChannel nil).Name}}
 {{if reFind `weekly-timer-reset$` $channel}}
-{{$reactions := cslice 748895819331141674 640697193052766218 640697096814592040 640697148807184384 640697492274544643 640698407199178771 640698387506921523 640697323143561276 655954199476961300 640697225684713473 682592075685953570}}
+{{$reactions := cslice 796125877633024051 640697225684713473 797519029715599400 640697096814592040 797518674616909914 640697492274544643 640697193052766218 748895819331141674 796160062904729600 796123308059000882 796116046616592445 796127204164632638 655954199476961300 795749721657573446 640697323143561276 640697148807184384 640698407199178771 797515621222318091 797519872115343360 797670477081608202}}
 {{$count := 0}}{{$allMatch := true}}
 
 {{range .ReactionMessage.Reactions}}
@@ -121,7 +134,7 @@
 {{end}}
 {{end}}
 
-{{if and $allMatch (eq $count 11)}}
+{{if and $allMatch (eq $count 20)}}
 
 {{exec "tickets close" "All Weekly Map Resets Complete"}}
 {{end}}

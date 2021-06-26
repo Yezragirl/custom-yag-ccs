@@ -11,7 +11,7 @@
 {{if eq .Reaction.Emoji.Name "1️⃣"}}
 {{if (eq .Channel.ID 575676562872074290)}} 
 {{$type = "vault"}}
-{{$message = ", thank you for creating a ticket!\nSomeone from <@&634598489732546588> will be set up your quest vault shortly.\nQuest vault are housed on the top floor of the Community Center on Artemis. Someone will close this ticket once your quest vault is set up. If you have any questions about quests, feel free to ask them here."}}
+{{$message = ", thank you for creating a ticket!\nSomeone from <@&634598489732546588> will be set up your quest vault shortly.\nQuests are located in the quest building at the Community Center on Manticore, in the large field behind Green Ob. Someone will close this ticket once your quest vault is set up. If you have any questions about quests, feel free to ask them here."}}
 {{$emoji = "1️⃣"}}
 {{else}}
 {{$type = "mart"}}
@@ -68,10 +68,21 @@
 {{$message = ", so you found a flag? Great! Please tell us the ***Map*** and the ***Coordinates*** of the flag. Once we verify that it is indeed a Scavenger Hunt Flag location, your prize will be dispersed."}}
 {{$emoji = "🏁"}}
 
+{{else if eq .Reaction.Emoji.Name "🇭"}}
+{{$type = "Hardcore"}}
+{{$message = ", this is a Hardcore ticket. How can we assist you?"}}
+{{$emoji = "🇭"}}
+
+
 {{else if eq .Reaction.Emoji.Name "🇸"}}
 {{$type = "SMart"}}
 {{$message = ", welcome to the Sponsor Mart!\nThank you for creating a ticket!\nSomeone from <@&634598489732546588> will be with you shortly.\nTo help facilitate your assistance, please answer the following questions:\n:one: ***What would you like from the Sponsor Mart?***\n:two: ***What Map would you like to pick up your purchase on?***\n:three: ***How will you be paying? BBS or coupon?***\n**Please note that Prices in the Sponsor Mart are NOT discounted.**"}}
 {{$emoji = "🇸"}}
+
+{{else if eq .Reaction.Emoji.Name "🇲"}}
+{{$type = "Map"}}
+{{$message = ", welcome to a Private Map ticket. \nTo begin, please fill out the form at https://docs.google.com/forms/d/e/1FAIpQLSeRkcJdzLWw_MXUYqikDtCMTcdY9hlgeFvMov5ep70Me00RSg/viewform if this is a new map setup. If its just a change, please let the changes you'd like to make below and someone from <@&634598489732546588> will be with you shortly."}}
+{{$emoji = "🇲"}}
 {{end}}
 
 {{if and (eq .Reaction.Emoji.Name "🇸") (not (hasRoleID 580491796556283904))}}
@@ -79,15 +90,18 @@
 {{deleteAllMessageReactions nil $panel}}
 {{addMessageReactions nil $panel $emoji}}
 {{else}}
-{{$ticketnum = add $ticketnum 1}}
-{{dbSet 0 "ticketnum" $ticketnum}}
-{{editMessage 660329324976799754 765226303569264680 (joinStr "" "There are currently " $ticketnum " open tickets.")}}
+
+{{dbSet userID key value}}
 {{$capture = exec "ticket open" $type}}
 {{$ID = reFind `\d+` (reFind `<#\d+>` $capture)}}
+{{$ticketnum = dbIncr 0 "ticketnum" 1}}
+
+
 {{$ticket := sendMessageNoEscapeRetID $ID (joinStr "" .User.Mention $message)}}
 {{$daycounter := sendMessageNoEscapeRetID $ID "\n\nThis ticket was opened today."}}
 {{deleteAllMessageReactions nil $panel}}
 {{addMessageReactions nil $panel $emoji}}
+
 {{execCC 220 $ID 86400 (sdict "days" $days "daycounter" $daycounter)}}
 {{addMessageReactions $ID $ticket ":kibble:660605488609755146" ":cryopod:631218688099614724" ":Tek_Door:660605465721569334" }}
 {{end}}

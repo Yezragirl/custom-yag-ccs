@@ -88,7 +88,6 @@
 	{{sleep 30}}
 	{{$ticketnum = sub $ticketnum 1}}
 	{{dbSet 0 "ticketnum" $ticketnum}}
-	{{editMessage 660329324976799754 765226303569264680 (joinStr "" "There are currently " $ticketnum " open tickets.")}}	
 	{{sendMessage 653058600230584353 (joinStr "" .Member.Nick " has closed ticket " (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1) "." )}}
 	{{sendMessage 634442883440836609 (joinStr "" .Member.Nick " has closed ticket " .Channel.Name "." )}}
 	{{dbDel (toInt64 .Channel.ID) "ticket_control"}}
@@ -123,8 +122,8 @@
 
 
 {{$channel := (getChannel nil).Name}}
-{{if reFind `weekly-timer-reset$` $channel}}
-{{$reactions := cslice 748895819331141674 640697193052766218 640697096814592040 640697148807184384 640697492274544643 640698407199178771 640698387506921523 640697323143561276 655954199476961300 640697225684713473 682592075685953570}}
+{{if or (reFind `restock-and-repin$` $channel) (reFind `map-sweeps$` $channel)}}
+{{$reactions := cslice 796125877633024051 640697225684713473 797519029715599400 640697096814592040 797518674616909914 640697492274544643 640697193052766218 748895819331141674 796160062904729600  811680105218179083 796116046616592445 796127204164632638 655954199476961300 795749721657573446 640697323143561276 640697148807184384 640698407199178771 797515621222318091 797519872115343360 797670477081608202}}
 {{$count := 0}}{{$allMatch := true}}
 
 {{range .ReactionMessage.Reactions}}
@@ -135,9 +134,10 @@
 {{end}}
 {{end}}
 
-{{if and $allMatch (eq $count 11)}}
-
-{{exec "tickets close" "All Weekly Map Resets Complete"}}
+{{if and $allMatch (eq $count 20)}}
+	{{$ticketnum = sub $ticketnum 1}}
+	{{dbSet 0 "ticketnum" $ticketnum}}
+{{exec "tickets close" "All Maps Reset and Repinned"}}
 {{end}}
 
 {{end}}
