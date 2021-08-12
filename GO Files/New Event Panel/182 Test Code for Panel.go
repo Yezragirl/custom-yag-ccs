@@ -1,4 +1,3 @@
-{{/*Creates Event Panel to test the look of the panel*/}}
 {{ $tz := "America/New_York" }}
 {{ $location := (newDate 0 0 0 0 0 0 $tz).Location }}
 {{ $time := currentTime.In $location }}
@@ -25,9 +24,11 @@
 			(sdict "name" "Team Size" "value" (toString $eventteam) "inline" true) 
 			(sdict "name" "Type" "value" $eventtypes "inline" true) 
 			(sdict "name" "Date/Time" "value" (toString $eventstart) "inline" false) 
-			(sdict "name" "Event Host" "value" (joinStr "" "`" $eventrunner "`") "inline" false) 
+			(sdict "name" "Event Runner" "value" (joinStr "" "`" $eventrunner "`") "inline" false) 
 			(sdict "name" (joinStr "" "Participants " $countparticipants "/" $eventmax)  "value" (joinStr "" "`" $eventparticipants "`") "inline" false)
 			(sdict "name" "Wait List" "value" (joinStr "" "`" $eventwaitlist  "`") "inline" false)) 
 		"footer" (sdict "text" "Event starts")  }}
 		{{$msgID := sendMessageRetID nil $embed}}
 		{{addMessageReactions nil $msgID "🌟" "✅" "❔"}} 
+
+		

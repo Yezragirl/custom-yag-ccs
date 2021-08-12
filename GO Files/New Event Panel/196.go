@@ -1,5 +1,5 @@
 {{$msgID := .ExecData.MessageID}}
-{{$channel := "573897276569813012"}}
+{{$channel := "580400941048528900"}}
 {{$db := dbGet (toInt64 $msgID) "event"}}
 {{$event := sdict}}{{range $k,$v := $db.Value}}{{$event.Set $k $v}}{{end}}
 {{$number := $event.number}}
@@ -30,16 +30,16 @@
 {{$participantslist := "\u180E"}}
 {{$waitlistlist := "\u180E"}}
 	{{range $event.runner}}
-	{{$username := (getMember .).Nick}}
+{{$username := or ($mem :=getMember .).Nick $mem.User.Username}}
 	{{$runnerslist = print $username "\n" $runnerslist}}
 	{{end}}
 	{{range $event.participants}}
-	{{$username := (getMember .).Nick}}
+	{{$username := or ($mem :=getMember .).Nick $mem.User.Username}}
 	{{$participantslist = print $username "\n" $participantslist}}
 	{{$pcount = add $pcount 1}}
 	{{end}}
 	{{range $event.waitlist}}
-	{{$username := (getMember .).Nick}}
+{{$username := or ($mem :=getMember .).Nick $mem.User.Username}}
 	{{$waitlistlist = print $username "\n" $waitlistlist}}
 	{{end}}
 {{$embed := cembed 
@@ -52,8 +52,8 @@
 		(sdict "name" "Type" "value" (toString $types) "inline" true) 
 		(sdict "name" "Map" "value" (toString $mapname) "inline" true) 
         (sdict "name" "Date/Time" "value" (toString $start) "inline" false)
-		(sdict "name" "Time Until" "value" (toString $til) "inline" false) 
-        (sdict "name" "Event Host" "value" (toString (joinStr "" "```" $runnerslist "```")) "inline" false) 
+		(sdict "name" "Time Until" "value" (joinStr "<t:" $start.Unix ":R>") "inline" false) 
+        (sdict "name" "Event Runner" "value" (toString (joinStr "" "```" $runnerslist "```")) "inline" false) 
 		(sdict "name" (joinStr "" "Participants " $pcount "/" $max) "value" (toString (joinStr "" "```" $participantslist "```")) "inline" false)
 		(sdict "name" "Waitlist" "value" (toString (joinStr "" "```" $waitlistlist "```")) "inline" false)) 
     "footer" (sdict "text" "Event starts") 

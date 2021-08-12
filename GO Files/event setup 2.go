@@ -97,7 +97,7 @@
         (sdict "name" "Team Size" "value" (toString $team) "inline" true) 
         (sdict "name" "Type" "value" (toString $types) "inline" true) 
         (sdict "name" "Date/Time" "value" (toString $start) "inline" false)
-		(sdict "name" "Time Until" "value" (toString $til) "inline" false) 
+		(sdict "name" "Time Until" "value" (joinStr "" "<t:" $start.Unix ":R>") "inline" false) 
         (sdict "name" "Event Host" "value" (toString (joinStr "" "```" $runnerslist "```")) "inline" false) 
 		(sdict "name" "Particiants" "value" (toString (joinStr "" "```" $participantslist "```")) "inline" false)
 		(sdict "name" "Waitlist" "value" (toString (joinStr "" "```" $waitlistlist "```")) "inline" false)) 

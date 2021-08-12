@@ -1,11 +1,9 @@
-{{/*command create
-	starts event setup wizard*/}}
 {{$args := parseArgs 1 "correct syntax is `-create EventName`"
 (carg "string" "eventname")}}
 
 {{/*set editor, channel, and start event sdict*/}}
 {{$editor := (toString .User.ID)}}
-{{$channel := "573897276569813012"}}
+{{$channel := "580400941048528900"}}
 {{$event := sdict}}
 
 {{/*generate event number*/}}

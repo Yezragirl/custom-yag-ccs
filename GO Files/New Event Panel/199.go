@@ -9,6 +9,7 @@
 {{$db := dbGet (toInt64 $EventID) "event"}}
 {{$event := sdict}}{{range $k,$v := $db.Value}}{{$event.Set $k $v}}{{end}}
  
+{{$pcount := 0}}
 	{{$number := $event.number}}
 	{{$name := $event.name}}
 	{{$desc  := $event.desc}}

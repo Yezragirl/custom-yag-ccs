@@ -1,0 +1,5 @@
+{{$args := parseArgs 2 "correct syntax is `eventset setting new-value`"
+    (carg "string" "setting")
+    (carg "duration" "value")}}
+{{dbSet 0 (lower ($args.Get 0)) ($args.Get 1)}}
+{{sendMessage nil (joinStr "" ($args.Get 0) " set to " ($args.Get 1))}}

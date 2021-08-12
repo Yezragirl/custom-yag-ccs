@@ -12,75 +12,20 @@
 {{$parentguardian := (dbGet .User.ID "parentguardian").Value}}
 {{$tribe := (dbGet .User.ID "tribe").Value}}
 {{$ticketnum := (dbGet 0 "ticketnum").Value}}
-{{if and (eq .Reaction.Emoji.ID 658376626639339533) (eq (toString $Q) "Ref")}}
+{{if and (eq .Reaction.Emoji.ID 658376626639339533) (eq (toString $Q) "Ref")}}{{/*Yes*/}}
 {{deleteAllMessageReactions nil $msgID}}
 {{$Q = "Ref2"}}{{dbSet .User.ID "Q" $Q}}
 {{sendMessage nil (joinStr "" .User.Mention ", who referred you?")}}
-{{else if and (eq .Reaction.Emoji.ID 658376639322783745) (eq (toString $Q) "Ref")}}
+{{else if and (eq .Reaction.Emoji.ID 658376639322783745) (eq (toString $Q) "Ref")}}{{/*No*/}}
 {{deleteAllMessageReactions nil $msgID}}
 {{$Q = "Pin"}}{{dbSet .User.ID "Q" $Q}}{{$ref = "None"}}{{dbSet .User.ID "ref" $ref}}
 {{sendMessage nil (joinStr "" .User.Mention ", what 4 digit pin would you like used whenever a pin may be required? (Quest Vaults, or other situations.)")}}
-{{else if and (eq .Reaction.Emoji.ID 640697096814592040) (eq (toString $Q) "Starter")}}
+{{else if and (eq .Reaction.Emoji.ID 658376626639339533) (eq (toString $Q) "Starter")}}{{/*Yes*/}}
 {{deleteAllMessageReactions nil $msgID}}
 {{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
 {{execCC 71 nil 0 ""}}
-{{sendMessage nil "Selected Artemis"}}
-{{else if and (eq .Reaction.Emoji.ID 748895819331141674) (eq (toString $Q) "Starter")}}
-{{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
-{{execCC 71 nil 0 ""}}
-{{sendMessage nil "Selected Osiris"}}
-{{else if and (eq .Reaction.Emoji.ID 640697193052766218) (eq (toString $Q) "Starter")}}
-{{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
-{{execCC 71 nil 0 ""}}
-{{sendMessage nil "Selected Manticore"}}
-{{else if and (eq .Reaction.Emoji.ID 640697148807184384) (eq (toString $Q) "Starter")}}
-{{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
-{{execCC 71 nil 0 ""}}
-{{sendMessage nil "Selected Gryphon"}}
-{{else if and (eq .Reaction.Emoji.ID 640698387506921523) (eq (toString $Q) "Starter")}}
-{{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
-{{execCC 71 nil 0 ""}}
-{{sendMessage nil "Selected Elysian"}}
-{{else if and (eq .Reaction.Emoji.ID 640697492274544643) (eq (toString $Q) "Starter")}}
-{{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
-{{execCC 71 nil 0 ""}}
-{{sendMessage nil "Selected Zelda"}}
-{{else if and (eq .Reaction.Emoji.ID 640698407199178771) (eq (toString $Q) "Starter")}}
-{{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
-{{execCC 71 nil 0 ""}}
-{{sendMessage nil "Selected Phoenix"}}
-{{else if and (eq .Reaction.Emoji.ID 640697225684713473) (eq (toString $Q) "Starter")}}
-{{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
-{{execCC 71 nil 0 ""}}
-{{sendMessage nil "Selected Medusa"}}
-{{else if and (eq .Reaction.Emoji.ID 640697323143561276) (eq (toString $Q) "Starter")}}
-{{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
-{{execCC 71 nil 0 ""}}
-{{sendMessage nil "Selected Titan"}}
-{{else if and (eq .Reaction.Emoji.ID 655954199476961300) (eq (toString $Q) "Starter")}}
-{{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
-{{execCC 71 nil 0 ""}}
-{{sendMessage nil "Selected Raiden"}}
-{{else if and (eq .Reaction.Emoji.ID 796127204164632638) (eq (toString $Q) "Starter")}}
-{{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
-{{execCC 71 nil 0 ""}}
-{{sendMessage nil "Selected Beowulf"}}
-{{else if and (eq .Reaction.Emoji.ID 655954171844886558) (eq (toString $Q) "Starter")}}
-{{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
-{{execCC 71 nil 0 ""}}
-{{sendMessage nil "Selected Silvestria"}}
-{{else if and (eq .Reaction.Emoji.Name "⛔") (eq (toString $Q) "Starter")}}
+{{sendMessageNoEscape nil (joinStr "" .User.Mention ": Stay tuned to this channel! A member of the <@&634598489732546588> will be along as soon as possible to give you the information on how to get your starter. In the meantime, Please log into our Starter Map, ***Yez's Refuge*** to collect your starter. **This map is intended as a temporary map for those who want to get a few levels before joining the standard cluster maps,  or new players who are not yet familiar with the games mechanics. If you don't feel like you need to stay, please move on. You can NOT transfer IN to Refuge, only out. Be warned, the dinos on our standard maps are max level 450, with increased damage and resistance. Be prepared before you transfer.**\n\nThe Community Center there can be found along the southern coast at approximately 85, 63. It can be reached by spawning at South 2 or 3, and running along the beach. Check your map. Starter pick up info will be provided shortly.")}}
+{{else if and (eq .Reaction.Emoji.ID 658376639322783745) (eq (toString $Q) "Starter")}}{{/*No*/}}
 {{deleteAllMessageReactions nil $msgID}}
 {{$Q = "Done"}}{{dbSet .User.ID "Q" $Q}}
 {{execCC 71 nil 0 (sdict "starter" "none")}}
@@ -88,14 +33,14 @@
 {{exec "tickets close" "Registration Complete-No Starter Needed"}}
 {{$ticketnum = sub $ticketnum 1}}
 {{dbSet 0 "ticketnum" $ticketnum}}
-{{else if and (eq .Reaction.Emoji.ID 658376626639339533) (eq (toString $Q) "ParentGuardian")}}
+{{else if and (eq .Reaction.Emoji.ID 658376626639339533) (eq (toString $Q) "ParentGuardian")}}{{/*Yes*/}}
 {{deleteAllMessageReactions nil $msgID}}
 {{$Q = "ParentGuardian2"}}{{dbSet .User.ID "Q" $Q}}
 {{sendMessage nil (joinStr "" .User.Mention ", who is your parent/guardian?")}}
-{{else if and (eq .Reaction.Emoji.ID 658376639322783745) (eq (toString $Q) "ParentGuardian")}}
+{{else if and (eq .Reaction.Emoji.ID 658376639322783745) (eq (toString $Q) "ParentGuardian")}}{{/*No*/}}
 {{deleteAllMessageReactions nil $msgID}}
 {{sendMessage nil (joinStr "" .User.Mention ": I'm sorry, but this cluster is for 18+ only. Please come back when you are over 18.")}}
-{{sendMessage 573897276569813012 (joinStr "" .User.Mention " is being kicked for being" $age ". Please take note in case they attempt to register again and lie.\n<@&573210843840249889>")}}
+{{sendMessage 573897276569813012 (joinStr "" .User.Mention " is being kicked for being " $age ". Please take note in case they attempt to register again and lie.\n<@&573210843840249889>")}}
 {{sleep 10}}
 {{execAdmin "kick" .User.ID "Under age."}}
 {{execAdmin "tickets close underage"}}

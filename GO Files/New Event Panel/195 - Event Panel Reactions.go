@@ -1,5 +1,4 @@
-{{/*Event Panel Reaction Trigger*/}}
-
+{{/*Event*/}}
 {{$emojis := cslice "🌟" "✅" "❔"}}
 {{if in $emojis .Reaction.Emoji.Name}}
 
@@ -29,8 +28,10 @@
 {{$waitlist = (cslice).AppendSlice $waitlist}}
 {{if .ReactionAdded}} 
 	{{if eq .Reaction.Emoji.Name "🌟" }}
-	{{$runner = $runner.Append (toString .User.ID)}}
-	{{scheduleUniqueCC 197 573896118719610880 $timeLeft.Seconds (joinStr "" .ReactionMessage.ID "-" .User.ID "-runner") (sdict "event" (toString $name) "role" "runner")}}
+		{{if hasRoleID 573210843840249889}}
+			{{$runner = $runner.Append (toString .User.ID)}}
+			{{scheduleUniqueCC 197 573896118719610880 $timeLeft.Seconds (joinStr "" .ReactionMessage.ID "-" .User.ID "-runner") (sdict "event" (toString $name) "role" "runner")}}
+		{{end}}
 	{{else if eq .Reaction.Emoji.Name "✅" }}
 	{{$participants = $participants.Append (toString .User.ID)}}
 	{{scheduleUniqueCC 197 573896118719610880 $timeLeft.Seconds (joinStr "" .ReactionMessage.ID "-" .User.ID "-participant") (sdict "event" (toString $name) "role" "participant")}}
@@ -40,15 +41,17 @@
 	{{end}}
 {{else}}
 	{{if eq .Reaction.Emoji.Name "🌟" }}
-	{{$newrunner := cslice}}
-		{{range $runner}}
-			{{if eq . $userid}}
-			{{else}}
-			{{$newrunner = $newrunner.Append .}}
-			{{end}}
-		{{$runner = $newrunner}}
-		{{end}}
-		{{cancelScheduledUniqueCC 197 (joinStr "" .ReactionMessage.ID "-" .User.ID "-runner")}}
+		{{if hasRoleID 573210843840249889}}
+			{{$newrunner := cslice}}
+				{{range $runner}}
+					{{if eq . $userid}}
+					{{else}}
+					{{$newrunner = $newrunner.Append .}}
+					{{end}}
+				{{$runner = $newrunner}}
+				{{end}}
+			{{cancelScheduledUniqueCC 197 (joinStr "" .ReactionMessage.ID "-" .User.ID "-runner")}}
+	{{end}}
 	{{else if eq .Reaction.Emoji.Name "✅" }}
 	{{$newparticipants := cslice}}
 		{{range $participants}}

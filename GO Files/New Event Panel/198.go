@@ -31,14 +31,14 @@
     "description" $desc 
     "color" $color 
     "fields" (cslice 
-        (sdict "name" "Style" "value" (toString $style) "inline" true) 
-        (sdict "name" "Team Size" "value" (toString $team) "inline" true) 
-		(sdict "name" "Type" "value" (toString $types) "inline" true) 
-		(sdict "name" "Map" "value" (toString $mapname) "inline" true) 
-        (sdict "name" "Date/Time" "value" (toString $start) "inline" false)
-		(sdict "name" "Time Until" "value" (toString $til) "inline" false)) 
+        (sdict "name" "__**Style**__" "value" (toString $style) "inline" true) 
+        (sdict "name" "__**Team Size**__" "value" (toString $team) "inline" true) 
+		(sdict "name" "__**Type**__" "value" (toString $types) "inline" true) 
+		(sdict "name" "__**Map**__" "value" (toString $mapname) "inline" true) 
+        (sdict "name" "__**Date/Time**__" "value" (toString $start) "inline" false)
+		(sdict "name" "__**Time Until**__" "value" (joinStr "" "<t:" $start.Unix ":R>") "inline" false)) 
     "footer" (sdict "text" "Event starts") 
 	"timestamp" $time }}
 
-	{{sendMessage 573897276569813012 $embed}}
+	{{sendMessage 573245421066125324 $embed}}
 

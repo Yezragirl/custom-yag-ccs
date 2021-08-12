@@ -1,8 +1,7 @@
-{{/*Regex Event Wizard Listener*/}}
 {{/*set editor, channel, and start event sdict*/}}
 {{$startOfCmd := currentTime}}
 {{$editor := (dbGet 0 "eventeditor").Value }}
-{{$channel := "573897276569813012"}}
+{{$channel := "580400941048528900"}}
 {{$timeString := ""}}
 {{$formattedTime := currentTime}}
 {{$step := (dbGet 0 "EventEditing").Value}}
@@ -84,7 +83,7 @@
 		{{$til = humanizeDurationMinutes $timeLeft}}
 		{{$step = "complete"}}
 		{{$editor = "None"}}
-		{{sendMessage nil "Event Setup Complete"}}
+               {{sendMessage nil "Event Setup Complete"}}
 	{{end}}
 
 
@@ -120,7 +119,7 @@
 		(sdict "name" "Map" "value" (toString $mapname) "inline" true) 
         (sdict "name" "Date/Time" "value" (toString $start) "inline" false)
 		(sdict "name" "Time Until" "value" (toString $til) "inline" false) 
-        (sdict "name" "Event Host" "value" (toString (joinStr "" "```" $runnerslist "```")) "inline" false) 
+        (sdict "name" "Event Runner" "value" (toString (joinStr "" "```" $runnerslist "```")) "inline" false) 
 		(sdict "name" (joinStr "" "Particiants " $pcount "/" $max) "value" (toString (joinStr "" "```" $participantslist "```")) "inline" false)
 		(sdict "name" "Waitlist" "value" (toString (joinStr "" "```" $waitlistlist "```")) "inline" false)) 
     "footer" (sdict "text" "Event starts") 
@@ -160,7 +159,7 @@
 {{dbSet 0 "eventeditor" $editor}}
 {{dbSet 0 "currenteventediting" $msgID}}
 {{dbSet 0 "EventEditing" $step}}
-{{execCC 194 nil 30 (sdict "MessageID" (toInt64 $msgID)) }}
+{{execCC 194 nil 30 (sdict "MessageID" (toInt64 $msgID) "TimeLeft" $time) }}
 {{end}}
 
 {{ $dur := currentTime.Sub $startOfCmd }}

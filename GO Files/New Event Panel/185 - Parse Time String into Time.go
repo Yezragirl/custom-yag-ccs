@@ -1,3 +1,4 @@
+Converting Time...
 {{/*
 	This command allows you to parse string to time, in a human friendly way.
 	Recommended usage: As a part of a Larger Command. Can also be used standalone with -
@@ -169,5 +170,7 @@
 	{{ end }}
 
 	{{if .ExecData}}
-	{{execCC .ExecData.CC nil 2 (sdict "timeConverted" $timeConverted) }}{{else}} {{$timeConverted}}
+	{{execCC .ExecData.CC nil 2 (sdict "timeConverted" $timeConverted) }} {{else}} {{$timeConverted}}
+<t:{{$timeConverted.Unix}}:r>
+
 	{{end}}

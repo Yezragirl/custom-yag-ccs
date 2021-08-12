@@ -1,4 +1,4 @@
-{{/*Event System Setup - Command eventsetup*/}}
+{{/*Event System Proper*/}}
 {{$ReminderOne := toDuration (dbGet 0 "EventReminderOne").Value}}
 {{$ReminderTwo := toDuration (dbGet 0 "EventReminderTwo").Value}}
 {{$DMReminder := toDuration (dbGet 0 "EventDMReminder").Value}}
@@ -32,6 +32,6 @@
        (sdict "name" "**Time of First Reminder before Event**" "value" (toString $ReminderOne) "inline" false) 
        (sdict "name" "**Time of Second Reminder before Event**" "value" (toString $ReminderTwo) "inline" false) 
        (sdict "name" "**Time of DM Reminder before Event**" "value" (toString $DMReminder) "inline" false)
-       (sdict "name" "**Max Number of Event Hosts Allowed**" "value" (toString $Runners) "inline" false) ) 
+       (sdict "name" "**Max Number of Event Runners Allowed**" "value" (toString $Runners) "inline" false) ) 
 "footer" (sdict "text" "To change any of these settings, use -set [setting] [new value].")}}
 {{sendMessage nil $embed}}

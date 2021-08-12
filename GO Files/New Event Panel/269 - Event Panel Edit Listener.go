@@ -1,3 +1,4 @@
+{{/*New Event Panel EDIT Listener*/}}
 {{$msgID := .Reaction.MessageID}}
 {{$Step := toInt (dbGet 0 "Event Panel").Value}}
 {{$EventID := (dbGet 0 "Editing Event").Value}}

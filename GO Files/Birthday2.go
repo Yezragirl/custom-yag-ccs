@@ -84,12 +84,12 @@
 				{{end}}
 				{{if and $send (not (dbGet currentTime.Day "bdayannounced"))}} {{dbSet currentTime.Day "bdayannounced" true}} 
 				{{$embed := (cembed 
-				"title" "Happy Birthday!" 
+				"title" "Happy day!" 
 				"color" 16312092 
 				"description" (joinStr "" "Congratulations " $bdayMsg ", you leveled up in life! We here at Yez's Ark Cluster hope you have a wonderful, Ark-filled, day!") 
 				"thumbnail" (sdict "url" ($bdayMsg.AvatarURL "1024")))}}
 				{{sendMessageNoEscape 758515928761237504 (complexMessage "content" $bdayMsg "embed" $embed)}}
-				{{$message := sendMessageRetID 573860427721605120 (joinStr "" "Guess who's birthday it is!? It's " $bdayMsg "'s birthday! Let's give them a present.(Tek Dino Coupon)")}}
+				{{$message := sendMessageRetID 573860427721605120 (joinStr "" "Guess who's day it is!? It's " $bdayMsg "'s day! Let's give them a present.(Tek Dino Coupon)")}}
 				{{addMessageReactions 573860427721605120 $message "✔️" "❌"}}
 				 {{end}}
 				{{else}}
@@ -113,7 +113,7 @@
 				{{$return.Set "Day" (str .Day)}} {{$return.Set "Month" (printf "%d" .Month | toInt)}} {{$return.Set "User" $user}}
 				{{template "handleDeletes" $return}}
 				{{else}}
-				{{$error = print "This is already " $user.Mention "'s birthday."}}
+				{{$error = print "This is already " $user.Mention "'s day."}}
 				{{end}}
 				{{end}}
 				{{else}}
@@ -132,13 +132,13 @@
 				{{end}}
 				{{else if reFind `(?i)stop` .Cmd}}
 				{{cancelScheduledUniqueCC .CCID "bdays"}}
-				{{$out = "I will no longer congratulate people on their birthday."}}
+				{{$out = "I will no longer congratulate people on their day."}}
 				{{else if reFind `start` .Cmd}}
 				{{with .CmdArgs}} {{with index . 0 | toDuration}} {{$delay = add $delay .Seconds}} {{end}} {{end}}
 				{{if or (ne (currentTime.Add (mult 1000000000 $delay | toDuration)).Day ((currentTime.Add (mult 24 .TimeHour | toDuration)).Day)) (ge $delay 172800)}} {{$error = "Too long delay to start sending bday messages. You can only set delays up to tommorrow at 00:00 UTC"}}
 				{{else}}
 				{{execCC .CCID $channelID 1 $delay}}
-				{{$out = print "All set! Every day at **" ((currentTime.Add (mult 1000000000 $delay | toDuration)).Format "15:04 UTC") "** I will congratulate users if its their birthday."}}
+				{{$out = print "All set! Every day at **" ((currentTime.Add (mult 1000000000 $delay | toDuration)).Format "15:04 UTC") "** I will congratulate users if its their day."}}
 				{{end}}
 				{{else if reFind `(?i)get` .Cmd}}
 				{{with .CmdArgs}}
@@ -174,11 +174,11 @@
 				{{dbSet $userMonth "bdays" $insideMap}}
 				{{end}}
 				{{dbSet .User.ID "bday" $checkDate.UTC}}
-				{{if $invertedOrder}} {{$out = print "Your birthday was set to be " ($checkDate.Format "01/02/2006")}}
-				{{else}} {{$out = print "Your birthday was set to be " ($checkDate.Format "02/01/2006")}}
+				{{if $invertedOrder}} {{$out = print "Your day was set to be " ($checkDate.Format "01/02/2006")}}
+				{{else}} {{$out = print "Your day was set to be " ($checkDate.Format "02/01/2006")}}
 				{{end}}
 				{{else}}
-				{{$error = "Your birthday has already been set."}}
+				{{$error = "Your day has already been set."}}
 				{{end}}
 				{{end}}
 				{{if and (reFind `(?i)del` .Cmd)}}
@@ -189,10 +189,10 @@
 				{{dbDel $user.ID "bday"}}
 				{{$return.Set "Day" (str .Day)}} {{$return.Set "Month" (printf "%d" .Month | toInt)}} {{$return.Set "User" $user}}
 				{{template "handleDeletes" $return}}
-				{{$out = print "Successfully deleted the birthday from " $user.String}}
+				{{$out = print "Successfully deleted the day from " $user.String}}
 				{{end}}
 				{{else}}
-				{{$error = print $user.String " doesn't have a birthday set."}}
+				{{$error = print $user.String " doesn't have a day set."}}
 				{{end}}
 				{{end}}
 				{{end}}
@@ -290,12 +290,12 @@
 {{end}}
 {{if and $send (not (dbGet currentTime.Day "bdayannounced"))}} {{dbSet currentTime.Day "bdayannounced" true}} 
 {{$embed := (cembed 
-"title" "Happy Birthday!" 
+"title" "Happy day!" 
 "color" 16312092 
 "description" (joinStr "" "Congratulations " $who.Mention ", you leveled up in life! We here at Yez's Ark Cluster hope you have a wonderful, Ark-filled, day!") 
 "thumbnail" (sdict "url" ($who.AvatarURL "1024")))}}
 {{sendMessageNoEscape 758515928761237504 (complexMessage "content" $who.Mention "embed" $embed)}}
-{{$message := sendMessageRetID 573860427721605120 (joinStr "" "Guess who's birthday it is!? It's " $who.Mention "'s birthday! Let's give them a present.(Tek Dino Coupon)")}}
+{{$message := sendMessageRetID 573860427721605120 (joinStr "" "Guess who's day it is!? It's " $who.Mention "'s day! Let's give them a present.(Tek Dino Coupon)")}}
 {{addMessageReactions 573860427721605120 $message "✔️" "❌"}}
 {{end}}
 
@@ -323,7 +323,7 @@
 {{template "handleDeletes" $return}}
 
 {{else}}
-{{$error = print "This is already " $user.Mention "'s birthday."}}
+{{$error = print "This is already " $user.Mention "'s day."}}
 {{end}}
 {{end}}
 
@@ -346,7 +346,7 @@
 {{end}}
 {{else if reFind `(?i)stop` .Cmd}}
 {{cancelScheduledUniqueCC .CCID "bdays"}}
-{{$out = "I will no longer congratulate people on their birthday."}}
+{{$out = "I will no longer congratulate people on their day."}}
 {{else if reFind `start` .Cmd}}
 {{with .CmdArgs}} {{with index . 0 | toDuration}} {{$delay = add $delay .Seconds}}
 {{end}}
@@ -355,7 +355,7 @@
 
 {{else}}
 {{execCC .CCID $channelID 1 $delay}}
-{{$out = print "All set! Every day at **" ((currentTime.Add (mult 1000000000 $delay | toDuration)).Format "15:04 UTC") "** I will congratulate users if its their birthday."}}
+{{$out = print "All set! Every day at **" ((currentTime.Add (mult 1000000000 $delay | toDuration)).Format "15:04 UTC") "** I will congratulate users if its their day."}}
 {{end}}
 {{else if reFind `(?i)get` .Cmd}}
 {{with .CmdArgs}}
@@ -397,13 +397,13 @@
 {{dbSet $userMonth "bdays" $insideMap}}
 {{end}}
 {{dbSet .User.ID "bday" $checkDate.UTC}}
-{{if $invertedOrder}} {{$out = print "Your birthday was set to be " ($checkDate.Format "01/02/2006")}}
+{{if $invertedOrder}} {{$out = print "Your day was set to be " ($checkDate.Format "01/02/2006")}}
 
-{{else}} {{$out = print "Your birthday was set to be " ($checkDate.Format "02/01/2006")}}
+{{else}} {{$out = print "Your day was set to be " ($checkDate.Format "02/01/2006")}}
 {{end}}
 
 {{else}}
-{{$error = "Your birthday has already been set."}}
+{{$error = "Your day has already been set."}}
 {{end}}
 {{end}}
 {{if and (reFind `(?i)del` .Cmd)}}
@@ -418,11 +418,11 @@
 {{dbDel $user.ID "bday"}}
 {{$return.Set "Day" (str .Day)}} {{$return.Set "Month" (printf "%d" .Month | toInt)}} {{$return.Set "User" $user}}
 {{template "handleDeletes" $return}}
-{{$out = print "Successfully deleted the birthday from " $user.String}}
+{{$out = print "Successfully deleted the day from " $user.String}}
 {{end}}
 
 {{else}}
-{{$error = print $user.String " doesn't have a birthday set."}}
+{{$error = print $user.String " doesn't have a day set."}}
 {{end}}
 {{end}}
 {{end}}
