@@ -1,0 +1,2 @@
+{{/*Log Admin Chat Code*/}}
+{{$log := execAdmin "log" 250}}

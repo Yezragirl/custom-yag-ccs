@@ -1,0 +1,4 @@
+{{/*deletereginfo*/}}
+{{$ID := index .CmdArgs 0}}
+{{$ID}}{{$public := (dbGet (toInt64 $ID) "public").Value}}{{$admin := (dbGet (toInt64 $ID) "admin").Value}}{{deleteMessage 658352884701724733 $public}}{{deleteMessage 658354135221141533 $admin}}{{dbDel (toInt64 $ID) "Q"}} {{dbDel (toInt64 $ID) "admin"}}{{dbDel (toInt64 $ID) "age"}}{{dbDel (toInt64 $ID) "gt"}}{{dbDel (toInt64 $ID) "name"}}{{dbDel (toInt64 $ID) "pin"}}{{dbDel (toInt64 $ID) "public"}}{{dbDel (toInt64 $ID) "ref"}}{{dbDel (toInt64 $ID) "parentguardian"}}{{dbDel (toInt64 $ID) "tribe"}}
+Reg info deleted for {{$ID}}.

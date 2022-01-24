@@ -1,0 +1,49 @@
+{{$args := parseArgs 1 "map which?"
+(carg "string" "user")}}
+{{$maps := sdict "manticore" 1 "artemis" 2 "gryphon" 3 "zelda" 4 "phoenix" 5 "elysian" 6 "trebuchet" 7 "jasper" 8 "medusa" 9 "beowulf" 10 "osiris" 11 "sphinx" 12 "silvestria" 13 "setup" 14 "sanctuary" 15 "haven" 16 "everest" 17 "jupiter" 18 "fenris" 19 "merlin" 20 "excelsior" 21 "hades" 22 "forge" 23 "orca" 24 "venus" 25 "refuge" 26 "aphrodite" 27 "rembrandt" 28  "zanzibar" 29}}
+{{$map := $maps.Get ($args.Get 0)}}
+{{if $map}}
+    {{$maptype := (dbGet $map "maptype").Value}}
+    {{if eq $maptype "event"}}
+        {{$mapname := (dbGet $map "name").Value}}
+        {{$cclocation := (dbGet $map "cclocation").Value}}
+        {{$rules := (dbGet $map "coords").Value}}
+        {{$adminlocations := (dbGet $map "adminlocations").Value}}
+        {{$dinos := (dbGet $map "dinos").Value}}
+        {{$color := randInt 111111 999999 }}
+        {{$embed := cembed 
+        "color" $color
+        "Title" $mapname
+        "Description" "Our Event Maps are unique, in that they have different settings, and e to the public. That's also where you pick up Arkmart orders,  and some include a hatchery!\nAll CC's are equipped with FREE food, FREE water, and FREE honey. Please put in a ticket if you find one of these things lacking from a CC.\nAll maps have public teleporters at all Obis."
+        "fields" (cslice 
+            (sdict "name" "__**Community Center Coordinates**__" "value" $coords)
+            (sdict "name" "__**Special Map Rules**__" "value" $cclocation)
+            (sdict "name" "__**Admin Teleporters and Locations of Interest**__" "value" $adminlocations)
+            (sdict "name" "__**Dinos**__" "value" $dinos))}}
+            {{sendMessage nil $embed}}
+    {{else if eq $maptype "PVE"}}
+    {{$mapname := (dbGet $map "name").Value}}
+    {{$cclocation := (dbGet $map "cclocation").Value}}
+    {{$coords := (dbGet $map "coords").Value}}
+    {{$adminlocations := (dbGet $map "adminlocations").Value}}
+    {{$dinos := (dbGet $map "dinos").Value}}
+    {{$color := randInt 111111 999999 }}
+    {{$embed := cembed 
+    "color" $color
+    "Title" $mapname
+    "Description" "Each of our PVE maps has a Community Center with basic crafting stations available to the public. That's also where you pick up Arkmart orders,  and some include a hatchery!\nAll CC's are equipped with FREE food, FREE water, and FREE honey. Please put in a ticket if you find one of these things lacking from a CC.\nAll maps have public teleporters at all Obis."
+    "fields" (cslice 
+        (sdict "name" "__**Community Center Coordinates**__" "value" $coords)
+        (sdict "name" "__**Community Center Location**__" "value" $cclocation)
+        (sdict "name" "__**Admin Teleporters and Locations of Interest**__" "value" $adminlocations)
+        (sdict "name" "__**Non-Native Dinos**__" "value" $dinos))}}
+        {{sendMessage nil $embed}}
+    {{else}}
+    {{$color := randInt 111111 999999 }}
+    {{$embed := cembed 
+    "color" $color
+    "Title" "Sorry"
+    "Description" "The map you referenced is either not set up yet, or spelled wrong. Please check `?maps` for the proper spelling of map names and try again."}}
+        {{sendMessage nil $embed}}
+    {{end}}
+{{end}}

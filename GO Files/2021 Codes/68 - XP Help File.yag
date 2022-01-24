@@ -1,0 +1,12 @@
+{{/*?xp - explains the xp system*/}}
+Hello {{.User.Mention}},
+Our new XP system was coded by Yez herself, so try not to be too harsh. :joy:
+
+To see your current standings, use `-xp` in any channel.
+
+To see the leaderboard, use `-lb` in any channel. 
+
+You get a new Level Color every **5** levels.
+
+To gain XP, just **chat** in the main chat channels. The Fun channels are also currently included. You get  between {{(dbGet 0 "minimum").Value}} and {{(dbGet 0 "maximum").Value}} XP for every message you send. 
+There is a cooldown of {{(dbGet 0 "cooldown").Value}} seconds, so spamming the channels will not help you. 

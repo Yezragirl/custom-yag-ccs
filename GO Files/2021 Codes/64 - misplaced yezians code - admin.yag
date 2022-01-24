@@ -1,0 +1,20 @@
+{{/*Misplaced Yezians Code*/}}
+{{$inactive_roleID := 648706778061602816}}
+{{$inactive_days := 60}}
+{{$inactive_threshold := ( toDuration (mult $inactive_days 24 .TimeHour))}}
+{{$continue := 1}}
+{{$entries := dbBottomEntries "inactive" 9 0}}
+{{if lt (len $entries) 9}}{{$continue = 0 }}{{end}}
+{{range $entries}}
+{{$inactive_time := sub (currentTime.Sub (newDate 2019 11 11 0 0  0)).Seconds .Value }}
+{{if gt $inactive_time $inactive_threshold.Seconds}}
+{{dbDel .UserID .Key}}
+{{giveRoleID .UserID $inactive_roleID}}
+{{takeRoleID .UserID 607041870966685706}}
+{{else}}
+{{$continue = 0}}
+{{end}}
+{{end}}
+{{if $continue}}
+{{execCC .CCID nil 7 nil}}
+{{end}}

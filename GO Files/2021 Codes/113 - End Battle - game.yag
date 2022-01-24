@@ -1,0 +1,20 @@
+{{/*endbattle*/}}
+{{$db := dbGet 0 "Battle"}}
+{{$battle := sdict}}{{range $k,$v := $db.Value}}{{$battle.Set $k $v}}{{end}}
+{{$game := $battle.game}}
+{{$player1 := (userArg $battle.p1)}}
+{{$player2 := (userArg $battle.p2)}}
+{{deleteMessage 765314667975016478 $game}}
+		{{takeRoleID $player1 667754372456775680}}
+		{{takeRoleID $player2 667754372456775680}}
+{{$embed := cembed 
+"Title" "Battle Ended"
+"description" "This battle was ended without a Victor, so it is undecided."
+			"fields" (cslice 
+		(sdict "name" (toString $player1.Username) "value" "Game Over" "inline" true)
+		(sdict "name" (toString $player2.Username) "value" "Game Over" "inline" true)
+		(sdict "name" "Action" "value" "Battle Ended" "inline" false) )
+"thumbnail" (sdict "url" "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/lg/57/crossed-swords_2694.png") }}
+{{sendMessage 765314667975016478 $embed}}
+{{dbDel 0 "Battle"}}
+{{deleteResponse 30}}{{deleteTrigger 5}}

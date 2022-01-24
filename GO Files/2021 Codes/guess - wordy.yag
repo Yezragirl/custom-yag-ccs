@@ -1,0 +1,166 @@
+{{/*
+Makes a guess at the current word
+
+See <link>
+
+Author: AaroneousAK <https://github.com/AaroneousAK/>
+*/}}
+
+{{/* Configuration values */}}
+{{$evil := 0}}{{/* <== Change this if you DO NOT want the answer revealed on an unsuccessful attempt */}}
+{{/* End of configuration values */}}
+
+{{$args := parseArgs 1 "Requires a 5-letter word"
+ (carg "string" "word")}}
+{{$guess := $args.Get 0}}
+
+{{if not (eq (len $guess) 5)}}
+{{.User.Mention}} Please enter a 5-letter word.
+{{else}}
+{{$list := dbGet 0 "WORDLIST"}}
+{{$list = $list.Value}}
+{{$guessValidation := joinStr "" "(?i)" $guess}}
+{{$guess = reFindAll `\w` $guess}} 
+{{$word := dbGet .User.ID "WLWORD"}}
+{{if $word.Value}}
+{{if not (reFind $guessValidation $list)}}
+{{sendMessage nil "That might be a word, but it's not a word this game knows. Try again."}}
+{{else}}
+{{$validation := $word.Value}}
+{{$word = reFindAll `\w` $word.Value}}
+{{$o1 := "~"}}
+{{$o2 := "~"}}
+{{$o3 := "~"}}
+{{$o4 := "~"}}
+{{$o5 := "~"}}
+{{$g1 := index $guess 0}}
+{{$g2 := index $guess 1}}
+{{$g3 := index $guess 2}}
+{{$g4 := index $guess 3}}
+{{$g5 := index $guess 4}}
+{{$w1 := index $word 0}}
+{{$w2 := index $word 1}}
+{{$w3 := index $word 2}}
+{{$w4 := index $word 3}}
+{{$w5 := index $word 4}}
+{{$attempt := dbGet .User.ID "WLGUESS"}}
+{{$attempt = toInt $attempt.Value}}
+{{$add := add $attempt 1}}
+{{if inFold $g1 $w1}}
+{{$o1 = joinStr "" "**" (upper $g1) "**"}}
+{{else}}
+{{range $word}}
+{{if inFold . $g1}}
+{{$o1 = lower $g1}}
+{{end}}
+{{end}}
+{{end}}
+{{if inFold $g2 $w2}}
+{{$o2 = joinStr "" "**" (upper $g2) "**"}}
+{{else}}
+{{range $word}}
+{{if inFold . $g2}}
+{{$o2 = lower $g2}}
+{{end}}
+{{end}}
+{{end}}
+{{if inFold $g3 $w3}}
+{{$o3 = joinStr "" "**" (upper $g3) "**"}}
+{{else}}
+{{range $word}}
+{{if inFold . $g3}}
+{{$o3 = lower $g3}}
+{{end}}
+{{end}}
+{{end}}
+{{if inFold $g4 $w4}}
+{{$o4 = joinStr "" "**" (upper $g4) "**"}}
+{{else}}
+{{range $word}}
+{{if inFold . $g4}}
+{{$o4 = lower $g4}}
+{{end}}
+{{end}}
+{{end}}
+{{if inFold $g5 $w5}}
+{{$o5 = joinStr "" "**" (upper $g5) "**"}}
+{{else}}
+{{range $word}}
+{{if inFold . $g5}}
+{{$o5 = lower $g5}}
+{{end}}
+{{end}}
+{{end}}
+{{$check := joinStr " " $o1 $o2 $o3 $o4 $o5}}
+{{$check = joinStr "" "[" $check "] on attempt `" $attempt "` (" ($args.Get 0) ")"}}
+{{$previous := dbGet .User.ID "WLPREVIOUS"}}
+{{$check2 := joinStr "" "(?i)" $g1 $g2 $g3 $g4 $g5}}
+{{if $previous.Value}}
+{{$previous = $previous.Value}}
+{{else}}
+{{$previous = ""}}
+{{end}}
+{{.User.Mention}}
+{{$previous}}
+{{$check}}
+{{if not (reFind $guessValidation $validation)}}
+{{if ge $attempt 6}}
+{{$nope := (joinStr "" "**Sorry, " .User.Mention ".** That's all your guesses...\nThe correct answer was `" (upper $validation) "`. Better luck next time!")}}
+{{if ne $evil 0}}
+{{$nope = (joinStr "" "**Sorry, " .User.Mention ".** That's all your guesses... Better luck next time!")}}
+{{end}}
+{{sendMessage nil $nope}}
+{{dbDel .User.ID "WLGUESS"}}
+{{dbDel .User.ID "WLWORD"}}
+{{dbDel .User.ID "WLPREVIOUS"}}
+{{else}}
+{{$next := joinStr "\n" $previous $check}}
+{{dbSet .User.ID "WLGUESS" $add}}
+{{dbSet .User.ID "WLPREVIOUS" $next}}
+{{end}}
+{{else}}
+{{$left := sub 6 $attempt}}
+{{sendMessage nil (joinStr "" "**Congratulations, " .User.Mention "!** You solved it with `" $left "` guesses left.")}}
+{{dbDel .User.ID "WLGUESS"}}
+{{dbDel .User.ID "WLWORD"}}
+{{dbDel .User.ID "WLPREVIOUS"}}
+{{end}}
+{{end}}
+{{else}}
+{{.User.Mention}} - There is no puzzle in progress. Use `-wordy` to start a new one.
+{{end}}
+{{end}}
+
+
+
+
+{{$embed := cembed 
+"title" "Wordy" 
+"description" "*Hardcore Fall 2021 Results*" 
+"color" 16711680
+"fields" (cslice 
+   (sdict "name" "**__Levels__**\n**1st Place - 50,000 <:bbs:583143695927214091>**" "value" "*Laines* (Level 225 Achieved)" "inline" false) 
+   (sdict "name" "**2nd Place - 25,000 <:bbs:583143695927214091>**" "value" "*Valantha, Hermit, Draygoon* (Level 200 Achieved)" "inline" false) 
+   (sdict "name" "**3rd Place - 15,000 <:bbs:583143695927214091>**" "value" "*Bug* (Level 175 Achieved)" "inline" false)
+   (sdict "name" "**Participation - 2,500 <:bbs:583143695927214091>**" "value" "*All players that achieved at least level 25*" "inline" false)
+   (sdict "name" "\n**__Tames__**\n**1st Place - 25,000 <:bbs:583143695927214091>**" "value" "*Valantha* (23 First Tames Achieved)" "inline" false)
+   (sdict "name" "**2nd Place - 10,000 <:bbs:583143695927214091>**" "value" "*Laines* (21 First Tames Achieved)" "inline" false))
+   "footer" (sdict "text"  )
+   "thumbnail" (sdict "url" "http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/wordy.jpg") }}
+{{sendMessage nil $embed}}
+{{deleteTrigger 1}}
+http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/wordy.jpg
+
+
+
+{{$check = printf "%s\t%s\t%s\t%s\t%s" $o1 $o2 $o3 $o4 $o5}}
+
+{{end}}
+{{$embed := cembed 
+"title" "XP Leaderboard" 
+"description" (joinStr "" "*Our Top " $rank " Leaders*\n\n```" $out "```") 
+"color" 4645612 
+"thumbnail" (sdict "url" "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/google/223/sports-medal_1f3c5.png")
+"footer" (sdict "text" (joinStr "" "Page " $pagenum))}}
+{{$msgid := sendMessageRetID nil $embed}}
+{{addMessageReactions nil $msgid "⬆️" "⬇️"}}

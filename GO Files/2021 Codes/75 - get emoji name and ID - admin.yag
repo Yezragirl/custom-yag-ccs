@@ -1,0 +1,3 @@
+{{/*Get Emoji Name and ID*/}}
+Name: {{.Reaction.Emoji.Name}}
+ID: {{.Reaction.Emoji.ID}}

@@ -1,0 +1,19 @@
+{{/*dbreview*/}}
+
+{{$skip := 0 -}}
+{{$count := 0}}
+{{if not .ExecData -}}
+    {{$skip = 0}}
+{{else -}}
+    {{- $skip = .ExecData.skip -}}
+{{end -}}
+    {{- range dbTopEntries ".*" 1 $skip -}}
+{{.UserID}} - {{.Key}} - {{.Value}}
+    {{- $count = add $count 1 -}}
+    {{end -}}
+  {{if gt  (toInt $count) 1 -}}
+    {{execCC .CCID nil 7 (sdict "skip" (add $skip 1)) -}}
+{{else}}
+Done
+  {{end -}}
+

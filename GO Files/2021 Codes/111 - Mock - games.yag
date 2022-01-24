@@ -1,0 +1,20 @@
+{{/*mock*/}}
+{{$startOfCmd := currentTime}}
+{{deleteTrigger 0}}
+{{$upsidelist := sdict "a" "ɐ" "c" "ɔ" "e" "ǝ" "f" "ɟ" "g" "ƃ" "i" "ᴉ" "j" "ɾ" "k" "ʞ" "o" "o" "r" "ɹ" "s" "s" "t" "ʇ" "v" "ʌ" "x" "x" "y" "ʎ" "z" "z" "A" "∀" "C" "Ɔ" "E" "Ǝ" "F" "Ⅎ" "G" "פ" "H" "H" "J" "ſ" "K" "ʞ" "L" "˥" "R" "ɹ" "T" "┴" "Y" "⅄" "?" "¿" "." "˙" "'" "," "," "'" "!" "¡" "(" ")" ")" "(" "{" "}" "}" "{" "[" "]" "]" "[" ">" "<" "<" ">" "^" "v"}}
+{{$output := ""}}
+{{range (split .StrippedMsg "")}}
+{{$randInt := (randInt 0 3)}}
+{{if eq . " "}}
+{{$output = joinStr "" $output " "}}
+{{else}}
+		{{if eq $randInt 0}} 
+			{{if $upsidelist.Get .}}  {{- $output = (joinStr "" $output (index $upsidelist (lower .)) ) -}}{{else}}{{$output = joinStr "" $output (lower .)}}{{end}}
+			{{else if eq $randInt 1}} 
+			  {{$output = joinStr "" $output (lower .)}}
+			{{else}}
+		 	 {{$output = joinStr "" $output (upper .)}}
+   		  	{{- end -}}{{end}}
+{{end}}
+{{$output}}
+{{sendMessage 587858995012698137 (print "Mock Command took " (currentTime.Sub $startOfCmd) " to run.")}}

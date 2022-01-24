@@ -1,0 +1,2 @@
+{{/*adduser2 second command*/}}
+{{execAdmin "tickets adduser" (.ExecData.user).ID}}

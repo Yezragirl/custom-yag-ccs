@@ -1,0 +1,8 @@
+{{/*rolesadmin see what roles a person has,  and what the role ID numbers are*/}}
+{{$user := index .CmdArgs 0}}
+{{$role := 0}}
+{{- range .Guild.Roles}}{{$role = toInt .ID}}
+{{- if targetHasRoleID $user $role}}
+{{$role}} - {{.Name}}
+{{- end}}
+{{- end}}

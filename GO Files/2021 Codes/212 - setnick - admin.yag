@@ -1,0 +1,4 @@
+{{/*setnick allows someone to change their nickname*/}}
+{{$args := parseArgs 1 "-setnick NewNickNameHere"
+    (carg "string" "name of arg2")}}
+{{editNickname ($args.Get 0)}}

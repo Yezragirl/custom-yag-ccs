@@ -1,0 +1,112 @@
+{{$msg := getMessage nil (index .CmdArgs 0)}}
+{{$winCount := 1}}
+{{if gt (len .CmdArgs) 1}}
+	{{$winCount = (add 1 (index .CmdArgs 1))}}
+{{end}}
+{{/* full list of counts, sorted reverse */}}
+{{$counts := cslice}}
+{{range $msg.Reactions}}
+	{{$counts = $counts.Append .Count}}
+{{end}}
+{{$sortedCounts := sort $counts (sdict "reverse" true)}}
+{{/* choose top N counts. ideally you'd make sure that N is not less than the number of poll options. */}}
+{{$winnerCounts := cslice}}
+{{range seq 0 $winCount}}
+    {{$winnerCounts = . | index $sortedCounts | $winnerCounts.Append}}
+{{end}}
+{{/* use the top N counts to get the associated emojis for them. NB: this will grab ties for the top N places. */}}
+{{$winnerEmojis := cslice}}
+
+{{range $msg.Reactions}}
+    {{if in $winnerCounts .Count}}
+        {{$winnerEmojis = $winnerEmojis.Append .Emoji.MessageFormat}}
+    {{end}}
+{{end}}
+{{$desc := ""}}
+{{$win := ""}}
+{{$emb := index $msg.Embeds 0}}
+{{$options := split $emb.Description "\n"}}
+{{$newOptions := cslice}} {{/* for demonstration with no actual message */}}
+{{range $options}}
+    {{- if in (index (split . " ") 0) $options}}
+        {{- $desc = printf "%s\n**%s**" $desc .}}
+                {{- $win = printf "The winning option is:**%s**" (slice . 4)}}
+    {{- else}}
+        {{- $desc = printf "%s\n~~%s~~" $desc .}}
+    {{- end -}}
+{{end}}
+{{$embed :=structToSdict $emb}}
+{{$embed.Set "description" $desc}}
+{{editMessage nil $msg.ID (complexMessageEdit "content" $win "embed" $embed)}}
+{{deleteAllMessageReactions nil (index .CmdArgs 0)}}
+{{deleteTrigger 1}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{{/*Original Code*/}}
+{{$msg := getMessage nil (index .CmdArgs 0)}}
+{{$count := 0}}
+{{$emoji := ""}}
+{{range $msg.Reactions}}
+    {{- if gt .Count $count}}
+        {{- $count = .Count}}
+        {{- $emoji = .Emoji.MessageFormat}}
+    {{- end -}}
+{{end}}
+
+{{$embed := index $msg.Embeds 0}}
+{{$options := split $embed.Description "\n"}}
+{{$desc := ""}}
+{{$win := ""}}
+{{range $options}}
+{{- if eq (index (split . " ") 0) $emoji}}
+        {{- $desc = printf "%s\n**%s**" $desc .}}
+                {{- $win = printf "The winning option is:**%s**" (slice . 4)}}
+    {{- else}}
+        {{- $desc = printf "%s\n~~%s~~" $desc .}}
+    {{- end -}}
+{{end}}
+
+{{$embed :=structToSdict $embed}}
+{{$embed.Set "description" $desc}}
+{{editMessage nil $msg.ID (complexMessageEdit "content" $win "embed" $embed)}}
+{{deleteAllMessageReactions nil (index .CmdArgs 0)}}
+{{deleteTrigger 1}}

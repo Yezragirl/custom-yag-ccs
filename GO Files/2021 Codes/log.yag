@@ -1,0 +1,7 @@
+{{$provisionals := (dbTopEntries "aaaposts" 10)}}
+{{range $provisionals}}
+    **{{(getMember $.User.ID).Nick}}**
+    {{range (dbGet $.User.ID "aaaposts").Value}}
+        {{printf "%s//%s//%s//%s", "https://discord.com/channels/", $.Guild.ID, "573221384310882304", .}}
+    {{end}}
+{{end}}

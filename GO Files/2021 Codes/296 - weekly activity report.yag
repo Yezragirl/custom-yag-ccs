@@ -1,0 +1,33 @@
+{{mentionRoleID 760153772000411739}}
+{{sendMessage nil "**__Weekly Admin Activity Log__**"}}
+{{$admins := (dbGet 0 "admins").Value}}
+{{range $admins}}
+    {{sendMessage nil (joinStr "" "*" (getMember .).Nick "*")}}
+    {{$weekly := (dbGet (toInt64 .) "weekly").Value}}
+    {{$tickets := $weekly.Get "tickets"}}{{if $tickets}}{{else}}{{$tickets = 0}}{{end}}
+    {{sendMessage nil (joinStr "" "Tickets Processed this week: " $tickets)}}
+    {{$todos := $weekly.Get "todos"}}{{if $todos}}{{else}}{{$todos = 0}}{{end}}
+    {{sendMessage nil (joinStr "" "To Do's Processed this week: " $todos)}}
+    {{$aaaposts := $weekly.Get "aaaposts"}}
+    {{if $aaaposts}}{{sendMessage nil (joinStr "" "Ask-an-Admin Posts this week: " (len $aaaposts) "\nPost links below:")}}
+        {{range $aaaposts}}
+            {{sendMessage nil (joinStr "/" "https://discord.com/channels" $.Guild.ID "573221384310882304"  .)}}
+        {{end}}
+    {{else}}
+        {{sendMessage nil "Ask-an-Admin Posts this week: 0"}}
+   	{{end}}
+{{dbDel (toInt64 .) "weekly"}}
+{{end}}
+
+
+
+
+
+{{$entries := dbTopEntries "weeklytickets" 10 0}}
+{{range $entries}}
+    {{$weekly := (dbGet .UserID "weekly").Value}}
+    {{$weekly.Set "tickets" (dbGet .UserID "weeklytickets").Value}}
+    {{dbDel .UserID "weeklytickets"}}
+    {{$weekly.Get "tickets"}}
+    {{dbSet .UserID "weekly" $weekly}}
+{{end}}

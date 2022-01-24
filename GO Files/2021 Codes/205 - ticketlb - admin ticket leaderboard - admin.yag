@@ -1,0 +1,16 @@
+{{/*ticketlb Admin Ticket Leaderboard*/}}
+{{$out := (printf "%s\t%-20s\t%-10s\n" "Rank" "Name" "Points")}}
+{{$rank := 0}}
+{{$name := ""}}
+{{$entries := 20}}
+{{range dbTopEntries "tickets" $entries 0}}
+{{if or (targetHasRoleID .UserID 588749231150465049) (targetHasRoleID .UserID 573210843840249889) }}
+{{$rank = add $rank 1}}
+{{$out = (joinStr "" $out (printf "#%2d:\t%-20s\t%-5d\n" $rank (getMember .User.ID).Nick (toInt .Value)))}}
+{{else}}
+{{dbDel .UserID "tickets"}}{{end}}{{end}}
+{{$embed := cembed 
+"title" "Ticket Point Leaderboard" 
+"description" (joinStr "" "*Our Top " $rank " Leaders*\n\n```" $out "```") 
+"color" 4645612}}
+{{$msgid := sendMessageRetID nil $embed}}

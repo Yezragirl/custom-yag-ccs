@@ -1,0 +1,71 @@
+{{/*Suggestions*/}}
+{{ $upvoteEmoji := "upvote" }} 
+{{ $downvoteEmoji := "downvote" }} 
+{{ $upvoteCount := 10 }} 
+{{ $filteredsuggestions := 573897276569813012 }} 
+
+{{ $linkRegex := `https?:\/\/(?:\w+\.)?[\w-]+\.[\w]{2,3}(?:\/[\w-_.]+)+\.(?:png|jpg|jpeg|gif|webp)` }}
+
+{{ $count := 0 }}
+{{ range .ReactionMessage.Reactions }}
+	{{ if and (eq .Emoji.Name $upvoteEmoji) (ge .Count $upvoteCount) }}
+		{{ $count = .Count }}
+	{{ end }}
+{{ end }}
+
+{{ $downCount := 0 }}
+{{ range .ReactionMessage.Reactions }}
+	{{ if and (eq .Emoji.Name $downvoteEmoji) }}
+		{{ $downCount = .Count }}
+	{{ end }}
+{{ end }}
+
+{{ $suggestionMessage := 0 }}
+{{ $thisID := .ReactionMessage.ID }}
+{{ with (dbGet 0 "suggestionMessages").Value }}
+	{{ $idRegex := printf `%d:(\d+)` $thisID }}
+	{{ with reFindAllSubmatches $idRegex . }} {{ $suggestionMessage = index . 0 1 }} {{ end }}
+	{{ if not (getMessage $filteredsuggestions $suggestionMessage) }}
+		{{ $suggestionMessage = 0 }}
+		{{ dbSet 0 "suggestionMessages" (reReplace $idRegex . "") }}
+	{{ end }}
+{{ end }}
+
+{{ if and $count (or .ReactionMessage.Content .ReactionMessage.Attachments) (eq .Reaction.Emoji.Name $upvoteEmoji) }}
+	{{ $emoji := "📌" }}
+	{{ if lt $count 5 }} {{ $emoji = "📌" }}
+	{{ end }}
+	{{ $count = sub $count 1 }}
+	{{ $downCount = sub $downCount 1 }}
+	{{ addMessageReactions 367947074861531146 .ReactionMessage.ID "pushpin~1:739004464241049641" }}
+	{{ $embed := sdict
+		"color" 0xFFAC33
+		"fields" (cslice
+			(sdict "name" "Suggested By:" "value" .ReactionMessage.Author.Mention "inline" true)
+		)
+		"timestamp" .ReactionMessage.Timestamp
+		"footer" (sdict "text" (printf "%s %d Upvotes, %d Downvotes" $emoji $count $downCount))
+	}}
+	{{ with .ReactionMessage.Content }}
+		{{ with reFind $linkRegex . }} {{ $embed.Set "image" (sdict "url" .) }} {{ end }}
+		{{ $content := . }}
+		{{ if gt (len .) 1000 }} {{ $content = slice . 0 1000 | printf "%s..." }} {{ end }}
+		{{ $embed.Set "fields" ($embed.fields.Append (sdict "name" "Suggestion" "value" $content)) }}
+	{{ end }}
+	{{ with .ReactionMessage.Attachments }}
+		{{ $attachment := (index . 0).URL }}
+		{{ if reFind `\.(png|jpg|jpeg|gif|webp)$` $attachment }}
+			{{ $embed.Set "image" (sdict "url" $attachment) }}
+		{{ end }}
+	{{ end }}
+	{{ with $suggestionMessage }}
+		{{ editMessage 573897276569813012 . (cembed $embed) }}
+	{{ else }}
+		{{ $ret := sendMessageRetID 573897276569813012 (cembed $embed) }}
+		{{ dbSet 0 "suggestionMessages" (printf
+			"%s\n%d:%d"
+			(or (dbGet 0 "suggestionMessages").Value "")
+			.ReactionMessage.ID $ret
+		) }}
+	{{ end }}
+{{ end }}

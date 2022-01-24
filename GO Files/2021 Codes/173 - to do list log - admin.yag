@@ -1,0 +1,35 @@
+{{/*To Do List*/}}
+{{ $tz := "America/New_York" }}
+{{ $location := (newDate 0 0 0 0 0 0 $tz).Location }}
+{{ $time := currentTime.In $location }}
+{{ $formattedtime := $time.Format "1/2/2006 3:04pm" }}
+{{$todocount := (dbGet .User.ID "todocount").Value}}
+{{$weeklytodocount := (dbGet .User.ID "weeklytodocount").Value}}
+
+{{if eq .Reaction.Emoji.Name "✔️"}}
+{{sendMessage 742173289962799145 (joinStr "" .Message.Content "   Completed by " .Member.Nick ", on " $formattedtime)}}
+{{deleteTrigger 1}}
+{{$todocount = add $todocount 1}}
+{{$weeklytodocount = add $weeklytodocount 1}}
+{{if hasRoleID 588749231150465049}} 
+	{{if eq (toInt $todocount) 10}}	
+	{{$points := dbIncr .User.ID "AdminPoints" 1}}
+	{{sendMessage 653058600230584353 (joinStr "" (getMember .User.ID).Nick " earned 1 point for starters/to do list things.")}}
+	{{sendMessage 654151821039894547 (joinStr "" .User.Mention " earned 1 point for starters/to do list things.")}}
+	{{sendMessage 654151821039894547 (joinStr "" .User.Mention " now has " (toString (toInt $points)) " points.")}}
+	{{dbSet .User.ID "todocount" 0}}
+	{{dbSet .User.ID "weeklytodocount" $weeklytodocount}}
+	{{else}}
+	{{dbSet .User.ID "todocount" $todocount}}
+	{{dbSet .User.ID "weeklytodocount" $weeklytodocount}}
+	{{end}}
+{{else}}
+	{{dbSet .User.ID "todocount" $todocount}}
+	{{dbSet .User.ID "weeklytodocount" $weeklytodocount}}
+{{end}}
+
+{{else if eq .Reaction.Emoji.Name "❌"}}
+{{sendMessage 742173289962799145 (joinStr "" .Message.Content "   Cancelled by " .Member.Nick ", on " $formattedtime)}}
+{{deleteTrigger 1}}
+
+{{end}}

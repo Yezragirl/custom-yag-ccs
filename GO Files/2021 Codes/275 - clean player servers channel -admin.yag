@@ -1,0 +1,2 @@
+{{/*Clean Player Servers Channel Code*/}}
+{{exec "clean 20 -nopin"}}

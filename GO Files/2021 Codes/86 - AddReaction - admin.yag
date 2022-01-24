@@ -1,0 +1,10 @@
+{{/*addreaction adds a reaction to a specified message*/}}
+{{$args := parseArgs 3 "correct syntax is `-addreaction channel message emoji`"
+     (carg "channel" "channel")
+(carg "int" "message")
+(carg "string" "emoji")}}
+{{$channel := ($args.Get 0).ID}}
+{{$message := (toString ($args.Get 1))}}
+{{$emoji := $args.Get 2}}
+{{addMessageReactions $channel $message $emoji}}
+{{deleteTrigger 1}}

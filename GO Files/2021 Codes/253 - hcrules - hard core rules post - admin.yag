@@ -1,0 +1,71 @@
+{{/*hcrules posts the rules for HC as embeds*/}}
+{{$embed := cembed 
+	"title" "Hardcore Character Level Rewards" 
+	"description" "*When you reach these character levels, these are the rewards. Each level can only be redeemed once per player.*" 
+	"color" 469732 
+	"fields" (cslice 
+		   (sdict "name" "**Level 25**" "value" "250 <:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Level 50**" "value" "500 <:bbs:583143695927214091>\nStone Tier Coupon" "inline" true) 
+		   (sdict "name" "**Level 75**" "value" "750 <:bbs:583143695927214091>" "inline" true)
+		   (sdict "name" "**Level 100**" "value" "1,000 <:bbs:583143695927214091>\nAdobe Tier Coupon" "inline" true) 
+		   (sdict "name" "**Level 125**" "value" "1,250 <:bbs:583143695927214091>" "inline" true)
+		   (sdict "name" "**Level 150**" "value" "1,500 <:bbs:583143695927214091>\nMetal Tier Coupon" "inline" true)
+		   (sdict "name" "**Level 175**" "value" "1,750 <:bbs:583143695927214091>" "inline" true)
+		   (sdict "name" "**Level 200**" "value" "2,000 <:bbs:583143695927214091>\nMetal Tier Coupon" "inline" true) 
+		   (sdict "name" "**Level 225**" "value" "2,250 <:bbs:583143695927214091>" "inline" true)
+		   (sdict "name" "**Level 250**" "value" "2,500 <:bbs:583143695927214091>\nTek Tier Coupon" "inline" true)) }}
+	{{sendMessage nil $embed}}
+	
+	{{$embed2 := cembed 
+	"title" "Hardcore First Tame Rewards" 
+	"description" "*When you turn in your first tame of each of these dinos, these are the rewards. Each of these can only be turned in once per player.*" 
+	"color" 469732 
+	"fields" (cslice        (sdict "name" "**Anglerfish**" "value" "On Danak Beta\n400<:bbs:583143695927214091>" "inline" true)
+	(sdict "name" "**Bulbdog**" "value" "On Danak Alpha\n250<:bbs:583143695927214091>" "inline" true)
+	(sdict "name" "**Crystal Wyvern**" "value" "On Danak Beta\n500<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Drake Egg over Level 250**" "value" "On Danak Beta\n500<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Electrophorus**" "value" "On Danak Alpha\n400<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Featherlight**" "value" "On Danak Beta\n250<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Giga**" "value" "On Danak Alpha\n1,000<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Glowtail**" "value" "On Danak Beta\n250<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Golem**" "value" "On Danak Alpha\n1,000<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Hesperonis**" "value" "On Danak Beta\n800<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Karkanos**" "value" "On Danak Beta\n1,000<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Liopleurodon**" "value" "On Danak Beta\n2,500<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Mantis**" "value" "On Danak Beta\n400<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Megalania**" "value" "On Danak Alpha\n400<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Megalosaurus**" "value" "On Danak Beta\n600<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Mosasaur**" "value" "On Danak Beta\n1,000<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Onyx**" "value" "On Danak Alpha\n400<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Ovis**" "value" "On Danak Alpha\n300<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Plesiosaur**" "value" "On Danak Alpha\n600<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Purlovia**" "value" "On Danak Alpha\n400<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Quetz**" "value" "On Danak Beta\n800<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Ravager**" "value" "On Danak Beta\n500<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Rex**" "value" "On Danak Alpha\n800<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Shinehorn**" "value" "On Danak Alpha\n250<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Snow Owl**" "value" "On Danak Alpha\n500<:bbs:583143695927214091>" "inline" true) 
+		    ) }}
+	{{sendMessage nil $embed2}} 
+	
+	
+	{{$embed3 := cembed 
+	"title" "Hardcore First Tame Rewards - Continued" 
+	"description" "*When you turn in your first tame of each of these dinos, these are the rewards. Each of these can only be turned in once per player.*" 
+	"color" 469732 
+	"fields" (cslice    
+	(sdict "name" "**Spino**" "value" "On Danak Beta\n800<:bbs:583143695927214091>" "inline" true) 
+	(sdict "name" "**Tapejara**" "value" "On Danak Beta\n500<:bbs:583143695927214091>" "inline" true)
+	(sdict "name" "**Therizinosaur**" "value" "On Danak Alpha\n800<:bbs:583143695927214091>" "inline" true) 	   
+	(sdict "name" "**Thylo**" "value" "On Danak Alpha\n600<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Titanoboa**" "value" "On Danak Alpha\n600<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Troodon**" "value" "On Danak Beta\n500<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Trope**" "value" "On Danak Beta\n800<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Tuso**" "value" "On Danak Beta\n1,000<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Unicorn**" "value" "On Danak Alpha\n500<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Wooly Rhino**" "value" "On Danak Beta\n400<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Fire/Ice Wyvern Egg Over Level 250**" "value" "On Danak Alpha\n500<:bbs:583143695927214091>" "inline" true) 
+		   (sdict "name" "**Yutyrannus**" "value" "On Danak Alpha\n800<:bbs:583143695927214091>" "inline" true) ) }}
+	{{sendMessage nil $embed3}} 
+	
+	

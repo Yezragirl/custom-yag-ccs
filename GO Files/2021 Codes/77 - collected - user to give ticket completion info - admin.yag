@@ -1,0 +1,73 @@
+{{/*collected*/}}
+{{if .ExecData}}
+{{$target := .ExecData.target}}
+ {{$msg := sendMessageRetID nil (joinStr ""  (userArg $target).Mention ", if there is nothing else, please hit the <:gcrystal:662677298431918092> below to close this ticket.")}}
+ {{addMessageReactions nil $msg ":gcrystal:662677298431918092" }}
+{{execCC .CCID nil 86400 (sdict "target" (toInt64 $target)) }}
+{{else}}
+
+{{$args := parseArgs 1 "syntax `-collected Who Map Locker Pin`"
+(carg "user" "user")
+(carg "string" "Map")
+(carg "string" "Locker ID")
+(carg "string" "pin")}}
+{{$target := $args.Get 0}}
+{{$map := (toString ($args.Get 1))}}
+{{$locker := ($args.Get 2)}}
+{{$pin := ($args.Get 3)}}
+{{$mapname := ""}}
+{{if eq $map "<:Artemis:640697096814592040>"}}
+{{$mapname = "Artemis"}}
+{{else if eq $map "<:Manticore:640697193052766218>"}}
+{{$mapname = "Manticore"}}
+{{else if eq $map "<:Gryphon:640697148807184384>"}}
+{{$mapname = "Gryphon"}}
+{{else if eq $map "<:Elysian:796160062904729600>"}}
+{{$mapname = "Elysian"}}
+{{else if eq $map "<:Zelda:640697492274544643>"}}
+{{$mapname = "Zelda"}}
+{{else if eq $map "<:Osiris:748895819331141674>"}}
+{{$mapname = "Osiris"}}
+{{else if eq $map "<:Beowulf:682592075685953570>"}}
+{{$mapname = "Beowulf"}}
+{{else if eq $map "<:Phoenix:640698407199178771>"}}
+{{$mapname = "Phoenix"}}
+{{else if eq $map "<:Medusa:640697225684713473>"}}
+{{$mapname = "Medusa"}}
+{{else if eq $map "<:Sanctuary1:798361386438098974>"}}
+{{$mapname = "Sanctuary"}}
+{{else if eq $map "<:Refuge:797670477081608202>"}}
+{{$mapname = "Refuge"}}
+{{else if eq $map "<:Everest:811680105218179083>"}}
+{{$mapname = "Everest"}}
+{{else if eq $map "<:Merlin:796116046616592445>"}}
+{{$mapname = "Merlin"}}
+{{else if eq $map "<:Haven:796125877633024051>"}}
+{{$mapname = "Haven"}}
+{{else if eq $map "<:Jupiter:795749721657573446>"}}
+{{$mapname = "Jupiter"}}
+{{else if eq $map "<:Hades:797518674616909914>"}}
+{{$mapname = "Hades"}}
+{{else if eq $map "<:Excelsior:797519872115343360>"}}
+{{$mapname = "Excelsior"}}
+{{else if eq $map "<:Fenris:797515621222318091>"}}
+{{$mapname = "Fenris"}}
+{{else if eq $map "<:Forge:854481877242478592>"}}
+{{$mapname = "Forge"}}
+{{else if eq $map "<:Orca:854481845848768573>"}}
+{{$mapname = "Orca"}}
+{{end}}
+
+{{if gt (len .Args) 2}}
+{{$msg := sendMessageRetID nil (joinStr "" $target.Mention ", you can collect your item(s) from Room " $locker " on " $mapname ", using pin " $pin ".\n\nPlease hit the <:gcrystal:662677298431918092> below to close this ticket once you have collected your item(s).")}}
+ {{addMessageReactions nil $msg ":gcrystal:662677298431918092" }}
+{{deleteTrigger 1}}
+{{execCC .CCID nil 86400 (sdict "target" (toInt64 $target.ID)) }}
+{{else}}
+
+ {{$msg := sendMessageRetID nil (joinStr ""  $target.Mention ", please hit the <:gcrystal:662677298431918092> below to close this ticket.")}}
+ {{addMessageReactions nil $msg ":gcrystal:662677298431918092" }}
+{{deleteTrigger 1}}
+{{execCC .CCID nil 86400 (sdict "target" (toInt64 $target.ID)) }}
+{{end}}
+{{end}}

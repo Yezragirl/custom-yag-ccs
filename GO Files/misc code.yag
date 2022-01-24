@@ -4,7 +4,7 @@
 -se -color "#F3003A" -title "Dino Issues" -desc "If you need help with any Dino Issues, react to this panel with the 4️⃣ below." -footer "Yez's Ark Cluster"
 -se -color "#DDFB28" -title "Discord" -desc "If you need help with any Discord Issues, react to this panel with the 5️⃣ below." -footer "Yez's Ark Cluster"
 -se -color "#0018FF" -title "Quests" -desc "If you need help with Quests, or want to turn in a New Player Quest, react to this panel with the 6️⃣ below." -footer "Yez's Ark Cluster"
--se -color "#BBCCAA" -title "Painting" -desc "If you would like a dino painted, react to this panel with the 🇵 below. There is a limit of 1 painting ticket per day, and 5 dinos per ticket. Please plan ahead." -footer "Yez's Ark Cluster"
+-se -color "#BBCCAA" -title "Painting/Imprinted" -desc "If you would like a dino painted or imprinted, react to this panel with the 🇵 below. There is a limit of 1 painting/imprinting ticket per day, and 5 dinos per ticket. Please plan ahead." -footer "Yez's Ark Cluster"
 -se -color "#000000" -title "Tribe Issues" -desc "If you need help with any Tribe Issues, react to this panel with the 8️⃣ below." -footer "Yez's Ark Cluster"
 -se -color "#E902DE" -title "Change Registration Info" -desc "To edit your Registration Information, including your Pin, Tribe Name, In Game Name, or Gamer Tag, please reactive with the 9️⃣ below." -footer "Yez's Ark Cluster"
 -se -color "#FDFFFD" -title "General" -desc "If your question/issue isn't covered by any other panel, react to this panel with the 🔟 below." -footer "Yez's Ark Cluster"
@@ -29,19 +29,17 @@ Emoji Spam Detected
 
 
 
--se -color "#388E3C" -title "Resource Roundup Winners" -desc "Here are you winners!
-`1st Place - McLovin
-2nd Place - Bug
-3rd Place - Mrs. K
-4th Place - Wiz
+-se -color "#388E3C" -title "Build-It - Yez's Realty Oct 2021" -desc "Here are you winners!
+`1st Place - Valantha
+2nd Place - Fetty
+3rd Place - Laines
+4th Place - JessieJoy
 5th Place - Fire
-6th Place - Mr. Pita
-7th Place - Miller
-8th Place - King
-9th Place - Starbright
-10th Place - Draygoon Rider`" -footer "Yez's Ark Cluster"
+6th Place - Rohan`" -footer "Yez's Ark Cluster"
 
 
+Regex for ANY Mention
+<@!?\d{17,}> 
 
 
 First command

@@ -1,6 +1,6 @@
 {{/* stepdown Admin Stepdown command */}}
 {{$name := (dbGet .User.ID "name").Value}}
-
+{{$admins := or (dbGet 0 "admins").Value (cslice)}}
 {{if hasRoleID 588749231150465049}}{{/*Provisional*/}}
 	{{$name = (reReplace "✨ " $name "")}}
 	{{removeRoleID 588749231150465049}}{{/*Provisional*/}}

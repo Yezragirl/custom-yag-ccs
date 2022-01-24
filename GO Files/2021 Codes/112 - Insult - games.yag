@@ -1,0 +1,13 @@
+{{/*insult*/}}
+{{$startOfCmd := currentTime}}
+{{$args := parseArgs 1 "Who"
+(carg "user" "user")}}
+{{$user := ($args.Get 0)}}
+{{$list1 := cslice "a Faffing" "a Cack-handed" "a Tub-Thumping" "a Burping" "a Corrugated" "a Momentous" "an Unrepentant" "aDribbling" "a Quacking" "an eye-Watering" "an Ironclad" "a Thatched" "a Horse-bothering" "an Indubitable" "a Knackered old" "a Grotty little" "an Ululating" "a Pear-shaped" "a Pebble-dashed" "a Numpty" "an Egregious" "a Chundering" "a Tinkling" "a Preposterous" "a Knicker-stealing" "an Inconceivable"}}
+{{$list2 := cslice "Piss" "Marmite" "Wank" "Bodge" "Cock" "Pants" "Minge" "Ham" "Willy" "Poo" "Tit" "Sock" "Arse" "Pudding" "Knob" "Jam" "Pranny" "Bell-end" "Sollock" "Bum" "Anorak" "Fanny" "Swamp" "Haggis" "Mince" "Muppet"}}
+{{$list3 := cslice "Sniffer" "Crumpet" "Kipper" "Trolley" "Womble" "Hammer" "Sandwich" "Bassoon" "Pillock" "Plonker" "Vicar" "Ferret" "Lorry" "Pilot" "Pony" "Stain" "Fluffer" "Spanner" "Biscuit" "Flap" "Scrounger" "Merchant" "Basket" "Wanker" "Monkey" "Bonnet"}}
+
+
+{{sendMessage 765314667975016478 (joinStr "" $user.Mention ", you are " (lower (index $list1 (randInt (len $list1)))) " " (lower (index $list2 (randInt (len $list2)))) " " (lower (index $list3 (randInt (len $list3))))  "!")}}
+{{deleteTrigger 1}}
+{{sendMessage 587858995012698137 (print "Insult Command took " (currentTime.Sub $startOfCmd) " to run.")}}

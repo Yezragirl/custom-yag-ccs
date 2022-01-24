@@ -1,0 +1,18 @@
+{{/*Restock and Repin ticket*/}}
+{{$week := roundCeil (fdiv currentTime.YearDay 7)}}
+{{if not (mod $week 2)}}
+{{$capture := ""}}
+{{$ID := ""}}
+{{$message := ""}}
+{{$type := ""}}
+
+{{$type = "restock and repin"}}
+{{$message = "<@&634598489732546588>, it's that time again! All community center free items need to be restocked, all turrets and generators checked. All rooms checked and repinned."}}
+
+{{$capture = exec "ticket open" $type}}
+{{$ID = reFind `\d+` (reFind `<#\d+>` $capture)}}
+{{$ticket := sendMessageNoEscapeRetID $ID $message}}
+
+{{$second := sendMessageNoEscapeRetID $ID (joinStr "" "Mark off your maps here as you do them. When all maps are done, this ticket will close automagically.")}}
+{{addMessageReactions $ID $second ":Haven:796125877633024051" ":Medusa:640697225684713473" ":Sanctuary:797519029715599400" ":Artemis:640697096814592040" ":Hades:797518674616909914" ":Zelda:640697492274544643" ":Manticore:640697193052766218" ":Osiris:748895819331141674" ":Elysian:796160062904729600" ":Everest:811680105218179083" ":Merlin:796116046616592445" ":Beowulf:796127204164632638" ":Forge:854481877242478592" ":Jupiter:795749721657573446" ":Orca:854481845848768573" ":Gryphon:640697148807184384" ":Phoenix:640698407199178771" ":Fenris:797515621222318091" ":Excelsior:797519872115343360" ":Refuge:797670477081608202"}}
+{{end}}

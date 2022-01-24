@@ -1,0 +1,5 @@
+{{if eq .Reaction.Emoji.Name "📌"}}
+        {{$msg := .ReactionMessage.Content}}
+        {{$newmsg := sendMessageRetID 573860427721605120 $msg}}
+        {{addMessageReactions 573860427721605120 $newmsg "✔️" "❌"}}
+{{end}}

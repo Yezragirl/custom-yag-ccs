@@ -24,7 +24,7 @@
 {{end}}
 {{end}}
 {{if gt $newlevel $currentlevel}}
-	{{if eq (toInt $newlevel) 105}}
+	{{if eq (toInt $newlevel) 100}}
 	{{$embedA := (cembed 
 		"title" "You've Ascended!" 
 		"color" $color 

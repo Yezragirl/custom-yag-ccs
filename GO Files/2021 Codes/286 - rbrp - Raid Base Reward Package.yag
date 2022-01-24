@@ -1,0 +1,14 @@
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+            "color" $color
+	    "Title" "A.R.E. Reward Packages"
+	    "Description" "Congratulations, you have earned a Reward Package."
+            "fields" (cslice 
+             (sdict "name" "Important Info" "value" "**This is a 4 week long event. You are only eligible to win __once__ per event.**\nA new base will be posted. If you decide to participate, you will *not* get a second prize.\nBy selecting a reward package, you are stating that you understand."  "inline" false) 
+             (sdict "name" "Rules" "value" "Please choose from the following options.\n*Note: All packages have approximately the same value.*" "inline" false) 
+             (sdict "name" "Package Options" "value" "1️⃣ Dino Delight\n2️⃣ Tekkie Treasures\n3️⃣ Supply Drop\n4️⃣ Kit Outta Here!\n5️⃣ The 'Surprise Me' Special" "inline" false) )
+             "footer" (sdict "text" "Yez's Ark Cluster") }}
+{{$msg := sendMessageRetID nil $embed}}
+{{addMessageReactions nil $msg "1️⃣" "2️⃣" "3️⃣" "4️⃣" "5️⃣"}}
+{{$rewards := cslice "1️⃣" "Dino Delight" "2️⃣" "Tekkie Treasures" "3️⃣" "Supply Drop" "4️⃣" "Kit Outta Here!" "5️⃣" "The 'Surprise Me' Special"}}
+{{deleteTrigger 1}}

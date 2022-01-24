@@ -1,0 +1,6 @@
+{{/*hug*/}}
+{{$args := parseArgs 1 "hug who"
+(carg "user" "user")}}
+{{$target := $args.Get 0}}
+{{deleteTrigger 1}}
+{{sendMessage nil (joinStr "" .User.Mention " gave " $target.Mention " a big ol' hug!")}}

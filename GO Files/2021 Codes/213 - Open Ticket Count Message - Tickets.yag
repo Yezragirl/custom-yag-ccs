@@ -1,0 +1,6 @@
+{{/*Open Ticket Count message*/}}
+{{$ticketnum := (dbGet 0 "ticketnum").Value}}
+{{exec "tickets close" "Registration Open for 7 days - Auto Closed."}}
+{{$ticketnum = sub $ticketnum 1}}
+{{dbSet 0 "ticketnum" $ticketnum}}
+{{editMessage 660329324976799754 765226303569264680 (joinStr "" "There are currently " $ticketnum " open tickets.")}}

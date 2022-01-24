@@ -1,0 +1,24 @@
+{{/*
+	Starts a new wordy (wordle clone)
+
+	See <link>
+
+	Author: AaroneousAK <https://github.com/AaroneousAK/>
+*/}}
+
+{{$pid := .User.ID}}
+{{$key := "WLWORD"}}
+{{$list := dbGet 0 "WORDLIST"}}
+{{$list = split $list.Value " "}}
+{{$list = shuffle $list}}
+{{$word := ""}}
+{{$check := dbGet $pid "WLWORD"}}
+
+{{if not $check.Value}}
+	{{dbSetExpire $pid "WLGUESS" 1 1800}}
+	{{$word = index $list 0}}
+	{{dbSetExpire $pid $key $word 1800}}
+	{{.User.Mention}} - The word has been set. You have 6 guesses and 30 minutes to solve it. Try to figure out the 5-letter word with the command `-guess [word]`. Letters in the correct positions will be **BOLDED** and UPPERCASE in the response. Letters in the word but in the wrong position will not be bolded.
+		{{else}}
+	{{.User.Mention}} - There is already a puzzle in progress. Use `-guess <word>` to progress it.
+{{end}}

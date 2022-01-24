@@ -1,0 +1,3 @@
+{{/*setslice allows admin to set a dbentry as a slice*/}}
+{{$db :=  (cslice "fuck" "sex" "pussy" "cock" "cunt")}}
+{{dbSet 0 "badWords" $db}}

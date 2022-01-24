@@ -1,0 +1,5 @@
+{{$weekly := (dbGet .User.ID "weekly").Value}}
+{{$askanadminposts := or ($weekly.Get "aaaposts") (cslice)}}
+{{$askanadminposts = $askanadminposts.Append .Message.ID}}
+{{$weekly.Set "aaaposts" $askanadminposts}}
+{{dbSet .User.ID "weekly" $weekly}}

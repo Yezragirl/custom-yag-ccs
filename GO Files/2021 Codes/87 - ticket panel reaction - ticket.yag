@@ -1,0 +1,81 @@
+{{/*Ticket Panel Reaction*/}}
+{{$capture := ""}}
+{{$ID := ""}}
+{{$message := ""}}
+{{$type := ""}}
+{{$panel := (toString .ReactionMessage.ID)}}
+{{$emoji := ""}}
+{{$days := 0}}
+{{$ticketnum := (dbGet 0 "ticketnum").Value}}
+
+{{if eq .Reaction.Emoji.Name "1️⃣"}}
+{{if (eq .Channel.ID 575676562872074290)}} 
+{{$type = "vault"}}
+{{$emoji = "1️⃣"}}
+{{else}}
+{{$type = "mart"}}
+{{$emoji = "1️⃣"}}
+{{end}}
+{{else if eq .Reaction.Emoji.Name "2️⃣"}}
+{{$type = "auction"}}
+{{$emoji = "2️⃣"}}
+
+{{else if eq .Reaction.Emoji.Name "3️⃣"}}
+{{$type = "base"}}
+{{$emoji = "3️⃣"}}
+
+{{else if eq .Reaction.Emoji.Name "4️⃣"}}
+{{$type = "dino"}}
+{{$emoji = "4️⃣"}}
+
+{{else if eq .Reaction.Emoji.Name "5️⃣"}}
+{{$type = "discord"}}
+{{$emoji = "5️⃣"}}
+
+{{else if eq .Reaction.Emoji.Name "6️⃣"}}
+{{$type = "quest"}}
+{{$emoji = "6️⃣"}}
+
+{{else if eq .Reaction.Emoji.Name "7️⃣"}}
+{{$type = "trap"}}
+{{$emoji = "7️⃣"}}
+
+{{else if eq .Reaction.Emoji.Name "8️⃣"}}
+{{$type = "tribe"}}
+{{$emoji = "8️⃣"}}
+
+{{else if eq .Reaction.Emoji.Name "9️⃣"}}
+{{$type = "regedit"}}
+{{$emoji = "9️⃣"}}
+
+{{else if eq .Reaction.Emoji.Name "🔟"}}
+{{$type = "general"}}
+{{$emoji = "🔟"}}
+
+{{else if eq .Reaction.Emoji.Name "🏁"}}
+{{$type = "hunt"}}
+{{$emoji = "🏁"}}
+
+{{else if eq .Reaction.Emoji.Name "🇭"}}
+{{$type = "hardcore"}}
+{{$emoji = "🇭"}}
+
+{{else if eq .Reaction.Emoji.Name "🇸"}}
+{{$type = "smart"}}
+{{$emoji = "🇸"}}
+
+{{else if eq .Reaction.Emoji.Name "🇲"}}
+{{$type = "map"}}
+{{$emoji = "🇲"}}
+{{end}}
+
+{{if and (eq .Reaction.Emoji.Name "🇸") (not (hasRoleID 580491796556283904))}}
+{{sendDM "Sorry, only those with the Sponsors role can open Sponsor Mart tickets."}}
+{{deleteAllMessageReactions nil $panel}}
+{{addMessageReactions nil $panel $emoji}}
+{{else}}
+{{$capture = exec "ticket open" $type}}
+{{$ID = reFind `\d+` (reFind `<#\d+>` $capture)}}
+{{deleteAllMessageReactions nil $panel}}
+{{addMessageReactions nil $panel $emoji}}
+{{end}}

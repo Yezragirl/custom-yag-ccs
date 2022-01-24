@@ -1,0 +1,55 @@
+{{$key := "WLWORD"}}
+{{$list := dbGet 0 "WORDLIST"}}
+{{$list = split $list.Value " "}}
+{{$list = shuffle $list}}
+{{$word := ""}}
+{{$game := (dbGet .User.ID "WORDY").Value}}
+
+    {{if $game}}
+        {{$msg := $game.Get "embed"}}
+        {{$attempt := $game.Get "guess"}}
+        {{$expire := $game.Get "expires"}}
+        {{$previous := $game.Get "previous"}}
+        {{if ge (toInt $expire) currentTime.Unix}}
+            {{$errormsg := (joinStr "" "Sorry, your last Wordy game expired <t:" $expire ":R>. Use `-wordy` to start a new one!")}}
+            {{$embed := cembed 
+                "title" "Wordy" 
+                "description" $errormsg
+                "color" 16711680
+                "footer" (sdict "text" (joinStr "" "This game belongs to: " .User.String) )
+                "thumbnail" (sdict "url" "http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/wordy.jpg") }}
+                {{$msg = sendMessageRetID nil (complexMessage "content" .User.Mention "embed" $embed)}}
+            {{dbDel .User.ID "WORDY"}}
+        {{else}}
+            {{$errormsg := "There is already a puzzle in progress. Use `-guess <word>` to progress it."}}
+        {{$embed := cembed 
+        "title" "Wordy" 
+        "description" $errormsg
+        "color" 16711680
+        "fields" (cslice
+        (sdict "name" "Progress" "value" $previous "inline" false)
+        (sdict "name" "Attempts Remaining" "value" (toString (sub 6 $attempt)) "inline" false)
+        (sdict "name" "Expires" "value" (joinStr "" "This game expires <t:" $expire ":R>") "inline" false))
+        "footer" (sdict "text" (joinStr "" "This game belongs to: " .User.String) )
+        "thumbnail" (sdict "url" "http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/wordy.jpg") }}
+        {{$msg = sendMessageRetID nil (complexMessage "content" .User.Mention "embed" $embed)}}
+        {{$game.Set "embed" $msg}}{{dbSet .User.ID "WORDY" $game}}
+        {{end}}
+    {{else}}
+        {{$word = index $list 0}}
+        {{$expire:= toInt (currentTime.Add (toDuration (mult 30 .TimeMinute))).Unix}}
+        {{$embed := cembed 
+        "title" "Wordy" 
+        "description" "Welcome to Wordy!\n\nYour Word has been Set. You have 6 guesses and 30 minutes to solve it." 
+        "color" 16711680
+        "fields" (cslice 
+        (sdict "name" "Instructions" "value" "Try to figure out the 5-letter word with the command `-guess [word]`. Letters in the correct positions will be **BOLDED** and UPPERCASE in the response. Letters in the word but in the wrong position will not be bolded." "inline" false)
+(sdict "name" "Expires" "value" (joinStr "" "This game expires <t:" $expire ":R>") "inline" false))
+        "footer" (sdict "text" (joinStr "" "This game belongs to: " .User.String) )
+        "thumbnail" (sdict "url" "http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/wordy.jpg") }}
+        {{$msg := sendMessageRetID nil $embed}}
+        {{$game = sdict "word" $word "guess" 0 "previous" "" "embed" (toString $msg) "expires" $expire }}
+        {{dbSetExpire .User.ID "WORDY" $game 1800}}
+    {{end}}
+
+{{deleteTrigger 5}}

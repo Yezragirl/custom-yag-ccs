@@ -1,0 +1,20 @@
+{{/*arerules posts the rules for are as embeds*/}}
+{{$embed := cembed 
+	"title" "Ark Raiders Evolved" 
+	"description" "*These rules apply to our Raid Base event.*" 
+	"color" 469732 
+	"fields" (cslice 
+		   (sdict "name" "Rule #1" "value" "Dinos, armor, weapons, and other supplies lost while transferring or as you attempt the raid base will not be replaced. Don't bring anything you'd mind losing." "inline" false) 
+		   (sdict "name" "Rule #2" "value" "Damage is allowed solely at the ACTIVE raid base. Any damage done to other admin structures will result in an **Event Ban** for a length to be determined by the transgression." "inline" false) 
+		   (sdict "name" "Rule #3" "value" "**This is a raid base event not an all out PvP battle. Save the fighting for full PVP Events.**" "inline" false)
+		   (sdict "name" "Rule #4" "value" "FOBs should be a place to recoup, and regroup, NOT passive aggressive PVP. Any defenses there need to be set to DINOS only to prevent hurting other Raiders. Admins will not leave render of the Raid Bases. Registered FOBs on <#877912093783916564>." "inline" false)
+		   (sdict "name" "Rule #5" "value" "**Only **dinos allowed to be left out at your FOB are platform wearing dinos. All dinos should be on **passive** when out at a FOB. " "inline" false)
+		   (sdict "name" "Rule #6" "value" "Admins will be defending, on and off, as their schedules allow. Admins will NOT follow you back to your FOB, as long as its built outside the confines of the Raid Base. Anything built INSIDE the base is fair game." "inline" false)
+		   (sdict "name" "Rule #7" "value" "When you successfully infiltrate the Raid Base, grab the snowglobe. This will be turned in to an Admin to show you succeeded. Once you have obtained the Snowglobe, open a General Ticket and provide us with the names of all who participated. Participates can be your tribemates, or any other players who were on and assisted.\n**Note: All people who participated will get the same reward. There is no benefit to you to lie and exclude people.**\n\n" "inline" false)
+		   (sdict "name" "Rule #8" "value" "If you aren't part of the team that infiltrates, there will be no compensation.\n*This is an all or nothing event.*" "inline" false)
+		   (sdict "name" "Rule #9" "value" "The Arkmart does not sell Raid supplies. It sells supplies. If you want to use them for Raiding, thats your choice, but NO ORDERS WILL BE FILLED ON THE RAID MAP." "inline" false)
+		   (sdict "name" "Rule #10" "value" "The Admins will not be providing TPs to the Raid Bases. They will not be designating areas for FOBs. You will only be given Coordinates of the Active Raid Base. You are responsible for getting you and your resources TO the Raid Base location." "inline" false)
+		   (sdict "name" "**Warning**" "value" "Raid Bases are MEANT TO BE HARD. You have been warned." "inline" false) ) }}
+	{{sendMessage nil $embed}}
+	{{deleteTrigger 1}}
+

@@ -1,0 +1,18 @@
+{{/*ticket open day counter*/}}
+{{$db := dbGet (toInt64 .Channel.ID) "ticket_control"}}
+{{$ticket := sdict}}{{range $k,$v := $db.Value}}{{$ticket.Set $k $v}}{{end}}
+{{$claimer := "&634598489732546588"}}
+{{if $ticket.claimer}}
+{{$claimer = (joinStr "" "!" (toString $ticket.claimer))}}
+{{end}}
+
+{{$days := .ExecData.days}}{{$daycounter := .ExecData.daycounter}}
+{{$days = add $days 1}}
+{{editMessage nil $daycounter (joinStr "" "This ticket was opened " $days " days ago.")}}
+{{execCC 220 nil 86400 (sdict "days" $days "daycounter" $daycounter)}}
+
+{{ if in .Channel.Name "base-sitting" }}
+{{else}}
+{{if ge $days 7}}
+{{sendMessage 794304663272554537 (joinStr "" "<@" $claimer ">, " .Channel.Name " has been open for " $days " days.")}}
+{{end}}{{end}}

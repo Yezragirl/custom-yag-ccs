@@ -1,0 +1,44 @@
+{{/*lbpost formatted embed for adding Leaderboards to the event leaderboard channel*/}}
+{{/*Building CHallenge*/}}
+{{$embed := cembed 
+	"title" "Building Challenge Leaderboard (and Prizes)" 
+	"description" "*Building Challenge\nAMUSEMENT PARK\nDecember 2021 Results*" 
+	"color" 3080447
+	"fields" (cslice 
+		   (sdict "name" "1st Place - 20,000 <:bbs:583143695927214091>" "value" "<:BuildingChallenge:871949074826395658>**Jurassic Jungle** - Rexual Frustration<:BuildingChallenge:871949074826395658>" "inline" false) 
+		   (sdict "name" "2nd Place - 15,000 <:bbs:583143695927214091>" "value" "**Honey, I Shrunk the Survivor** - Arkward" "inline" false) 
+		   (sdict "name" "3rd Place - 10,000 <:bbs:583143695927214091>" "value" "**Punny Falls Amusement Perk** - Reptile Dysfunction" "inline" false)) }}
+	{{sendMessage nil $embed}}
+	{{deleteTrigger 1}}
+	
+
+
+
+
+	{{/*Hardcore*/}}
+	{{$embed := cembed 
+		"title" "Hardcore Leaderboard (and Prizes)" 
+		"description" "*Hardcore Fall 2021 Results*" 
+		"color" 16711680
+		"fields" (cslice 
+			   (sdict "name" "**__Levels__**\n**1st Place - 50,000 <:bbs:583143695927214091>**" "value" "*Laines* (Level 225 Achieved)" "inline" false) 
+			   (sdict "name" "**2nd Place - 25,000 <:bbs:583143695927214091>**" "value" "*Valantha, Hermit, Draygoon* (Level 200 Achieved)" "inline" false) 
+			   (sdict "name" "**3rd Place - 15,000 <:bbs:583143695927214091>**" "value" "*Bug* (Level 175 Achieved)" "inline" false)
+			   (sdict "name" "**Participation - 2,500 <:bbs:583143695927214091>**" "value" "*All players that achieved at least level 25*" "inline" false)
+			   (sdict "name" "\n**__Tames__**\n**1st Place - 25,000 <:bbs:583143695927214091>**" "value" "*Valantha* (23 First Tames Achieved)" "inline" false)
+			   (sdict "name" "**2nd Place - 10,000 <:bbs:583143695927214091>**" "value" "*Laines* (21 First Tames Achieved)" "inline" false)) }}
+		{{sendMessage nil $embed}}
+		{{deleteTrigger 1}}
+
+
+		{{/*Raid Base*/}}
+		{{$embed := cembed 
+			"title" "Ark Raiders Evolved" 
+			"description" "**A.R.E. Results September 2021 Results**\n*Be aware that only 1 prize is given per person, per session, regardless of participating in multiple bases.*" 
+			"color" 3080447
+			"fields" (cslice 
+				   (sdict "name" "1st Raid Base Raiders" "value" "Valantha\nRohan\nLaines\nGolden\nDemonic" "inline" false) 
+				   (sdict "name" "2nd Raid Base Raiders" "value" "BellaMorwen\nTeddy\nShyland\nDragonmoon\nFire\nHalo\nFetty\nRose\nDoc\nWiz\nMonty\nMountain Dew\nMrQuackers19\nPAINT\nTiny\nw3INCHPUNSHR" "inline" false) 
+				   (sdict "name" "3rd Raid Base Raiders" "value" "Laines\nMountain Dew\nJessieJoy/Noble 1\nRohan\nValantha" "inline" false)) }}
+			{{sendMessage nil $embed}}
+			{{deleteTrigger 1}}
