@@ -168,10 +168,13 @@
 				{{$desc = (joinStr "" "Congratulations! You've won! The word was: `" (upper $validation) "`")}}
 				{{$delete = "yes"}}
 			{{else if eq $add 6}}
-				{{$desc := (joinStr "" "Your Guess: **" $guess "**\n\nSorry, that is all your guesses...\nThe correct answer was `" (upper $validation) "`. Better luck next time!")}}
+				{{$desc = (joinStr "" "Your Guess: **" $guess "**\n\nSorry, that is all your guesses...\nThe correct answer was `" (upper $validation) "`. Better luck next time!")}}
 			{{- if ne $evil 0}}{{$desc = (joinStr "" "Your Guess: **" $guess "**\n\nSorry, that is all your guesses...\nBetter luck next time!")}}{{end -}}
 				{{$expires = "This game has ended."}}
 				{{$delete = "yes"}}
+				{{$color = 16711680}}{{/* Red */}}
+				{{$leftnum = sub 6 $add}}
+				{{$left = "You are out of attempts."}}
 			{{else}}
 				{{$desc = (joinStr "" "Your Guess: **" $guess "**\nSorry that's not correct. Please try again.")}}
 				{{$leftnum = sub 6 $add}}
@@ -186,6 +189,7 @@
 {{else}}
 	{{$desc = (joinStr "" "You have no active Wordy game. Use `-wordy` to start a new one!")}}
 	{{$error = "yes"}}
+	{{$delete = "yes"}}
 	{{$color = 16711680}}{{/* Red */}}
 {{end}}
 {{deleteTrigger 10}}
