@@ -1,56 +1,201 @@
-{{$list := dbGet 0 "WORDLIST"}}
-{{$list = split $list.Value " "}}
-{{$list = shuffle $list}}
-{{$word := ""}}
-{{$game := (dbGet .User.ID "WORDY").Value}}
-{{$capitalletters := (sdict "A" "🇦" "B" "🇧" "C" "🇨" "D" "🇩" "E" "🇪" "F" "🇫" "G" "🇬" "H" "🇭" "I" "🇮" "J" "🇯" "K" "🇰" "L" "🇱" "M" "🇲" "N" "🇳" "O" "🇴" "P" "🇵" "Q" "🇶" "R" "🇷" "S" "🇸" "T" "🇹" "U" "🇺" "V" "🇻" "W" "🇼" "X" "🇽" "Y" "🇾" "Z" "🇿" )}}
-{{dbSet 0 "CAPS" $capitalletters}}
-{{$letters := (sdict "A" "" "B" "" "C" "" "D" "" "E" "" "F" "" "G" "" "H" "" "I" "" "J" "" "K" "" "L" "" "M" "" "N" "" "O" "" "P" "" "Q" "" "R" "" "S" "" "T" "" "U" "" "V" "" "W" "" "X" "" "Y" "" "Z" "" )}}
-    {{if $game}}
-        {{$msg := $game.Get "embed"}}
-        {{$attempt := $game.Get "guess"}}
-        {{$expire := $game.Get "expires"}}
-        {{$previous := $game.Get "previous"}}
-        {{if le (toInt $expire) currentTime.Unix}}
-            {{$errormsg := (joinStr "" "Sorry, your last Wordy game expired <t:" $expire ":R>. Use `-wordy` to start a new one!")}}
-            {{$embed := cembed 
-                "title" "Wordy" 
-                "description" $errormsg
-                "color" 16711680
-                "footer" (sdict "text" (joinStr "" "This game belongs to: " .User.String) )
-                "thumbnail" (sdict "url" "http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/wordy.jpg") }}
-                {{$msg = sendMessageRetID nil (complexMessage "content" .User.Mention "embed" $embed)}}
-            {{dbDel .User.ID "WORDY"}}
-        {{else}}
-            {{$errormsg := "There is already a puzzle in progress. Use `-guess <word>` to progress it."}}
-            {{$embed := cembed 
-            "title" "Wordy" 
-            "description" $errormsg
-            "color" 16711680
-            "fields" (cslice
-            (sdict "name" "Progress" "value" $previous "inline" false)
-            (sdict "name" "Attempts Remaining" "value" (toString (sub 6 $attempt)) "inline" false)
-            (sdict "name" "Expires" "value" (joinStr "" "This game expires <t:" $expire ":R>") "inline" false))
-            "footer" (sdict "text" (joinStr "" "This game belongs to: " .User.String) )
-            "thumbnail" (sdict "url" "http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/wordy.jpg") }}
-            {{$msg = sendMessageRetID nil (complexMessage "content" .User.Mention "embed" $embed)}}
-            {{$game.Set "embed" $msg}}{{dbSet .User.ID "WORDY" $game}}
-        {{end}}
-    {{else}}
-        {{$word = index $list 0}}
-        {{$expire:= toInt (currentTime.Add (toDuration (mult 30 .TimeMinute))).Unix}}
-        {{$embed := cembed 
-        "title" "Wordy" 
-        "description" "Welcome to Wordy!\n\nYour Word has been Set. You have 6 guesses and 30 minutes to solve it." 
-        "color" 16711680
-        "fields" (cslice 
-        (sdict "name" "Instructions" "value" "Try to figure out the 5-letter word with the command `-guess [word]`. Letters in the correct positions will be **BOLDED** and UPPERCASE in the response. Letters in the word but in the wrong position will not be bolded." "inline" false)
-        (sdict "name" "Expires" "value" (joinStr "" "This game expires <t:" $expire ":R>") "inline" false))
-        "footer" (sdict "text" (joinStr "" "This game belongs to: " .User.String) )
-        "thumbnail" (sdict "url" "http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/wordy.jpg") }}
-        {{$msg := sendMessageRetID nil $embed}}
-        {{$game = sdict "word" $word "guess" 0 "previous" "" "embed" (toString $msg) "expires" $expire "letters" $letters }}
-        {{dbSetExpire .User.ID "WORDY" $game 1800}}
-    {{end}}
+{{/* Makes a guess at the current word Author: AaroneousAK <https://github.com/AaroneousAK/> */}}
 
-{{deleteTrigger 5}}
+{{/* Config values */}}
+{{$evil := 0}}{{/* <== 0 shows answer on fail */}}
+{{$admin := 647785737336520724}}{{/* <== change to the channel ID of what channel you want the bad guesses sent to for review */}}
+
+{{/* VARIABLES */}}
+{{$prefix := slice ($x :=exec "prefix") (.Guild.ID|str|len|add 15) (len $x|add -1)}}
+{{$game := (dbGet .User.ID "WORDY").Value}}
+{{$args := parseArgs 1 "Requires a 5-letter word"
+(carg "string" "word")}}
+{{$guess := upper ($args.Get 0)}}
+{{$word:= ""}}
+{{$letters := (sdict)}}
+{{$used := ""}}
+{{$capitalletters := (dbGet 0 "CAPS").Value}}
+{{$lowerletters := (dbGet 0 "LOWS").Value}}
+{{$left := ""}}
+{{$msg := ""}}
+{{$eMsg := ""}}
+{{$attempt := 0}}
+{{$leftnum := 0}}
+{{$add := 0}}
+{{$delete := "no"}}
+{{$expire := ""}}
+{{$expires := ""}}
+{{$previous := ""}}
+{{$next := ""}}
+{{$error := "no"}}
+{{$color := 16776960}} {{/* Yellow */}}
+{{$error := "no"}}
+{{$delete := "no"}}
+{{$expires := ""}}
+{{$desc := ""}}
+{{$wordyavg := (dbGet .User.ID "WAVG").Value}}
+{{$gamecount := (dbGet .User.ID "WGAMES").Value}}
+{{$embed := cembed}}
+{{$score := 0}}
+{{$o1 := "⬜"}}{{$o2 := "⬜"}}{{$o3 := "⬜"}}{{$o4 := "⬜"}}{{$o5 := "⬜"}}
+{{if $game}}
+	{{$word = upper ($game.Get "word")}}
+	{{$letters = ($game.Get "letters")}}
+	{{$score = ($game.Get "score")}}
+	{{$msg = $game.Get "embed"}}
+	{{$eMsg = $game.Get "eMsg"}}
+	{{$attempt = $game.Get "guess"}}
+	{{$add = $attempt}}
+	{{$expire = $game.Get "expires"}}
+	{{$expires = (joinStr "" "This game expires <t:" $expire ":R>.")}}
+	{{$previous = $game.Get "previous"}}
+	{{$next = $previous}}
+	{{$list := (dbGet 0 "WORDLIST").Value}}
+	{{$list = split $list " "}}
+	{{$guessValidation := lower $guess}}
+	{{if ge (toInt $expire) currentTime.Unix}}
+		{{$v := 0}}
+	  	{{range $list}}
+			{{- if eq . $guessValidation}}
+				{{$v = 1}}
+			{{end -}}
+		{{end -}}
+		{{if not (eq (len $guess) 5)}}
+			{{$desc = "Please enter a 5-letter word."}}
+			{{$error = "yes"}}
+			{{$color = 16711680}}{{/* Red */}}
+		{{else if eq $v 0}}
+			{{$desc = "Sorry, that might be a word, but it's not a word this game knows. Please try again.\n(If you think this should be added to the word list, please tag @admin and let them know.)"}}
+			{{$error = "yes"}}
+			{{$embed := cembed 
+		"title" "Bad Guess Notification" 
+		"description" .StrippedMsg
+		"color" 999985
+		"fields" (cslice
+		(sdict "name" "Would you like to..." "value" "To Add this word to the word list, please use the ✅ below.\nOtherwise, to remove this notification, please use the ❎.\nNo action is required to maintain this record." "inline" false))
+               "footer" (sdict
+			"text" (print "Command triggered by " .User.String "."))
+               "thumbnail" (sdict "url" "http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/wordy_orig.jpg") }}
+		{{$badguess := sendMessageRetID $admin $embed}}
+		{{addMessageReactions $admin $badguess "✅" "❎"}}
+		{{$color = 16711680}}{{/* Red */}}
+		{{else}}
+			
+{{/* B. VARIABLES */}}
+{{$w1 := slice $word 0 1}}{{$w2 := slice $word 1 2}}{{$w3 := slice $word 2 3}}{{$w4 := slice $word 3 4}}{{$w5 := slice $word 4}}{{$word2 := cslice $w1 $w2 $w3 $w4 $w5}}
+{{$g1 := slice $guess 0 1}}{{$g2 := slice $guess 1 2}}{{$g3 := slice $guess 2 3}}{{$g4 := slice $guess 3 4}}{{$g5 := slice $guess 4}}{{$guess2 := cslice $g1 $g2 $g3 $g4 $g5}}
+{{$guessCheck := ""}}{{$wordCheck := ""}}{{$elementCheck := ""}}{{$rscore := -2500}}{{$yes := 0}}{{$maybe := 0}}{{$x := ""}}{{$y := ""}}
+{{$validation := $word}}
+{{range $u := $guess2}}
+	{{$letters.Set $u $u}}
+{{end}}
+{{$used = ""}}
+{{range $letters}}
+	{{$used = joinStr "" $used (upper .)}}
+{{end}}
+{{$used = joinStr "" "`" $used "`"}}
+ {{/* CHECKING SOLVED POSITIONS */}}
+{{- if eq $g1 $w1}}{{$o1 = upper $g1}}{{$g1 = "!"}}{{$rscore = add $rscore 10500}}{{end -}}{{- if eq $g2 $w2}}{{$o2 = upper $g2}}{{$g2 = "!"}}{{$rscore = add $rscore 10500}}{{end -}}{{- if eq $g3 $w3}}{{$o3 = upper $g3}}{{$g3 = "!"}}{{$rscore = add $rscore 10500}}{{end -}}{{- if eq $g4 $w4}}{{$o4 = upper $g4}}{{$g4 = "!"}}{{$rscore = add $rscore 10500}}{{end -}}{{- if eq $g5 $w5}}{{$o5 = upper $g5}}{{$g5 = "!"}}{{$rscore = add $rscore 10500}}{{end -}}
+{{/* RB. CHECKS */}}
+{{$wordCheck = joinStr "" $o1 $o2 $o3 $o4 $o5}}{{$word2 = cslice $o1 $o2 $o3 $o4 $o5}}{{$guessCheck = joinStr "" $g1 $g2 $g3 $g4 $g5}}{{$guess2 = cslice $g1 $g2 $g3 $g4 $g5}}
+{{/* CHECKING FOR MAYBE LETTERS */}}
+{{- range $index1, $element1 := $guess2}}
+	{{- if ne $element1 "!"}}
+		{{- range $index, $element := $word2}}
+			{{$maybe = reFindAll $element1 $word}}
+			{{- if ge (len $maybe) 1}}
+				{{$maybe = 1}}
+			{{else}}
+			{{$maybe = 0}}
+			{{end -}}
+		{{end -}}
+{{/* VALIDATING UNSOLVED LETTERS */}}
+{{$elementCheck = joinStr "" "(?i)" $element1}}{{$x = reFindAll $elementCheck $word}}{{$x = len $x}}{{$y = reFindAll $elementCheck $wordCheck}}{{$y = len $y}}
+{{/* PLACING MAYBE LETTERS */}}
+{{- if gt $x $y}}
+	{{- if eq $maybe 1}}
+		{{- if and (eq $index1 0) ((eq "⬜" $o1))}}
+			{{$o1 = $lowerletters.Get (upper $element1)}}{{$rscore = add $rscore 1500}}
+		{{else if and (eq $index1 1) ((eq "⬜" $o2))}}
+			{{$o2 = $lowerletters.Get (upper $element1)}}{{$rscore = add $rscore 1500}}
+		{{else if and (eq $index1 2) ((eq "⬜" $o3))}}
+			{{$o3 = $lowerletters.Get (upper $element1)}}{{$rscore = add $rscore 1500}}
+		{{else if and (eq $index1 3) ((eq "⬜" $o4))}}
+			{{$o4 = $lowerletters.Get (upper $element1)}}{{$rscore = add $rscore 1500}}
+		{{else if and (eq $index1 4) ((eq "⬜" $o5))}}
+			{{$o5 = $lowerletters.Get (upper $element1)}}{{$rscore = add $rscore 1500}}
+		{{end -}}
+		{{$maybe = 0 }}
+	{{end -}}
+{{end -}}
+		{{$wordCheck = joinStr "" $o1 $o2 $o3 $o4 $o5}}{{$word2 = cslice $o1 $o2 $o3 $o4 $o5}}
+{{end -}}{{end -}}
+{{/* FORMATTING SOLVED POSITIONS */}}
+{{- if eq $o1 $w1}}{{$o1 = $capitalletters.Get (upper $o1)}}{{end -}}{{- if eq $o2 $w2}}{{$o2 = $capitalletters.Get (upper $o2)}}{{end -}}{{- if eq $o3 $w3}}{{$o3 = $capitalletters.Get (upper $o3)}}{{end -}}{{- if eq $o4 $w4}}{{$o4 = $capitalletters.Get (upper $o4)}}{{end -}}{{- if eq $o5 $w5}}{{$o5 = $capitalletters.Get (upper $o5)}}{{end -}}
+ {{$add = add $attempt 1}}{{$check := joinStr "‎" $o1 $o2 $o3 $o4 $o5}}{{$leftnum = sub 6 $add}}{{$check = joinStr "" "[" $check "] on attempt `" $add "` (" $guess ")"}}{{$next = (joinStr "\n" $previous $check)}}
+{{$pretty := joinStr "‎" ($capitalletters.Get (upper $w1)) ($capitalletters.Get (upper $w2)) ($capitalletters.Get (upper $w3)) ($capitalletters.Get (upper $w4)) ($capitalletters.Get (upper $w5))}}
+{{if eq $guess $word}}
+	{{$left = (joinStr "" "You finished with " $leftnum " attempts remaining.")}}
+	{{$color = 65280}} {{/* Green */}}
+	{{$desc = (joinStr "" "Congratulations! You've won! The word was: " $pretty ".")}}
+	{{$delete = "yes"}}
+	{{$score = add $score $rscore (mult 50000 $leftnum) }}
+	{{$newgamecount := dbIncr .User.ID "WGAMES" 1}}
+	{{$wordyavg := div (add (mult $wordyavg $gamecount) $score) $newgamecount}}
+	{{dbSet .User.ID "WAVG" $wordyavg}}
+{{else if eq $add 6}}
+	{{$desc = (joinStr "" "Your Guess: **" $guess "**\n\nSorry, that is all your guesses...\nThe correct answer was " $pretty ". Better luck next time!")}}
+	{{- if ne $evil 0}}{{$desc = (joinStr "" "Your Guess: **" $guess "**\n\nSorry, that is all your guesses...\nBetter luck next time!")}}{{end -}}
+	{{$expires = "This game has ended."}}
+	{{$delete = "yes"}}
+	{{$color = 16711680}}{{/* Red */}}
+	{{$left = "You are out of attempts."}}
+	{{$score = add $score $rscore}}
+	{{$newgamecount := dbIncr .User.ID "WGAMES" 1}}
+	{{$wordyavg := div (add (mult $wordyavg $gamecount) $score) $newgamecount}}
+	{{dbSet .User.ID "WAVG" $wordyavg}}
+{{else}}
+	{{$desc = (joinStr "" "Your Guess: **" $guess "**\nSorry that's not correct. Please try again.")}}
+	{{$left = (joinStr "" "You have " $leftnum " attempts remaining.")}}
+	{{$score = add $score $rscore}}
+{{end}}{{end}}
+{{else}}
+	{{$desc = (joinStr "" "Sorry, your last Wordy game expired <t:" $expire ":R>. Use `" $prefix "wordy` to start a new one!")}}
+	{{$error = "yes"}}
+	{{$color = 16711680}}{{/* Red */}}
+{{end}}
+{{else}}
+	{{$desc = (joinStr "" "You have no active Wordy game. Use `" $prefix "wordy` to start a new one!")}}
+	{{$error = "yes"}}
+	{{$delete = "yes"}}
+	{{$color = 16711680}}{{/* Red */}}
+{{end}}
+{{deleteTrigger 10}}
+
+{{if eq $error "yes" }}
+	{{$embed = cembed 
+	"title" "Wordy" 
+	"description" $desc
+	"color" $color
+	"footer" (sdict "text" (joinStr "" "This game belongs to: " .User.String) )
+	"thumbnail" (sdict "url" "http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/wordy_orig.jpg") }}
+	{{deleteMessage nil $eMsg 1}}{{$eMsg = sendMessageRetID nil (complexMessage "content" .User.Mention "embed" $embed)}}
+{{else}}
+	{{$embed = cembed 
+	"title" "Wordy" 
+	"description" $desc
+	"color" $color
+	"fields" (cslice
+	(sdict "name" "Progress" "value" $next "inline" false)
+	(sdict "name" "Letters Used" "value" $used "inline" false)
+	(sdict "name" "Attempts Remaining" "value" $left "inline" false)
+	(sdict "name" "Current Score" "value" (humanizeThousands $score) "inline" false)
+	(sdict "name" "Expires" "value" $expires "inline" false))
+	"footer" (sdict "text" (joinStr "" "This game belongs to: " .User.String) )
+	"thumbnail" (sdict "url" "http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/wordy_orig.jpg") }}
+	{{deleteMessage nil $eMsg 1}}{{deleteMessage nil $msg 1}}{{$msg = sendMessageRetID nil (complexMessage "content" .User.Mention "embed" $embed)}}
+{{end}}
+{{if eq $delete "yes" }}
+	{{dbDel .User.ID "WORDY"}}
+{{else}}
+	{{$game.Set "letters" $letters}}{{$game.Set "eMsg" $eMsg}}{{$game.Set "embed" $msg}}{{$game.Set "guess" $add}}{{$game.Set "previous" $next}}{{$game.Set "score" $score}}{{dbSet .User.ID "WORDY" $game}}
+{{end}}

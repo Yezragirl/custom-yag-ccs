@@ -146,10 +146,10 @@ Author: AaroneousAK <https://github.com/AaroneousAK/>
    (sdict "name" "\n**__Tames__**\n**1st Place - 25,000 <:bbs:583143695927214091>**" "value" "*Valantha* (23 First Tames Achieved)" "inline" false)
    (sdict "name" "**2nd Place - 10,000 <:bbs:583143695927214091>**" "value" "*Laines* (21 First Tames Achieved)" "inline" false))
    "footer" (sdict "text"  )
-   "thumbnail" (sdict "url" "http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/wordy.jpg") }}
+   "thumbnail" (sdict "url" "http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/wordy_orig.jpg") }}
 {{sendMessage nil $embed}}
 {{deleteTrigger 1}}
-http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/wordy.jpg
+http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/wordy_orig.jpg
 
 
 

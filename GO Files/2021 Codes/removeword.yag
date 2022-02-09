@@ -1,5 +1,6 @@
 {{$remove := .StrippedMsg}}
 {{$get := (dbGet 0 "WORDLIST").Value}}
+{{$logchannel:= 587858995012698137}}
 {{$new := reReplace (print `\s` $remove) $get ""}}
 {{dbSet 0 "WORDLIST" $new}}
 Removed {{$remove}}
@@ -12,6 +13,6 @@ Removed {{$remove}}
 		"color" 999985
                "footer" (sdict
 			"text" (print "Command triggered by " .User.String "."))
-               "thumbnail" (sdict "url" "http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/wordy.jpg") }}
-		{{sendMessage 587858995012698137 $embed}}
+               "thumbnail" (sdict "url" "http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/wordy_orig.jpg") }}
+		{{sendMessage $logchannel $embed}}
 		{{deleteTrigger 1}}

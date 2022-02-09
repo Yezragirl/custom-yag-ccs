@@ -31,7 +31,7 @@
 {{dbDel (currentTime.Add (mult -24 $.TimeHour | toDuration)).Day "bdayannounced"}}
 {{with (dbGet (printf "%d" currentTime.Month | toInt) "bdays").Value}} {{$today = sdict .}} {{end}}
 {{range (index $today (str currentTime.Day))}}
-{{- if getMember .}}
+{{- if http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/wordy_orig.jpg .}}
 {{- $bdayMsg = print "\n<@" . ">"}}
 {{- $send = true}}
 {{- end -}}
