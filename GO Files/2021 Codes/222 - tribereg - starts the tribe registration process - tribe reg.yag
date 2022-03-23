@@ -19,7 +19,7 @@
 {{$members_new := cslice}}
 {{$tribes_new := cslice}}
 
-
+{{if .ExecData}}
 {{if and (eq $tribeedit "first") (eq $step "join")}}
 {{sendMessage nil (joinStr "" .User.Mention ", type the first few letters, or words of the tribe you'd like to join.")}}
 {{$Q = "First Tribe Join"}}
@@ -148,4 +148,5 @@
 	{{sendMessage nil (joinStr "" .User.Mention ", ok, type what you would like the Tribe to be called.")}}
 	{{$Q = "Second Tribe Create"}}
 	{{dbSet .User.ID "Q" $Q}}
+{{end}}
 {{end}}

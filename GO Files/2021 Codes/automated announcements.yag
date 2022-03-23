@@ -1,0 +1,61 @@
+
+{{/*Automated Announcements Code*/}}
+{{$ad := 0}}
+{{$url := "http"}}
+{{$color := randInt 111111 999999 }}
+{{$dTime := currentTime}}
+{{$time := sdict "Weekday" $dTime.Weekday "Day" $dTime.Day "Month" $dTime.Month "Year" $dTime.Year "Hour" 0 "Min" 0 "Sec" 0 }}
+{{if eq $time.Day 25}}
+	{{$url = "http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/coupon-buyback_orig.png"}}
+{{else if or (eq $time.Day 2) (eq $time.Day 15)}}
+	{{$ad = (randInt 1 5)}}
+	{{if eq $ad 1}}
+		{{$url = "http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/keep-family-together-reaper_orig.png"}}
+	{{else if eq $ad 2}}
+		{{$url = "http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/love-the-server-raptor_orig.png"}}
+	{{else if eq $ad 3}}
+		{{$url = "http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/come-and-join-rex_orig.png"}}
+	{{else if eq $ad 4}}
+		{{$url = "http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/become-a-sponsor-underwater_orig.png"}}
+	{{end}}
+{{else if eq $time.Day 8}}
+	{{$url = "http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/player-shops_orig.png"}}
+
+{{else if eq $time.Day 10}}
+	{{$url = "http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/admin-map-sweeps_orig.png"}}
+
+{{else if eq $time.Day 17}}
+	{{$url = "http://www.yezsarkcluster.com/uploads/7/1/0/3/7103082/admin-recruitment-admin-application_orig.png"}}
+
+{{end}}
+	{{$embed := cembed 
+		"color" $color
+		"image" (sdict "url" $url) }}
+
+{{$msg := sendMessageNoEscapeRetID 573220101977800704 (complexMessage "content" "<@&573210479753691170>" "embed" $embed)}}
+
+
+
+
+{{/* Message Link v1 */}}
+{{getMessage 573220101977800704 $msg}}
+{{if not $msg}}
+
+{{else}}
+{{ $avatar := (joinStr "" "https://cdn.discordapp.com/avatars/" (toString $msg.Author.ID) "/" $msg.Author ".png") }}
+
+{{$embedRaw := sdict 
+"description" (joinStr "" "**<#" $msg.ChannelID ">**\n" $msg.Content)
+"color" 4645612 
+"author" (sdict "name"  $msg.Author.Username "icon_url" ($msg.Author.AvatarURL "64")) 
+"footer" (sdict "text" (joinStr "" "Req. by "  .Message.Author.Username ". Quote from ")) 
+"timestamp" $msg.Timestamp  }}
+
+{{if $msg.Attachments}}
+{{$embedRaw.Set "image" (sdict "url" (index $msg.Attachments 0).URL) }}
+{{end}}
+
+{{ sendMessage 573245421066125324 (cembed $embedRaw) }}
+{{ sendMessage 646033978721173523 (cembed $embedRaw) }}
+
+{{end}}
