@@ -13,14 +13,14 @@
 {{$MsgID := .Reaction.MessageID}}
 {{$tribeselect := ""}}
 
-
+{{if .Message.Embeds}}
 {{range (index .Message.Embeds 0).Fields -}}
 	{{$parts := reFindAllSubmatches `([^ ]+) (.+)` .Name -}}
 	{{$emojipart := index $parts 0 1 -}}
 	{{if (eq $.Reaction.Emoji.Name $emojipart)}}
 		{{$tribeselect = index $parts 0 2}}
 	{{end}}
-{{end}}
+{{end}}{{end}}
 
 {{$tribeBitsLookup := sdict
 	"Edit First Tribe Join"

@@ -16,8 +16,8 @@
 	{{$optionselect = index $parts 0 2}}
 {{end}}
 {{end}}
-{{$Q}}
-
+Q = {{$Q}}
+Opt = {{$optionselect}}
 {{if eq $optionselect "Cancel"}}
 	{{removeRoleID 770393574734692363}}
 {{dbDel .Channel.ID "tribeedit"}}
@@ -28,7 +28,7 @@
 {{else if eq $Q "TribeMan"}}
 	{{$tribeedit = $optionselect}}
 	{{$dbkey := print "tribe_" (lower $tribeedit)}}
-	{{$tribeinfo := sdict (dbGet 0 $dbkey).Value}}
+	{{$tribeinfo := or (sdict (dbGet 0 $dbkey).Value) sdict}}
 	{{dbSet .Channel.ID "tribeedit" $tribeedit}}
 
 	{{$color := randInt 111111 999999 }}
@@ -36,11 +36,11 @@
 	"Title" (joinStr "" "Tribe Management for " $tribeedit)
 	"color" $color
 	"fields" (cslice 
-	(sdict "name" ":one: Transfer Tribe Ownership" "value" "Transfer ownership of this tribe to another tribe member." "inline" false) 
-	(sdict "name" ":two: Manage Tribe Members" "value" "Remove Tribe Members." "inline" false) 
-	(sdict "name" ":three: Change Tribe Name" "value" "Change the Tribe Name." "inline" false) 
-	(sdict "name" ":four: Manage Tribe Bases" "value" "Edit/Remove Tribe Bases." "inline" false)
-	(sdict "name" ":five: Cancel" "value" "Cancel Tribe Management." "inline" false))
+	(sdict "name" "1️⃣ Transfer Tribe Ownership" "value" "Transfer ownership of this tribe to another tribe member." "inline" false) 
+	(sdict "name" "2️⃣ Manage Tribe Members" "value" "Remove Tribe Members." "inline" false) 
+	(sdict "name" "3️⃣ Change Tribe Name" "value" "Change the Tribe Name." "inline" false) 
+	(sdict "name" "4️⃣ Manage Tribe Bases" "value" "Edit/Remove Tribe Bases." "inline" false)
+	(sdict "name" "5️⃣ Cancel" "value" "Cancel Tribe Management." "inline" false))
 	"thumbnail" (sdict "url" "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/46b63d3c-ae67-464c-9a37-670829b2a157/d9eh2nw-f682acd6-3622-461c-8293-e7907bcc11d8.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOiIsImlzcyI6InVybjphcHA6Iiwib2JqIjpbW3sicGF0aCI6IlwvZlwvNDZiNjNkM2MtYWU2Ny00NjRjLTlhMzctNjcwODI5YjJhMTU3XC9kOWVoMm53LWY2ODJhY2Q2LTM2MjItNDYxYy04MjkzLWU3OTA3YmNjMTFkOC5wbmcifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6ZmlsZS5kb3dubG9hZCJdfQ.Tsz77fz2XHArjp78X1vPBVJTrKNZYpUP2cR-lKp_wo8") }}
 {{$msg := sendMessageRetID nil $embed}}
 {{addMessageReactions nil $msg "1️⃣" "2️⃣" "3️⃣" "4️⃣" "5️⃣"}}
@@ -82,11 +82,11 @@
 	"Title" (joinStr "" "Tribe Management for " $tribeedit)
 	"color" $color
 	"fields" (cslice 
-	(sdict "name" ":one: Transfer Tribe Ownership" "value" "Transfer ownership of this tribe to another tribe member." "inline" false) 
-	(sdict "name" ":two: Manage Tribe Members" "value" "Remove Tribe Members." "inline" false) 
-	(sdict "name" ":three: Change Tribe Name" "value" "Change the Tribe Name." "inline" false) 
-	(sdict "name" ":four: Manage Tribe Bases" "value" "Edit/Remove Tribe Bases." "inline" false)
-	(sdict "name" ":five: Cancel" "value" "Cancel Tribe Management." "inline" false))
+	(sdict "name" "1️⃣ Transfer Tribe Ownership" "value" "Transfer ownership of this tribe to another tribe member." "inline" false) 
+	(sdict "name" "2️⃣ Manage Tribe Members" "value" "Remove Tribe Members." "inline" false) 
+	(sdict "name" "3️⃣ Change Tribe Name" "value" "Change the Tribe Name." "inline" false) 
+	(sdict "name" "4️⃣ Manage Tribe Bases" "value" "Edit/Remove Tribe Bases." "inline" false)
+	(sdict "name" "5️⃣ Cancel" "value" "Cancel Tribe Management." "inline" false))
 	"thumbnail" (sdict "url" "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/46b63d3c-ae67-464c-9a37-670829b2a157/d9eh2nw-f682acd6-3622-461c-8293-e7907bcc11d8.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOiIsImlzcyI6InVybjphcHA6Iiwib2JqIjpbW3sicGF0aCI6IlwvZlwvNDZiNjNkM2MtYWU2Ny00NjRjLTlhMzctNjcwODI5YjJhMTU3XC9kOWVoMm53LWY2ODJhY2Q2LTM2MjItNDYxYy04MjkzLWU3OTA3YmNjMTFkOC5wbmcifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6ZmlsZS5kb3dubG9hZCJdfQ.Tsz77fz2XHArjp78X1vPBVJTrKNZYpUP2cR-lKp_wo8") }}
 {{$msg := sendMessageRetID nil $embed}}
 {{addMessageReactions nil $msg "1️⃣" "2️⃣" "3️⃣" "4️⃣" "5️⃣"}}
@@ -100,11 +100,11 @@
 	"Title" (joinStr "" "Tribe Management for " $tribeedit)
 	"color" $color
 	"fields" (cslice 
-	(sdict "name" ":one: Transfer Tribe Ownership" "value" "Transfer ownership of this tribe to another tribe member." "inline" false) 
-	(sdict "name" ":two: Manage Tribe Members" "value" "Remove Tribe Members." "inline" false) 
-	(sdict "name" ":three: Change Tribe Name" "value" "Change the Tribe Name." "inline" false) 
-	(sdict "name" ":four: Manage Tribe Bases" "value" "Edit/Remove Tribe Bases." "inline" false)
-	(sdict "name" ":five: Cancel" "value" "Cancel Tribe Management." "inline" false))
+	(sdict "name" "1️⃣ Transfer Tribe Ownership" "value" "Transfer ownership of this tribe to another tribe member." "inline" false) 
+	(sdict "name" "2️⃣ Manage Tribe Members" "value" "Remove Tribe Members." "inline" false) 
+	(sdict "name" "3️⃣ Change Tribe Name" "value" "Change the Tribe Name." "inline" false) 
+	(sdict "name" "4️⃣ Manage Tribe Bases" "value" "Edit/Remove Tribe Bases." "inline" false)
+	(sdict "name" "5️⃣ Cancel" "value" "Cancel Tribe Management." "inline" false))
 	"thumbnail" (sdict "url" "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/46b63d3c-ae67-464c-9a37-670829b2a157/d9eh2nw-f682acd6-3622-461c-8293-e7907bcc11d8.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOiIsImlzcyI6InVybjphcHA6Iiwib2JqIjpbW3sicGF0aCI6IlwvZlwvNDZiNjNkM2MtYWU2Ny00NjRjLTlhMzctNjcwODI5YjJhMTU3XC9kOWVoMm53LWY2ODJhY2Q2LTM2MjItNDYxYy04MjkzLWU3OTA3YmNjMTFkOC5wbmcifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6ZmlsZS5kb3dubG9hZCJdfQ.Tsz77fz2XHArjp78X1vPBVJTrKNZYpUP2cR-lKp_wo8") }}
 {{$msg := sendMessageRetID nil $embed}}
 {{addMessageReactions nil $msg "1️⃣" "2️⃣" "3️⃣" "4️⃣" "5️⃣"}}
@@ -118,11 +118,11 @@
 	"Title" (joinStr "" "Tribe Management for " $tribeedit)
 	"color" $color
 	"fields" (cslice 
-	(sdict "name" ":one: Transfer Tribe Ownership" "value" "Transfer ownership of this tribe to another tribe member." "inline" false) 
-	(sdict "name" ":two: Manage Tribe Members" "value" "Remove Tribe Members." "inline" false) 
-	(sdict "name" ":three: Change Tribe Name" "value" "Change the Tribe Name." "inline" false) 
-	(sdict "name" ":four: Manage Tribe Bases" "value" "Edit/Remove Tribe Bases." "inline" false)
-	(sdict "name" ":five: Cancel" "value" "Cancel Tribe Management." "inline" false))
+	(sdict "name" "1️⃣ Transfer Tribe Ownership" "value" "Transfer ownership of this tribe to another tribe member." "inline" false) 
+	(sdict "name" "2️⃣ Manage Tribe Members" "value" "Remove Tribe Members." "inline" false) 
+	(sdict "name" "3️⃣ Change Tribe Name" "value" "Change the Tribe Name." "inline" false) 
+	(sdict "name" "4️⃣ Manage Tribe Bases" "value" "Edit/Remove Tribe Bases." "inline" false)
+	(sdict "name" "5️⃣ Cancel" "value" "Cancel Tribe Management." "inline" false))
 	"thumbnail" (sdict "url" "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/46b63d3c-ae67-464c-9a37-670829b2a157/d9eh2nw-f682acd6-3622-461c-8293-e7907bcc11d8.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOiIsImlzcyI6InVybjphcHA6Iiwib2JqIjpbW3sicGF0aCI6IlwvZlwvNDZiNjNkM2MtYWU2Ny00NjRjLTlhMzctNjcwODI5YjJhMTU3XC9kOWVoMm53LWY2ODJhY2Q2LTM2MjItNDYxYy04MjkzLWU3OTA3YmNjMTFkOC5wbmcifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6ZmlsZS5kb3dubG9hZCJdfQ.Tsz77fz2XHArjp78X1vPBVJTrKNZYpUP2cR-lKp_wo8") }}
 {{$msg := sendMessageRetID nil $embed}}
 {{addMessageReactions nil $msg "1️⃣" "2️⃣" "3️⃣" "4️⃣" "5️⃣"}}

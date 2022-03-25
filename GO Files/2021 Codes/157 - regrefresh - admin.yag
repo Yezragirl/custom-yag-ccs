@@ -12,6 +12,7 @@
 {{$parentguardian := (dbGet $user.ID "parentguardian").Value}}
 {{$ref := (dbGet $user.ID "ref").Value}}
 {{$tribe := (dbGet $user.ID "tribe").Value}}
+{{$tribe2 := (dbGet $user.ID "tribe2").Value}}
 {{$nick := (getMember $user.ID).Nick}}
 {{if not $nick}}
 	{{if not $name}}
@@ -27,7 +28,7 @@
             "fields" (cslice 
             (sdict "name" "In Game Name" "value" (toString $name) "inline" false) 
             (sdict "name" "Gamer Tag" "value" (toString $gt) "inline" false) 
-            (sdict "name" "Tribe Name" "value" (toString $tribe) "inline" false) )
+            (sdict "name" "Tribe Name" "value" (joinStr "/" (toString $tribe) (toString $tribe2)) "inline" false) )
             "thumbnail" (sdict "url" ($user.AvatarURL "1024")) }}
 		{{if $public}}
 		{{editMessage 658352884701724733 $public $embed}}
@@ -61,7 +62,7 @@ No Admin Registration to Update. New Admin Registration Created.
             "fields" (cslice 
             (sdict "name" "__***MINOR***__" "value" "_ _" "inline" false) 
 			(sdict "name" "In Game Name" "value" (toString $name) "inline" false)
-			(sdict "name" "Tribe Name" "value" (toString $tribe) "inline" false)  
+			(sdict "name" "Tribe Name" "value" (joinStr "/" (toString $tribe) (toString $tribe2)) "inline" false)  
             (sdict "name" "Gamer Tag" "value" (toString $gt) "inline" false) )
             "thumbnail" (sdict "url" ($user.AvatarURL "1024")) }}
 			{{if $public}}
@@ -79,7 +80,7 @@ No Public Registration to Update. New Public Registration Created.
             (sdict "name" "__***MINOR***__" "value" (toString $age) "inline" false) 
             (sdict "name" "In Game Name" "value" (toString $name) "inline" false) 
 			(sdict "name" "Gamer Tag" "value" (toString $gt) "inline" false)  
-			(sdict "name" "Tribe Name" "value" (toString $tribe) "inline" false) 
+			(sdict "name" "Tribe Name" "value" (joinStr "/" (toString $tribe) (toString $tribe2)) "inline" false) 
             (sdict "name" "Parent/Guardian" "value" (toString $parentguardian) "inline" false)
             (sdict "name" "Pin" "value" (toString $pin) "inline" false))
             "thumbnail" (sdict "url" ($user.AvatarURL "1024")) }}

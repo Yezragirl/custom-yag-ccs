@@ -25,15 +25,18 @@
 {{$Q = "First Tribe Join"}}
 {{dbSet .User.ID "Q" $Q}}
 {{else if and (eq $tribeedit "first") (eq $step "leave")}}
-	{{$dbkey := print "tribe_" (lower $tribe)}}
-	{{$tribeinfo := sdict (dbGet 0 $dbkey).Value}}
-	{{$owner := $tribeinfo.owner}}
-	{{if $owner}}Owner Exists
-		{{if eq .User.ID $owner}}I am owner.
-			{{$members_converted := (cslice).AppendSlice (or $tribeinfo.members cslice)}}
-			{{if gt (len $members_converted) 0}}There are other tribe members.
+	{{if eq $tribe "Unregistered"}}
+		You can't leave a tribe you haven't registered yet. Please run `-regedit` again and join or create a tribe.
+	{{else}}
+		{{$dbkey := print "tribe_" (lower $tribe)}}
+		{{$tribeinfo := sdict (dbGet 0 $dbkey).Value}}
+		{{$owner := $tribeinfo.owner}}
+		{{if $owner}}Owner Exists
+			{{if eq .User.ID $owner}}I am owner.
+				{{$members_converted := (cslice).AppendSlice (or $tribeinfo.members cslice)}}
+				{{if gt (len $members_converted) 0}}There are other tribe members.
 				You are the Owner of this tribe. You can not leave this tribe until you have transferred ownership to another member. 
-			{{else}}There are no tribe members.
+				{{else}}There are no tribe members.
 				Tribe has no members...deleting tribe {{$tribe}}.
 				{{dbDel 0 (print "tribe_" (lower $tribe))}}
 				{{- range $tribes -}}
@@ -46,10 +49,13 @@
 				{{dbSet .User.ID "tribe" $tribe}}
 				{{$Q = "First Tribe Leave"}}
 				{{dbSet .User.ID "Q" $Q}}
-			{{end}}
+				{{removeRoleID 658469834589208616}}
+				{{execCC 74 nil 0 ""}}
+				{{end}}
 		{{else}}I am not the owner.
 			{{$members_converted := (cslice).AppendSlice $tribeinfo.members}}
-			{{if lt (len $members_converted) 2}}There are no other tribe members. 
+			{{if and (lt (len $members_converted) 2) (not $owner)}}
+				There are no other tribe members. 
 				Tribe has no members...deleting tribe {{$tribe}}.
 				{{dbDel 0 (print "tribe_" (lower $tribe))}}
 				{{- range $tribes -}}
@@ -71,6 +77,8 @@
 				{{dbSet .User.ID "tribe" $tribe}}
 				{{$Q = "First Tribe Leave"}}
 				{{dbSet .User.ID "Q" $Q}}
+				{{removeRoleID 658469834589208616}}
+				{{execCC 74 nil 0 ""}}
 			{{end}}
 		{{end}}
 	{{else}}No owner exists. 
@@ -83,7 +91,7 @@
 				{{$tribeinfo.Set "members" $members_new}}
 				{{dbSet 0 $dbkey $tribeinfo}}
 			{{end}}
-		{{else}}THere are no other tribe members. 
+		{{else}}There are no other tribe members. 
 		Tribe has no members...deleting tribe {{$tribe}}.
 				{{dbDel 0 (print "tribe_" (lower $tribe))}}
 				{{- range $tribes -}}
@@ -98,7 +106,8 @@
 		{{dbSet .User.ID "tribe" $tribe}}
 		{{$Q = "First Tribe Leave"}}
 		{{dbSet .User.ID "Q" $Q}}
-	{{end}}	
+		{{end}}
+	{{end}}
 {{else if and (eq $tribeedit "first") (eq $step "create")}}
 	{{sendMessage nil (joinStr "" .User.Mention ", ok, type what you would like the Tribe to be called.")}}
 	{{$Q = "First Tribe Create"}}
@@ -108,7 +117,10 @@
 	{{$Q = "Second Tribe Join"}}
 	{{dbSet .User.ID "Q" $Q}}
 {{else if and (eq $tribeedit "second") (eq $step "leave")}}
-	{{$dbkey := print "tribe_" (lower $tribe)}}
+	{{if eq $tribe2 "Unregistered"}}
+		You can't leave a tribe you haven't registered yet. Please run `-regedit` again and join or create a tribe.
+	{{else}}
+		{{$dbkey := print "tribe_" (lower $tribe2)}}
 	{{$tribeinfo := sdict (dbGet 0 $dbkey).Value}}
 	{{$owner := $tribeinfo.owner}}
 		{{if eq .User.ID $owner}}
@@ -124,13 +136,16 @@
 					{{- end -}}
 				{{end}}
 				{{dbSet 0 "tribes" $tribes_new}}
-				{{$tribe = "Unregistered"}}
+				{{$tribe2 = "Unregistered"}}
 				{{dbSet .User.ID "tribe2" $tribe2}}
-				{{$Q = "First Tribe Leave"}}
+				{{$Q = "Second Tribe Leave"}}
 				{{dbSet .User.ID "Q" $Q}}
+				{{removeRoleID 658469834589208616}}
+				{{execCC 74 nil 0 ""}}
 			{{end}}
 		{{else}}
-			{{$members_converted := (cslice).AppendSlice $tribeinfo.members}}
+			{{$tribeinfo}}
+			{{$members_converted := (cslice).AppendSlice (or $tribeinfo.members cslice)}}
 			{{- range $members_converted -}}
 				{{- if ne . $.User.ID -}}
 					{{- $members_new = $members_new.Append . -}}
@@ -139,14 +154,18 @@
 			{{$tribeinfo.Set "members" $members_new}}
 			{{dbSet 0 $dbkey $tribeinfo}}
 			{{sendMessage nil (joinStr "" .User.Mention ", ok, you have left " (toString $tribe2) ".")}}
-			{{$tribe = "Unregistered"}}
+			{{$tribe2 = "Unregistered"}}
 			{{dbSet .User.ID "tribe2" $tribe2}}
-			{{$Q = "First Tribe Leave"}}
+			{{$Q = "Second Tribe Leave"}}
+			{{execCC 74 nil 0 ""}}
 			{{dbSet .User.ID "Q" $Q}}
+			{{removeRoleID 658469834589208616}}
 		{{end}}
+	{{end}}
 {{else if and (eq $tribeedit "second") (eq $step "create")}}
 	{{sendMessage nil (joinStr "" .User.Mention ", ok, type what you would like the Tribe to be called.")}}
 	{{$Q = "Second Tribe Create"}}
 	{{dbSet .User.ID "Q" $Q}}
 {{end}}
 {{end}}
+

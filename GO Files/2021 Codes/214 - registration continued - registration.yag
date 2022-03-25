@@ -1,8 +1,10 @@
 {{/*continuation of the reg code.*/}}
 {{if (eq .Channel.ParentID 635305499600093214)}} 
 	{{$Q := (dbGet .User.ID "Q").Value}}{{$admin := (dbGet .User.ID "admin").Value}}{{$age := (dbGet .User.ID "age").Value}}{{$gt := (dbGet .User.ID "gt").Value}}{{$name := (dbGet .User.ID "name").Value}}{{$pin := (dbGet .User.ID "pin").Value}}{{$public := (dbGet .User.ID "public").Value}}{{$ref := (dbGet .User.ID "ref").Value}}{{$parentguardian := (dbGet .User.ID "parentguardian").Value}}
-	{{if not $parentguardian}}{{$parentguardian = "Not a Minor"}}{{dbSet .User.ID "parentguardian" $parentguardian}}{{end}}{{$tribe := (dbGet .User.ID "tribe").Value}}{{$color := randInt 111111 999999 }}
+	{{if not $parentguardian}}{{$parentguardian = "Not a Minor"}}{{dbSet .User.ID "parentguardian" $parentguardian}}{{end}}{{$tribe := (dbGet .User.ID "tribe").Value}}
+		{{$tribe2 := (dbGet .User.ID "tribe2").Value}}{{$color := randInt 111111 999999 }}
 	{{if not $tribe}}{{$tribe = "Unregistered"}}{{dbSet .User.ID "tribe" $tribe}}{{end}}
+	{{if not $tribe2}}{{$tribe2 = "Unregistered"}}{{dbSet .User.ID "tribe2" $tribe}}{{end}}
 	{{if eq (toString $Q) "Done"}}
 	{{$embed := cembed 
 			"Title" "Initializing" }}
@@ -14,7 +16,7 @@
 			"fields" (cslice 
 			(sdict "name" "In Game Name" "value" (toString $name) ) 
 			(sdict "name" "Gamer Tag" "value" (toString $gt) ) 
-			(sdict "name" "Tribe Name" "value" (toString $tribe) ) )
+			(sdict "name" "Tribe Name" "value" (joinStr "/" (toString $tribe) (toString $tribe2)) ) )
 			"thumbnail" (sdict "url" (.User.AvatarURL "1024")) }}
 			{{$embed2 = cembed 
 			"color" $color
@@ -31,7 +33,7 @@
 			"fields" (cslice 
 			(sdict "name" "__***MINOR***__" "value" "_ _" ) 
 			(sdict "name" "In Game Name" "value" (toString $name) ) 
-			(sdict "name" "Tribe Name" "value" (toString $tribe) ) 
+			(sdict "name" "Tribe Name" "value" (joinStr "/" (toString $tribe) (toString $tribe2)) ) 
 			(sdict "name" "Gamer Tag" "value" (toString $gt) ) )
 			"thumbnail" (sdict "url" (.User.AvatarURL "1024")) }}
 			{{$embed2 = cembed 
@@ -41,7 +43,7 @@
 			(sdict "name" "__***MINOR***__" "value" (toString (toInt $age)) ) 
 			(sdict "name" "In Game Name" "value" (toString $name) ) 
 			(sdict "name" "Gamer Tag" "value" (toString $gt) ) 
-			(sdict "name" "Tribe Name" "value" (toString $tribe) ) 
+			(sdict "name" "Tribe Name" "value" (joinStr "/" (toString $tribe) (toString $tribe2)) ) 
 			(sdict "name" "Parent/Guardian" "value" (toString $parentguardian) )
 			(sdict "name" "Pin" "value" (toString $pin) ))
 			"thumbnail" (sdict "url" (.User.AvatarURL "1024")) }}
