@@ -49,9 +49,11 @@
 				{{$tribe = (toString .Message.Content)}}
 				{{dbSet .User.ID "tribe" $tribe}}
 				{{dbSet 0 "tribes" ($tribes.Append $tribe)}}
-				{{dbSet 0 (joinStr "" "tribe_" (lower $tribe)) (sdict "name" $tribe "owner" .User.ID)}}
+				{{dbSet 0 (joinStr "" "tribe_" (lower $tribe)) (sdict "name" $tribe "owner" (toString .User.ID))}}
 				{{$Q = "End Edit"}}{{dbSet .User.ID "Q" $Q}}
 				{{sendMessage nil (joinStr "" "Tribe " $tribe ", created. " .User.Mention " set as owner.")}}
+				{{removeRoleID 658469834589208616}}
+				{{execCC 74 nil 0 ""}}
 			{{end}}
 		{{else if eq (toString $Q) "Second Tribe Create"}}
 			{{- range $lowertribes -}}
@@ -67,9 +69,11 @@
 				{{$tribe2 = (toString .Message.Content)}}
 				{{dbSet .User.ID "tribe2" $tribe2}}
 				{{dbSet 0 "tribes" ($tribes.Append $tribe2)}}
-				{{dbSet 0 (joinStr "" "tribe_" (lower $tribe2)) (sdict "name" $tribe2 "owner" .User.ID)}}
+				{{dbSet 0 (joinStr "" "tribe_" (lower $tribe2)) (sdict "name" $tribe2 "owner" (toString .User.ID))}}
 				{{$Q = "End Edit"}}{{dbSet .User.ID "Q" $Q}}
 				{{sendMessage nil (joinStr "" "Tribe " $tribe2 ", created. " .User.Mention " set as owner.")}}
+				{{removeRoleID 658469834589208616}}
+				{{execCC 74 nil 0 ""}}
 			{{end}}
 		{{else if eq (toString $Q) "First Tribe Join"}}
 			{{$finds = dbGetPattern 0 (print "tribe_%" (lower .Message.Content) "%") 5 0}}

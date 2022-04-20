@@ -33,6 +33,8 @@
 {{else if eq $reason "Map Sweeps"}}{{$fourth :=  sendMessageNoEscapeRetID .Channel.ID (joinStr "" "**__Procedure for Checking Base Activity/Inactive Bases__**\n\nLeave your current tribe and Force join the tribe you’re checking.\nCheck last active in game day vs. current in game day in the tribe log.\n-If the difference is under 240 days, Leave Tribe, no further action required.\n-If the difference is over 240 days, but under 300 days, log in spread sheet with a 2 week check back note (optional: set reminder in discord with -remindme). Leave Tribe, no further action required until 2 weeks has passed.\n-If the difference is over 300 days, log in spread sheet and then Check for any Dinos that could be auctioned. Leave tribe, and red gun and/or structure wipe. (logging not required for traps or small amounts of miscellaneous structures.) \n\nDinos to Keep for Auctions:\nSpecial dinos you don't see very often (Spacewhales, Reaper, Golems...)\nLarge fliers that are good levels.\nAny water tames of a decent level\nAny variants, Gen 1, or Gen 2 dinos)")}}
 {{else}}
 {{$messageID := sendMessageNoEscapeRetID .Channel.ID (joinStr "" .User.Mention $message)}}
+{{$messageID2 := sendMessageNoEscapeRetID .Channel.ID (joinStr "" .User.Mention "First time making a ticket? Use the ❓ below to get info on how tickets work!")}}
+{{addMessageReactions .Channel.ID $messageID2 "❓"}}
 {{$daycounter := sendMessageNoEscapeRetID .Channel.ID "\n\nThis ticket was opened today."}}
 {{execCC 220 .Channel.ID 86400 (sdict "days" $days "daycounter" $daycounter)}}
 {{addMessageReactions .Channel.ID $messageID ":kibble:660605488609755146" ":cryopod:631218688099614724" ":Tek_Door:660605465721569334" }}

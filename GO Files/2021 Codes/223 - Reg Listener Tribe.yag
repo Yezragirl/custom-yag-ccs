@@ -12,7 +12,11 @@
 {{$tribe2 := (dbGet .User.ID "tribe2").Value}}{{if not $tribe2}}{{$tribe2 = "Unregistered"}}{{dbSet .User.ID "tribe2" $tribe2}}{{end}}
 {{$MsgID := .Reaction.MessageID}}
 {{$tribeselect := ""}}
-
+{{$tribesave := ""}}
+{{$tribes_db := (dbGet 0 "tribes").Value}}
+{{$tribes := (cslice).AppendSlice $tribes_db}}
+{{$members_new := cslice}}
+{{$tribes_new := cslice}}
 {{if .Message.Embeds}}
 {{range (index .Message.Embeds 0).Fields -}}
 	{{$parts := reFindAllSubmatches `([^ ]+) (.+)` .Name -}}
@@ -22,24 +26,114 @@
 	{{end}}
 {{end}}{{end}}
 
-{{$tribeBitsLookup := sdict
-	"Edit First Tribe Join"
-		(sdict "ordinal" "first" "key" "tribe")
-	"Edit Second Tribe Join"
-		(sdict "ordinal" "second" "key" "tribe2")
-	}}
+{{$tribeBitsLookup := sdict "Edit First Tribe Join" (sdict "ordinal" "first" "key" "tribe") "Edit Second Tribe Join" (sdict "ordinal" "second" "key" "tribe2") 	}}
 	
 	{{if $tribeBits := $tribeBitsLookup.Get (toString $Q)}}
 		{{if eq $tribeselect "Try Again"}}
 			{{execCC 222 nil 0 (sdict "tribe" $tribeBits.ordinal "step" "join")}}
 		{{else}}
-			{{$dbkey := print "tribe_" (lower $tribeselect)}}
-			{{dbSet .User.ID $tribeBits.key $tribeselect}}
-			{{$tribeinfo := sdict (dbGet 0 $dbkey).Value}}
-			{{$tribeinfo.Set "members" (((cslice).AppendSlice (or $tribeinfo.members cslice)).Append .User.ID)}}
-			{{dbSet 0 $dbkey $tribeinfo}}
-			Added Tribe {{$tribeselect}} to your registration.
-			Added {{.User.Mention}} to {{$tribeselect}} member roster.
+			{{if eq $tribeBits.ordinal "first"}}
+				{{$tribesave = $tribe}}
+			{{else}}
+				{{$tribesave = $tribe2}}
+			{{end}}
+Tribesave {{$tribesave}}
+			{{if eq $tribesave "Unregistered"}}
+				{{$dbkey := print "tribe_" (lower $tribeselect)}}
+				{{dbSet .User.ID $tribeBits.key $tribeselect}}
+				{{$tribeinfo := sdict (dbGet 0 $dbkey).Value}}
+				{{$tribeinfo.Set "members" (((cslice).AppendSlice (or $tribeinfo.members cslice)).Append (toString .User.ID))}}
+				{{dbSet 0 $dbkey $tribeinfo}}
+				Added Tribe {{$tribeselect}} to your registration.
+				Added {{.User.Mention}} to {{$tribeselect}} member roster.
+				{{removeRoleID 658469834589208616}}
+				{{execCC 74 nil 0 ""}}
+			{{else}}
+				{{$dbkey := print "tribe_" (lower $tribesave)}}key {{$dbkey}} 
+				{{$tribeinfo := or ((sdict (dbGet 0 $dbkey).Value) sdict)}}tribe info {{$tribeinfo}}
+				{{$owner := $tribeinfo.owner}}
+				{{if $owner}}Owner Exists
+					{{if eq (toString .User.ID) $owner}}I am owner.
+						{{$members_converted := (cslice).AppendSlice (or $tribeinfo.members cslice)}}
+						{{if gt (len $members_converted) 0}}There are other tribe members.
+							You are the Owner of this tribe. You can not leave this tribe until you have transferred ownership to another member. 
+						{{else}}There are no tribe members.
+							Tribe has no members...deleting tribe {{$tribesave}}.
+							{{dbDel 0 (print "tribe_" (lower $tribesave))}}
+							{{- range $tribes -}}
+								{{- if ne . $tribesave -}}
+									{{- $tribes_new = $tribes_new.Append . -}}
+								{{- end -}}
+							{{end}}
+							{{dbSet 0 "tribes" $tribes_new}}
+							{{sendMessage nil (joinStr "" .User.Mention ", ok, you have left " (toString $tribesave) ".")}}
+							{{$dbkey := print "tribe_" (lower $tribeselect)}}
+							{{dbSet .User.ID $tribeBits.key $tribeselect}}
+							{{$tribeinfo := sdict (dbGet 0 $dbkey).Value}}
+							{{$tribeinfo.Set "members" (((cslice).AppendSlice (or $tribeinfo.members cslice)).Append (toString .User.ID))}}
+							{{dbSet 0 $dbkey $tribeinfo}}
+							Added Tribe {{$tribeselect}} to your registration.
+							Added {{.User.Mention}} to {{$tribeselect}} member roster.
+							{{removeRoleID 658469834589208616}}
+							{{execCC 74 nil 0 ""}}
+						{{end}}
+					{{else}}I am not the owner.
+						{{$members_converted := (cslice).AppendSlice $tribeinfo.members}}
+						{{- range $members_converted -}}
+							{{- if ne . $.User.ID -}}
+								{{- $members_new = $members_new.Append . -}}
+							{{- end -}}
+							{{$tribeinfo.Set "members" $members_new}}
+							{{dbSet 0 $dbkey $tribeinfo}}
+						{{end}}
+					{{end}}
+					{{sendMessage nil (joinStr "" .User.Mention ", ok, you have left " (toString $tribesave) ".")}}
+					{{$dbkey := print "tribe_" (lower $tribeselect)}}
+					{{dbSet .User.ID $tribeBits.key $tribeselect}}
+					{{$tribeinfo := sdict (dbGet 0 $dbkey).Value}}
+					{{$tribeinfo.Set "members" (((cslice).AppendSlice (or $tribeinfo.members cslice)).Append (toString .User.ID))}}
+					{{dbSet 0 $dbkey $tribeinfo}}
+					Added Tribe {{$tribeselect}} to your registration.
+					Added {{.User.Mention}} to {{$tribeselect}} member roster.
+					{{removeRoleID 658469834589208616}}
+					{{execCC 74 nil 0 ""}}
+				{{else}}No owner exists. 
+					{{$members_converted := (cslice).AppendSlice $tribeinfo.members}}
+					{{if gt (len $members_converted) 1}}There are other tribe members.
+						{{- range $members_converted -}}
+							{{- if ne . $.User.ID -}}
+								{{- $members_new = $members_new.Append . -}}
+							{{- end -}}
+							{{$tribeinfo.Set "members" $members_new}}
+							{{dbSet 0 $dbkey $tribeinfo}}
+						{{end}}
+					{{else}}There are no other tribe members. 
+						Tribe has no members, and no owner...deleting tribe {{$tribesave}}.
+						{{dbDel 0 (print "tribe_" (lower $tribesave))}}
+						{{- range $tribes -}}
+							{{- if ne . $tribesave -}}
+								{{- $tribes_new = $tribes_new.Append . -}}
+							{{- end -}}
+						{{end}}
+						{{dbSet 0 "tribes" $tribes_new}}
+					{{end}}
+					{{sendMessage nil (joinStr "" .User.Mention ", ok, you have left " (toString $tribesave) ".")}}
+					{{$dbkey := print "tribe_" (lower $tribeselect)}}
+					{{dbSet .User.ID $tribeBits.key $tribeselect}}
+					{{$tribeinfo := sdict (dbGet 0 $dbkey).Value}}
+					{{$tribeinfo.Set "members" (((cslice).AppendSlice (or $tribeinfo.members cslice)).Append (toString .User.ID))}}
+					{{dbSet 0 $dbkey $tribeinfo}}
+					Added Tribe {{$tribeselect}} to your registration.
+					Added {{.User.Mention}} to {{$tribeselect}} member roster.
+					{{removeRoleID 658469834589208616}}
+					{{execCC 74 nil 0 ""}}
+				{{end}}
+		
+
+
+
+
+			{{end}}
 		{{end}}
 	{{end}}
 {{end}}

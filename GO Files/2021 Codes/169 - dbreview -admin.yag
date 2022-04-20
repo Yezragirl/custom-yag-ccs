@@ -17,3 +17,81 @@
 Done
   {{end -}}
 
+
+  {{/*dbreview*/}}
+
+{{$skip := 0 -}}
+{{$count := 0}}
+{{if not .ExecData -}}
+    {{$skip = 0}}
+{{else -}}
+    {{- $skip = .ExecData.skip -}}
+{{end -}}
+    {{- range dbTopEntries `%` 1 $skip -}}
+{{.UserID}} - {{.Key}} - {{.Value}}
+    {{- $count = add $count 1 -}}
+    {{end -}}
+  {{if eq  (toInt $count) 1 -}}
+    {{execCC .CCID nil 10 (sdict "skip" (add $skip 1)) -}}
+{{else}}
+Done
+  {{end -}}
+
+
+
+
+
+
+
+  {{/*dbreview*/}}
+
+  {{$skip := 0 -}}
+  {{$count := 0}}
+  {{if not .ExecData -}}
+      {{$skip = 0}}
+  {{else -}}
+      {{- $skip = .ExecData.skip -}}
+  {{end -}}
+      {{- range dbTopEntries `tribe_%a%` 10 $skip -}}
+  {{.UserID}} - {{.Key}} - {{.Value}}
+  
+      {{- $count = add $count 1 -}}
+      {{end -}}
+    {{if eq  (toInt $count) 1 -}}
+      {{execCC .CCID nil 10 (sdict "skip" (add $skip 1)) -}}
+  {{else}}
+  Done
+    {{end -}}
+
+
+
+
+    {{/*dbreview*/}}
+
+    {{$skip := 0 -}}
+    {{$tname := ""}}
+    {{$count := 0}}
+    {{$tribes := dbGet 0 "tribes"}}
+    {{if not .ExecData -}}
+        {{$skip = 0}}
+    {{else -}}
+        {{- $skip = .ExecData.skip -}}
+    {{end -}}
+        {{- range dbBottomEntries `tribe\_%` 10 $skip -}}
+    {{.UserID}} - {{.Key}} - {{.Value}}  
+    {{- $tribeInfo := sdict .Value -}}
+    {{- $tname = $tribeInfo.name -}}
+    {{if in $tname $tribes}}
+In Tribe List
+    {{else}}
+Not in Tribe List
+{{dbDel 0 .Key}}
+Tribe Entry Deleted
+    {{end}}
+        {{ $count = add $count 1 -}}
+        {{end -}}
+      {{if eq  (toInt $count) 1 -}}
+        {{execCC .CCID nil 10 (sdict "skip" (add $skip 1)) -}}
+    {{else}}
+    Done
+      {{end -}}

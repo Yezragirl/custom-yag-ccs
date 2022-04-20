@@ -8,19 +8,18 @@
 {{$rankemotes := sdict "1" "1️⃣" "2" "2️⃣" "3" "3️⃣" "4" "4️⃣" "5" "5️⃣" "6" "6️⃣" }}
 {{$rank := 0}}
 {{$emote := ""}}
-{{$tribe}} - {{ printf "%T" $tribe }}
-{{$tribe2}} - {{ printf "%T" $tribe2 }}
 {{$tribeinfo := (dbGet 0 (print "tribe_" (lower $tribe))).Value}}
-{{$tribeinfo}}
+
 {{$ownedtribes := cslice -}}
-{{range (cslice $tribe $tribe2) -}}
+{{range (cslice $tribe $tribe2) -}}{{- . -}}
 	{{$tribeinfo := sdict (dbGet 0 (print "tribe_" (lower .))).Value -}}
-		{{if eq $tribeinfo.owner $.User.ID -}}
+		{{if eq (toString $tribeinfo.owner) (toString $.User.ID) -}}
 			{{$ownedtribes = $ownedtribes.Append $tribeinfo.name -}}
 		{{end -}}
 	{{end -}}
-
-
+{{if lt (len $ownedtribes) 1}}
+Sorry, there are no tribes for you to manage. 
+{{else}}
 	{{$fields := cslice}}
 	{{$addEmotes := cslice}}
 	{{- range $ownedtribes -}}
@@ -44,7 +43,7 @@
 	{{- range $addEmotes -}}
 	{{- addMessageReactions nil $msg . -}}
 {{- end -}}
-
+{{end}}
 {{$Q = "TribeMan"}}
 {{dbSet .User.ID "Q" $Q}}
 
