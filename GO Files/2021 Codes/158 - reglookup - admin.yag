@@ -3,17 +3,11 @@
 {{$args := parseArgs 1 "regrefresh for who"
 (carg "userid" "user")}}
 {{$user := (userArg ($args.Get 0))}}
- {{$Q := (dbGet $user.ID "Q").Value}} 
- {{$admin := (dbGet $user.ID "admin").Value}}
- {{$age := (dbGet $user.ID "age").Value}}
- {{$gt := (dbGet $user.ID "gt").Value}}
- {{$name := (dbGet $user.ID "name").Value}}
- {{$pin := (dbGet $user.ID "pin").Value}}
- {{$public := (dbGet $user.ID "public").Value}}
- {{$ref := (dbGet $user.ID "ref").Value}} {{if not $ref}}{{$ref = "None"}}{{dbSet .User.ID "ref" $ref}}{{end}}
-{{$parentguardian := (dbGet $user.ID "parentguardian").Value}}{{if not $parentguardian}}{{$parentguardian = "Not a Minor"}}{{dbSet $user.ID "parentguardian" $parentguardian}}{{end}}
-{{$tribe := (dbGet $user.ID "tribe").Value}} {{if not $tribe}}{{$tribe = "Unregistered"}}{{dbSet $user.ID "tribe" $tribe}}{{end}}
-{{$tribe2 := (dbGet $user.ID "tribe2").Value}} {{if not $tribe2}}{{$tribe2 = "Unregistered"}}{{dbSet $user.ID "tribe2" $tribe2}}{{end}}
+{{$reg := (dbGet $user.ID "reg").Value}}
+{{$Q := $reg.Q}}{{$admin := $reg.admin}}{{$age := $reg.age}}{{$gt := $reg.gt}}{{$name := $reg.name}}{{$pin := $reg.pin}}{{$public := $reg.public}}{{$ref := $reg.ref}}{{$parentguardian := $reg.parentguardian}}
+{{$tribe := $reg.tribe}}{{$tribe2 := $reg.tribe2}}
+{{if not $tribe}}{{$tribe = "Unregistered"}}{{$reg.Set "tribe" $tribe}}{{dbSet $user.ID "reg" $reg}}{{end}}
+{{if not $tribe2}}{{$tribe2 = "Unregistered"}}{{$reg.Set "tribe2" $tribe2}}{{dbSet $user.ID "reg" $reg}}{{end}}
 			{{$embed := cembed 
 				"title" "Registration Lookup"
 				"description" "Here is the registration information as requested."

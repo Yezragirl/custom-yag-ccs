@@ -1,4 +1,4 @@
-{{/*Ticket Claimer Reaction*/}}
+{{/*Ticket Claimer Reaction - Minify before save*/}}
 {{ $start := currentTime }}
 {{$pattern := `([^-]+-[^-]+)(.+)?` -}}
 {{$db := dbGet (toInt64 .Channel.ID) "ticket_control"}}
@@ -10,182 +10,187 @@
 {{$weeklyticketcount := $weekly.Get "tickets"}}
 {{$msgs := (dbGet .Channel.ID "mapEmojis").Value}}
 {{$maps := sdict "640697096814592040" "Artemis" "640697193052766218" "Manticore" "640697148807184384" "Gryphon" "796160062904729600" "Elysian" "640697492274544643" "Zelda" "748895819331141674" "Osiris" "682592075685953570" "Beowulf" "640698407199178771" "Phoenix" "640697225684713473" "Medusa" "798361386438098974" "Sanctuary" "797670477081608202" "Refuge" "811680105218179083" "Everest" "796116046616592445" "Merlin" "796125877633024051" "Haven" "795749721657573446" "Jupiter" "797518674616909914" "Hades" "797519872115343360" "Excelsior" "797515621222318091" "Fenris" "854481877242478592" "Forge" "854481845848768573" "Orca" "923790844119625738" "Jasper" "923790637705347152" "Trebuchet"}}
-{{if lt (toInt $ticketcount) 0}}
-{{$ticketcount = 0}}
-{{end}}
+
 {{if eq .Channel.ParentID 635305499600093214}}
-{{if eq .Reaction.Emoji.ID 660605488609755146}}
-{{if $ticket.hold}}
-{{editChannelName nil (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1)}}
-{{sendMessage 653058600230584353 (joinStr "" .Member.Nick " has removed ticket " (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1) " from hold." )}}
-{{$ticket.Del "hold"}}
-{{sendMessage nil (joinStr "" .Member.Nick " will be assisting you.")}}
-{{editChannelName nil (joinStr "" (getChannel nil).Name "-" .Member.Nick)}}
-{{$ticket.Set "claimer" .User.ID}}
-{{$ticketcount = add $ticketcount 1}}
-{{$weeklyticketcount = add $weeklyticketcount 1}}
-{{dbSet (toInt64 .Channel.ID) "ticket_control" $ticket}}
-{{if hasRoleID 588749231150465049}} 
-{{if eq (toInt $ticketcount) 3}}
-{{$points := dbIncr .User.ID "AdminPoints" 1}}
-{{sendMessage 653058600230584353 (joinStr "" (getMember .User.ID).Nick " earned 1 point for tickets.")}}
-{{sendMessage 654151821039894547 (joinStr "" .User.Mention " earned 1 point for tickets.")}}
-{{sendMessage 654151821039894547 (joinStr "" .User.Mention " now has " (toString (toInt $points)) " points.")}}
-{{dbSet .User.ID "tickets" 0}}
-{{$weekly.Set "tickets" $weeklyticketcount}}
-{{else}}
-{{dbSet .User.ID "tickets" $ticketcount}}
-{{$weekly.Set "tickets" $weeklyticketcount}}
+    {{if eq .Reaction.Emoji.ID 660605488609755146}}
+        {{if $ticket.hold}}
+            {{editChannelName nil (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1)}}
+            {{sendMessage 653058600230584353 (joinStr "" .Member.Nick " has removed ticket " (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1) " from hold." )}}
+            {{$ticket.Del "hold"}}
+            {{sendMessage nil (joinStr "" .Member.Nick " will be assisting you.")}}
+            {{editChannelName nil (joinStr "" (getChannel nil).Name "-" .Member.Nick)}}
+            {{$ticket.Set "claimer" .User.ID}}
+            {{$ticketcount = add $ticketcount 1}}
+            {{$weeklyticketcount = add $weeklyticketcount 1}}
+            {{dbSet (toInt64 .Channel.ID) "ticket_control" $ticket}}
+            {{if hasRoleID 588749231150465049}} 
+                {{if eq (toInt $ticketcount) 3}}
+                    {{$points := dbIncr .User.ID "AdminPoints" 1}}
+                    {{sendMessage 653058600230584353 (joinStr "" (getMember .User.ID).Nick " earned 1 point for tickets.")}}
+                    {{sendMessage 654151821039894547 (joinStr "" .User.Mention " earned 1 point for tickets.")}}
+                    {{sendMessage 654151821039894547 (joinStr "" .User.Mention " now has " (toString (toInt $points)) " points.")}}
+                    {{dbSet .User.ID "tickets" 0}}
+                    {{$weekly.Set "tickets" $weeklyticketcount}}
+                {{else}}
+                    {{dbSet .User.ID "tickets" $ticketcount}}
+                    {{$weekly.Set "tickets" $weeklyticketcount}}
+                {{end}}
+            {{else}}
+                {{dbSet .User.ID "tickets" $ticketcount}}
+                {{$weekly.Set "tickets" $weeklyticketcount}}
+            {{end}}
+        {{else}}
+            {{if $ticket.claimer}}
+                {{if eq $ticket.claimer .User.ID}}
+                    {{editChannelName nil (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1)}}
+                    {{sendMessage 653058600230584353 (joinStr "" .Member.Nick " has unclaimed ticket " (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1) )}}
+                    {{sendMessageNoEscape nil (joinStr "" .Member.Nick " will no longer be assisting you. Please be patient, and someone else from <@&634598489732546588> will be with you shortly. ")}}
+                    {{$ticket.Del "claimer"}}
+                    {{$ticketcount = sub $ticketcount 1}}
+                    {{$weeklyticketcount = sub $weeklyticketcount 1}}
+                    {{dbSet (toInt64 .Channel.ID) "ticket_control" $ticket}}
+                    {{dbSet .User.ID "tickets" $ticketcount}}
+                    {{$weekly.Set "tickets" $weeklyticketcount}}
+                {{else}}
+                    {{editChannelName nil (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1)}}
+                    {{sendMessage 653058600230584353 (joinStr "" .Member.Nick " has claimed ticket " (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1) )}}
+                    {{sendMessage nil (joinStr "" .Member.Nick " will be assisting you.")}}
+                    {{editChannelName nil (joinStr "" (getChannel nil).Name "-" .Member.Nick)}}
+                    {{$unclaimer := $ticket.Get "claimer"}}
+                    {{$x := dbIncr $unclaimer "tickets" -1}}
+                    {{$ticket.Set "claimer" .User.ID}}
+                    {{$ticketcount = add $ticketcount 1}}
+                    {{$weeklyticketcount = add $weeklyticketcount 1}}
+                    {{dbSet (toInt64 .Channel.ID) "ticket_control" $ticket}}
+                    {{if hasRoleID 588749231150465049}} 
+                        {{if eq (toInt $ticketcount) 3}}
+                            {{$points := dbIncr .User.ID "AdminPoints" 1}}
+                            {{sendMessage 653058600230584353 (joinStr "" (getMember .User.ID).Nick " earned 1 point for tickets.")}}
+                            {{sendMessage 654151821039894547 (joinStr "" .User.Mention " earned 1 point for tickets.")}}
+                            {{sendMessage 654151821039894547 (joinStr "" .User.Mention " now has " (toString (toInt $points)) " points.")}}
+                            {{dbSet .User.ID "tickets" 0}}
+                            {{$weekly.Set "tickets" $weeklyticketcount}}
+                        {{else}}
+                            {{dbSet .User.ID "tickets" $ticketcount}}
+                            {{$weekly.Set "tickets" $weeklyticketcount}}
+                        {{end}}
+                    {{else}}
+                        {{dbSet .User.ID "tickets" $ticketcount}}
+                        {{$weekly.Set "tickets" $weeklyticketcount}}
+                    {{end}}
+                {{end}}
+            {{else}}
+                {{sendMessage 653058600230584353 (joinStr "" .Member.Nick " has claimed ticket " (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1) )}}
+                {{editChannelName nil (joinStr "" (getChannel nil).Name "-" .Member.Nick)}}
+                {{sendMessage nil (joinStr "" .Member.Nick " will be assisting you.")}}
+                {{$ticket.Set "claimer" .User.ID}}
+                {{$ticketcount = add $ticketcount 1}}
+                {{$weeklyticketcount = add $weeklyticketcount 1}}
+                {{dbSet (toInt64 .Channel.ID) "ticket_control" $ticket}}
+                {{if hasRoleID 588749231150465049}} 
+                    {{if eq (toInt $ticketcount) 3}}
+                        {{$points := dbIncr .User.ID "AdminPoints" 1}}
+                        {{sendMessage 653058600230584353 (joinStr "" (getMember .User.ID).Nick " earned 1 point for tickets.")}}
+                        {{sendMessage 654151821039894547 (joinStr "" .User.Mention " earned 1 point for tickets.")}}
+                        {{sendMessage 654151821039894547 (joinStr "" .User.Mention " now has " (toString (toInt $points)) " points.")}}
+                        {{dbSet .User.ID "tickets" 0}}
+                        {{$weekly.Set "tickets" $weeklyticketcount}}
+                    {{else}}
+                        {{dbSet .User.ID "tickets" $ticketcount}}
+                        {{$weekly.Set "tickets" $weeklyticketcount}}
+                    {{end}}
+                {{else}}
+                    {{dbSet .User.ID "tickets" $ticketcount}}
+                    {{$weekly.Set "tickets" $weeklyticketcount}}
+                {{end}}
+            {{end}}
+        {{end}}
+    {{else if eq .Reaction.Emoji.ID 660605465721569334}}
+        {{sendMessage nil (joinStr "" .Member.Nick " has closed this ticket. If you have further issues, please open a new ticket. This channel will be deleted in 30 seconds.")}}
+        {{sleep 30}}
+        {{sendMessage 653058600230584353 (joinStr "" .Member.Nick " has closed ticket " (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1) "." )}}
+        {{sendMessage 634442883440836609 (joinStr "" .Member.Nick " has closed ticket " .Channel.Name "." )}}
+        {{dbDel (toInt64 .Channel.ID) "ticket_control"}}
+        {{exec "tickets close" (joinStr "" "Ticket closed by " .User.Username)}}
+    {{else if eq .Reaction.Emoji.ID 631218688099614724}}
+        {{if $ticket.hold}}
+            {{editChannelName nil (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1)}}
+            {{sendMessage 653058600230584353 (joinStr "" .Member.Nick " has removed ticket " (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1) " from hold." )}}
+            {{$ticket.Del "hold"}}
+            {{dbSet (toInt64 .Channel.ID) "ticket_control" $ticket}}
+        {{else}}
+            {{if $ticket.claimer}}
+                {{editChannelName nil (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1)}}
+                {{sendMessage 653058600230584353 (joinStr "" .Member.Nick " has placed ticket " (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1) " on hold." )}}
+                {{sendMessage nil (joinStr "" .Member.Nick " has placed this ticket on hold.")}}
+                {{editChannelName nil (joinStr "" (getChannel nil).Name "-hold")}}
+                {{$ticket.Set "hold" "yes"}}
+                {{$ticket.Del "claimer"}}
+                {{dbSet (toInt64 .Channel.ID) "ticket_control" $ticket}}
+            {{else}}
+                {{sendMessage 653058600230584353 (joinStr "" .Member.Nick " has placed ticket " (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1) " on hold." )}}
+                {{sendMessage nil (joinStr "" .Member.Nick " has placed this ticket on hold.")}}
+                {{editChannelName nil (joinStr "" (getChannel nil).Name "-hold")}}
+                {{$ticket.Set "hold" "yes"}}
+                {{dbSet (toInt64 .Channel.ID) "ticket_control" $ticket}}
+            {{end}}
+        {{end}}
+    {{end}}
 {{end}}
-{{else}}
-{{dbSet .User.ID "tickets" $ticketcount}}
-{{$weekly.Set "tickets" $weeklyticketcount}}
-{{end}}
-{{else}}
-{{if $ticket.claimer}}
-{{if eq $ticket.claimer .User.ID}}
-{{editChannelName nil (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1)}}
-{{sendMessage 653058600230584353 (joinStr "" .Member.Nick " has unclaimed ticket " (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1) )}}
-{{sendMessageNoEscape nil (joinStr "" .Member.Nick " will no longer be assisting you. Please be patient, and someone else from <@&634598489732546588> will be with you shortly. ")}}
-{{$ticket.Del "claimer"}}
-{{$ticketcount = sub $ticketcount 1}}
-{{$weeklyticketcount = sub $weeklyticketcount 1}}
-{{dbSet (toInt64 .Channel.ID) "ticket_control" $ticket}}
-{{dbSet .User.ID "tickets" $ticketcount}}
-{{$weekly.Set "tickets" $weeklyticketcount}}
-{{else}}
-{{editChannelName nil (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1)}}
-{{sendMessage 653058600230584353 (joinStr "" .Member.Nick " has claimed ticket " (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1) )}}
-{{sendMessage nil (joinStr "" .Member.Nick " will be assisting you.")}}
-{{editChannelName nil (joinStr "" (getChannel nil).Name "-" .Member.Nick)}}
-{{$unclaimer := $ticket.Get "claimer"}}
-{{$x := dbIncr $unclaimer "tickets" -1}}
-{{$ticket.Set "claimer" .User.ID}}
-{{$ticketcount = add $ticketcount 1}}
-{{$weeklyticketcount = add $weeklyticketcount 1}}
-{{dbSet (toInt64 .Channel.ID) "ticket_control" $ticket}}
-{{if hasRoleID 588749231150465049}} 
-{{if eq (toInt $ticketcount) 3}}
-{{$points := dbIncr .User.ID "AdminPoints" 1}}
-{{sendMessage 653058600230584353 (joinStr "" (getMember .User.ID).Nick " earned 1 point for tickets.")}}
-{{sendMessage 654151821039894547 (joinStr "" .User.Mention " earned 1 point for tickets.")}}
-{{sendMessage 654151821039894547 (joinStr "" .User.Mention " now has " (toString (toInt $points)) " points.")}}
-{{dbSet .User.ID "tickets" 0}}
-{{$weekly.Set "tickets" $weeklyticketcount}}
-{{else}}
-{{dbSet .User.ID "tickets" $ticketcount}}
-{{$weekly.Set "tickets" $weeklyticketcount}}
-{{end}}
-{{else}}
-{{dbSet .User.ID "tickets" $ticketcount}}
-{{$weekly.Set "tickets" $weeklyticketcount}}
-{{end}}{{end}}
-{{else}}
-{{sendMessage 653058600230584353 (joinStr "" .Member.Nick " has claimed ticket " (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1) )}}
-{{editChannelName nil (joinStr "" (getChannel nil).Name "-" .Member.Nick)}}
-{{sendMessage nil (joinStr "" .Member.Nick " will be assisting you.")}}
-{{$ticket.Set "claimer" .User.ID}}
-{{$ticketcount = add $ticketcount 1}}
-{{$weeklyticketcount = add $weeklyticketcount 1}}
-{{dbSet (toInt64 .Channel.ID) "ticket_control" $ticket}}
-{{if hasRoleID 588749231150465049}} 
-{{if eq (toInt $ticketcount) 3}}
-{{$points := dbIncr .User.ID "AdminPoints" 1}}
-{{sendMessage 653058600230584353 (joinStr "" (getMember .User.ID).Nick " earned 1 point for tickets.")}}
-{{sendMessage 654151821039894547 (joinStr "" .User.Mention " earned 1 point for tickets.")}}
-{{sendMessage 654151821039894547 (joinStr "" .User.Mention " now has " (toString (toInt $points)) " points.")}}
-{{dbSet .User.ID "tickets" 0}}
-{{$weekly.Set "tickets" $weeklyticketcount}}
-{{else}}
-{{dbSet .User.ID "tickets" $ticketcount}}
-{{$weekly.Set "tickets" $weeklyticketcount}}
-{{end}}
-{{else}}
-{{dbSet .User.ID "tickets" $ticketcount}}
-{{$weekly.Set "tickets" $weeklyticketcount}}
-{{end}}{{end}}{{end}}
-{{else if eq .Reaction.Emoji.ID 660605465721569334}}
-{{sendMessage nil (joinStr "" .Member.Nick " has closed this ticket. If you have further issues, please open a new ticket. This channel will be deleted in 30 seconds.")}}
-{{sleep 30}}
-{{sendMessage 653058600230584353 (joinStr "" .Member.Nick " has closed ticket " (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1) "." )}}
-{{sendMessage 634442883440836609 (joinStr "" .Member.Nick " has closed ticket " .Channel.Name "." )}}
-{{dbDel (toInt64 .Channel.ID) "ticket_control"}}
-{{exec "tickets close" (joinStr "" "Ticket closed by " .User.Username)}}
-{{else if eq .Reaction.Emoji.ID 631218688099614724}}
-{{if $ticket.hold}}
-{{editChannelName nil (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1)}}
-{{sendMessage 653058600230584353 (joinStr "" .Member.Nick " has removed ticket " (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1) " from hold." )}}
-{{$ticket.Del "hold"}}
-{{dbSet (toInt64 .Channel.ID) "ticket_control" $ticket}}
-{{else}}
-{{if $ticket.claimer}}
-{{editChannelName nil (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1)}}
-{{sendMessage 653058600230584353 (joinStr "" .Member.Nick " has placed ticket " (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1) " on hold." )}}
-{{sendMessage nil (joinStr "" .Member.Nick " has placed this ticket on hold.")}}
-{{editChannelName nil (joinStr "" (getChannel nil).Name "-hold")}}
-{{$ticket.Set "hold" "yes"}}
-{{$ticket.Del "claimer"}}
-{{dbSet (toInt64 .Channel.ID) "ticket_control" $ticket}}
-{{else}}
-{{sendMessage 653058600230584353 (joinStr "" .Member.Nick " has placed ticket " (index (index (reFindAllSubmatches $pattern .Channel.Name) 0) 1) " on hold." )}}
-{{sendMessage nil (joinStr "" .Member.Nick " has placed this ticket on hold.")}}
-{{editChannelName nil (joinStr "" (getChannel nil).Name "-hold")}}
-{{$ticket.Set "hold" "yes"}}
-{{dbSet (toInt64 .Channel.ID) "ticket_control" $ticket}}
-{{end}}{{end}}{{end}}{{end}}
 
 {{$channel := (getChannel nil).Name}}
 {{if or (reFind `restock-and-repin$` $channel) (reFind `map-sweeps$` $channel)}}
-{{$reactions := cslice 796125877633024051 640697225684713473 797519029715599400 640697096814592040 797518674616909914 854481877242478592 854481845848768573 640697492274544643 640697193052766218 748895819331141674 796160062904729600 811680105218179083 796116046616592445 796127204164632638 795749721657573446 640697148807184384 640698407199178771 797515621222318091 797519872115343360 797670477081608202}}
-{{$count := 0}}{{$allMatch := true}}
-{{if .ReactionAdded}}
-{{$map := $maps.Get (toString .Reaction.Emoji.ID)}}
-{{sendMessage 653058600230584353 (joinStr "" (getMember .User.ID).Nick " completed the restock/map sweep for " $map ".")}}
-{{$todocount = add $todocount 1}}
-{{$weeklytodocount = add $weeklytodocount 1}}
-{{if hasRoleID 588749231150465049}} 
-{{if eq (toInt $todocount) 10}}
-{{$points := dbIncr .User.ID "AdminPoints" 1}}
-{{sendMessage 653058600230584353 (joinStr "" (getMember .User.ID).Nick " earned 1 point for starters/to do list things.")}}
-{{sendMessage 654151821039894547 (joinStr "" .User.Mention " earned 1 point for starters/to do list things.")}}
-{{sendMessage 654151821039894547 (joinStr "" .User.Mention " now has " (toString (toInt $points)) " points.")}}
-{{dbSet .User.ID "todocount" 0}}
-{{$weekly.Set "todos" $weeklytodocount}}
-{{else}}
-{{dbSet .User.ID "todocount" $todocount}}
-{{$weekly.Set "todos" $weeklytodocount}}
-{{end}}
-{{end}}
-{{else}}
-{{$map := $maps.Get (toString .Reaction.Emoji.ID)}}
-{{sendMessage 653058600230584353 (joinStr "" (getMember .User.ID).Nick " canceled the restock/map sweep for " $map ".")}}
-{{$todocount = sub $todocount 1}}
-{{$weeklytodocount = sub $weeklytodocount 1}}
-{{if hasRoleID 588749231150465049}} 
-{{if eq (toInt $todocount) -1}}
-{{$points := dbIncr .User.ID "AdminPoints" -1}}
-{{sendMessage 653058600230584353 (joinStr "" (getMember .User.ID).Nick " lost 1 point for undoing restock/map sweep. To Do Count reset to 9.")}}
-{{sendMessage 654151821039894547 (joinStr "" .User.Mention " lost 1 point for undoing restock/map sweep. To Do Count reset to 9.")}}
-{{sendMessage 654151821039894547 (joinStr "" .User.Mention " now has " (toString (toInt $points)) " points.")}}
-{{dbSet .User.ID "todocount" 9}}
-{{$weekly.Set "todos" $weeklytodocount}}
-{{else}}
-{{dbSet .User.ID "todocount" $todocount}}
-{{$weekly.Set "todos" $weeklytodocount}}
-{{end}}
-{{end}}
-{{end}}
+    {{$reactions := cslice 796125877633024051 640697225684713473 797519029715599400 640697096814592040 797518674616909914 854481877242478592 854481845848768573 640697492274544643 640697193052766218 748895819331141674 796160062904729600 811680105218179083 796116046616592445 796127204164632638 795749721657573446 640697148807184384 640698407199178771 797515621222318091 797519872115343360 797670477081608202}}
+    {{$count := 0}}{{$allMatch := true}}
+    {{if .ReactionAdded}}
+        {{$map := $maps.Get (toString .Reaction.Emoji.ID)}}
+        {{sendMessage 653058600230584353 (joinStr "" (getMember .User.ID).Nick " completed the restock/map sweep for " $map ".")}}
+        {{$todocount = add $todocount 1}}
+        {{$weeklytodocount = add $weeklytodocount 1}}
+        {{if hasRoleID 588749231150465049}} 
+            {{if eq (toInt $todocount) 10}}
+                {{$points := dbIncr .User.ID "AdminPoints" 1}}
+                {{sendMessage 653058600230584353 (joinStr "" (getMember .User.ID).Nick " earned 1 point for starters/to do list things.")}}
+                {{sendMessage 654151821039894547 (joinStr "" .User.Mention " earned 1 point for starters/to do list things.")}}
+                {{sendMessage 654151821039894547 (joinStr "" .User.Mention " now has " (toString (toInt $points)) " points.")}}
+                {{dbSet .User.ID "todocount" 0}}
+                {{$weekly.Set "todos" $weeklytodocount}}
+            {{else}}
+                {{dbSet .User.ID "todocount" $todocount}}
+                {{$weekly.Set "todos" $weeklytodocount}}
+            {{end}}
+        {{end}}
+    {{else}}
+        {{$map := $maps.Get (toString .Reaction.Emoji.ID)}}
+        {{sendMessage 653058600230584353 (joinStr "" (getMember .User.ID).Nick " canceled the restock/map sweep for " $map ".")}}
+        {{$todocount = sub $todocount 1}}
+        {{$weeklytodocount = sub $weeklytodocount 1}}
+        {{if hasRoleID 588749231150465049}} 
+            {{if eq (toInt $todocount) -1}}
+                {{$points := dbIncr .User.ID "AdminPoints" -1}}
+                {{sendMessage 653058600230584353 (joinStr "" (getMember .User.ID).Nick " lost 1 point for undoing restock/map sweep. To Do Count reset to 9.")}}
+                {{sendMessage 654151821039894547 (joinStr "" .User.Mention " lost 1 point for undoing restock/map sweep. To Do Count reset to 9.")}}
+                {{sendMessage 654151821039894547 (joinStr "" .User.Mention " now has " (toString (toInt $points)) " points.")}}
+                {{dbSet .User.ID "todocount" 9}}
+                {{$weekly.Set "todos" $weeklytodocount}}
+            {{else}}
+                {{dbSet .User.ID "todocount" $todocount}}
+                {{$weekly.Set "todos" $weeklytodocount}}
+            {{end}}
+        {{end}}
+    {{end}}
 {{range $msgs}}
-{{$msg := getMessage nil .}}
-{{range $msg.Reactions}}
-{{if and (in $reactions .Emoji.ID) (ge .Count 2)}}
-{{$count = add $count 1}}
-{{else}}
-{{$allMatch = false}}
-{{end}}
-{{end}}
+    {{$msg := getMessage nil .}}
+    {{range $msg.Reactions}}
+        {{if and (in $reactions .Emoji.ID) (ge .Count 2)}}
+            {{$count = add $count 1}}
+        {{else}}
+            {{$allMatch = false}}
+        {{end}}
+    {{end}}
 {{end}}
 {{if and $allMatch (eq $count 20)}}
-{{exec "tickets close" "All Weekly Map Resets Complete"}}
-{{end}}{{end}}
+    {{exec "tickets close" "All Weekly Map Resets Complete"}}
+{{end}}
+
 {{dbSet .User.ID "weekly" $weekly}}

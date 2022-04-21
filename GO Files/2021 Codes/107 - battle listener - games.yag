@@ -26,9 +26,9 @@ Sorry, there is already a battle in progress between {{$player1.Username}} and {
 		(sdict "name" "Action" "value" $action "inline" false)
 (sdict "name" "Who's Turn Is it?" "value" (toString $player2.Username) "inline" false) )
 "thumbnail" (sdict "url" "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/lg/57/crossed-swords_2694.png") }}
-{{$game := sendMessageRetID 765314667975016478 $embed}}
+{{$game := sendMessageRetID nil $embed}}
 {{addMessageReactions nil $game ":attack:633311599020736531" ":shield:667754698639540254" ":Riot_Shield:670664127806570496" ":Club:670664127324356608" ":Railgun:670664127588466708" ":Medical_Brew:670664127701581829" }}
-{{giveRoleID $player2 667754372456775680}}{{/*give turn role*/}}
+{{try}}{{giveRoleID $player2 667754372456775680}}{{/*give turn role*/}}{{catch}} {{.Reason}}{{end}}
 {{$battle := sdict}}{{$battle.Set "game" (toString $game)}}{{$battle.Set "p1" (toString $player1.ID)}}{{$battle.Set "p2" (toString $player2.ID)}}{{$battle.Set "wp" (toString $player1.ID)}}{{$battle.Set "cp" (toString $player2.ID)}}{{$battle.Set "hp1" $P1HP}}{{$battle.Set "hp2" $P2HP}}{{$battle.Set "action" $action}}
 {{$battle.Set "shield" "no"}}{{$battle.Set "riot" "no"}}{{$battle.Set "rail1" "no"}}{{$battle.Set "rail2" "no"}}{{$battle.Set "club" "no"}}
 {{dbSet 0 "Battle" $battle}}{{dbSet $player1.ID "BattleHP" $P1MAX}}{{dbSet $player2.ID "BattleHP" $P2MAX}}

@@ -110,8 +110,8 @@
 		{{if eq $rail2 "charging"}}
 			{{$rail2 = "charged"}}
 		{{end}}
-	{{if or (le (toInt $P1HP) 0) (le (toInt $P2HP) 0)}}{{if (le (toInt $P1HP) 0)}}{{$win = $player2}}{{$lose = $player1}}{{$NEWMAX = add (toInt $P2MAX) 1}}{{dbSet $player2.ID "BattleHP" $NEWMAX}}{{dbSet $player1.ID "BattleHP" $P1MAX}}
-		 {{else}}{{$win = $player1}}{{$lose = $player2}}{{$NEWMAX = add (toInt $P1MAX) 1}}{{dbSet $player1.ID "BattleHP" $NEWMAX}}{{dbSet $player2.ID "BattleHP" $P2MAX}} {{end}}
+	{{if or (le (toInt $P1HP) 0) (le (toInt $P2HP) 0)}}{{if (le (toInt $P1HP) 0)}}{{$win = $player2}}{{$lose = $player1}}{{$NEWMAX = add (toInt $P2MAX) 1}}
+		 {{else}}{{$win = $player1}}{{$lose = $player2}}{{$NEWMAX = add (toInt $P1MAX) 1}}{{end}}
 		{{$embed := cembed 
 		"Title" "BATTLE OVER"
 		"description" "The battle is over! Results below!"
@@ -120,8 +120,9 @@
 		(sdict "name" "Loser" "value" (toString $lose.Username) "inline" true)
 		(sdict "name" "Final Action" "value" $action "inline" false))
 		"thumbnail" (sdict "url" "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/lg/57/crossed-swords_2694.png") }}
-		{{deleteMessage 765314667975016478 $game}}{{takeRoleID $player1 667754372456775680}}{{takeRoleID $player2 667754372456775680}}{{sendMessage 765314667975016478 (joinStr "" "1 Point added to " $win.Mention "'s Max HP. New Max HP - " (toInt $NEWMAX) ".")}}
-				{{sendMessage 765314667975016478 $embed}}
+		{{deleteMessage nil $game}}{{takeRoleID $player1 667754372456775680}}{{takeRoleID $player2 667754372456775680}}{{sendMessage nil (joinStr "" "1 Point added to " $win.Mention "'s Max HP. New Max HP - " (toInt $NEWMAX) ".")}}
+		{{dbSet $win.ID "BattleHP" $NEWMAX}}
+				{{sendMessage nil $embed}}
 		{{dbDel 0 "Battle"}}
 	{{else}}{{$embed := cembed 
 		"Title" "It's BATTLE Time!"
@@ -132,8 +133,8 @@
 		(sdict "name" "Action" "value" $action "inline" false)
 		(sdict "name" "Who's Turn Is it?" "value"  $wp.Username "inline" false))
 		"thumbnail" (sdict "url" "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/lg/57/crossed-swords_2694.png") }}
-		{{deleteMessage 765314667975016478 $game}}{{$newgame := sendMessageRetID 765314667975016478 $embed}}{{takeRoleID $cp 667754372456775680}}{{giveRoleID $wp 667754372456775680}}
-               {{addMessageReactions 765314667975016478 $newgame ":attack:633311599020736531" ":shield:667754698639540254" ":Riot_Shield:670664127806570496" ":Club:670664127324356608" ":Railgun:670664127588466708" ":Medical_Brew:670664127701581829" }}
+		{{deleteMessage nil $game}}{{$newgame := sendMessageRetID nil $embed}}{{takeRoleID $cp 667754372456775680}}{{giveRoleID $wp 667754372456775680}}
+               {{addMessageReactions nil $newgame ":attack:633311599020736531" ":shield:667754698639540254" ":Riot_Shield:670664127806570496" ":Club:670664127324356608" ":Railgun:670664127588466708" ":Medical_Brew:670664127701581829" }}
 		{{$battle.Set "cp" (toString $wp.ID)}}{{$battle.Set "wp" (toString $cp.ID)}}{{$battle.Set "hp1" $P1HP}}{{$battle.Set "hp2" $P2HP}}{{$battle.Set "shield" $shield}}{{$battle.Set "game" (toString $newgame)}}{{$battle.Set "riot" $riot}}{{$battle.Set "rail1" $rail1}}{{$battle.Set "rail2" $rail2}}{{$battle.Set "club" $club}}
 				{{dbSet 0 "Battle" $battle}}
 		{{end}}
