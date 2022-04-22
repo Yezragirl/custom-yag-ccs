@@ -1,0 +1,21 @@
+{{$embed := cembed 
+	"Title" "Base Registration for Tribe **Tribe Name**"
+    "Description" "This tribe consists of @Person1, @Person2, and @Person3"
+	"color" 123456
+	"fields" (cslice 
+	(sdict "name" "Map: Island" "value" "BASE Server: Zelda, Coords: 12.5 56" "inline" false) 
+	(sdict "name" "Map: Center" "value" "BASE Server: Zelda, Coords: 12.5 56" "inline" false) 
+	(sdict "name" "Map: Scorched Earth" "value" "OUTPOST Server: Zelda, Coords: 12.5 56" "inline" false) 
+	(sdict "name" "Map: Ragnarok" "value" "OUTPOST Server: Zelda, Coords: 12.5 56" "inline" false)
+    (sdict "name" "Map: Aberration" "value" "OUTPOST Server: Zelda, Coords: 12.5 56" "inline" false) 
+	(sdict "name" "Map: Extinction" "value" "OUTPOST Server: Zelda, Coords: 12.5 56" "inline" false) 
+	(sdict "name" "Map: Valguero" "value" "OUTPOST Server: Zelda, Coords: 12.5 56" "inline" false)
+	(sdict "name" "Map: Genesis Part 1" "value" "BASE Server: Zelda, Coords: 12.5 56" "inline" false) 
+	(sdict "name" "Map: Crystal Isles" "value" "OUTPOST Server: Zelda, Coords: 12.5 56" "inline" false) 
+	(sdict "name" "Map: Genesis Part 2" "value" "OUTPOST Server: Zelda, Coords: 12.5 56" "inline" false)
+    (sdict "name" "Map: Lost Island" "value" "OUTPOST Server: Zelda, Coords: 12.5 56" "inline" false) 
+	(sdict "name" "Map: Fjordur" "value" "OUTPOST Server: Zelda, Coords: 12.5 56" "inline" false) 
+	(sdict "name" "Map: Zanzibar" "value" "Coords: 12.5 56" "inline" false)
+    (sdict "name" "Map: Aphrodite" "value" "Coords: 12.5 56" "inline" false))
+	"thumbnail" (sdict "url" "https://static.wikia.nocookie.net/arksurvivalevolved_gamepedia/images/d/d6/Tent_%28Scorched_Earth%29.png/revision/latest/scale-to-width-down/890?cb=20170117190945") }}
+	{{$msg := sendMessageRetID nil $embed}}

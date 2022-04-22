@@ -1,0 +1,49 @@
+{{$days := 0}}
+{{$reg := sdict }}
+{{$db := (dbGet .User.ID "reg").Value}}
+{{if $db}}
+{{$reg = $db}}
+{{end}}
+
+{{$Q := $reg.Q}}{{$admin := $reg.admin}}{{$age := $reg.age}}{{$gt := $reg.gt}}{{$name := $reg.name}}{{$pin := $reg.pin}}{{$public := $reg.public}}{{$ref := $reg.ref}}{{$parentguardian := $reg.parentguardian}}
+{{if $parentguardian = "NA"}}{{$parentguardian = ""}}{{end}}
+{{$tribe := $reg.tribe}}
+
+{{$names_db := (dbGet 0 "names").Value}}
+{{$names := (cslice).AppendSlice $names_db}}
+{{$names_new := cslice}}
+{{$message := ""}}
+{{$days := 0}}
+
+{{if not $name}}
+	{{sendMessage .Channel.ID (joinStr "" "Thanks for joining Yez's Ark Cluster!\n\nJust a few questions, and you'll be registered and ready to play!\nInstructions first. **If emojis appear below the question, please use them to respond. Otherwise, type your answers.** These answers will be editable later, but be sure to check for typos before hitting enter, as your answers affect the direction these questions go.")}}
+	{{$Q = "Age"}}
+    {{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+    {{removeRoleID 645404993863811072}}
+	{{removeRoleID 573210479753691170}}
+	{{removeRoleID 607041870966685706}}
+	{{giveRoleID .User.ID 606566506922377257}}
+	{{sendMessage .Channel.ID (joinStr "" .User.Mention ", how old are you?")}}
+{{else}}
+	{{range $names}}
+		{{if ne . $name}}
+			{{$names_new = $names_new.Append .}}
+		{{end}}
+	{{end}}
+	{{dbSet 0 "names" $names_new}}
+	{{removeRoleID 645404993863811072}}
+	{{removeRoleID 573210479753691170}}
+	{{removeRoleID 607041870966685706}}
+	{{giveRoleID .User.ID 606566506922377257}}
+	{{sendMessage .Channel.ID (joinStr "" "Thanks for joining Yez's Ark Cluster!\n\nJust a few questions, and you'll be registered and ready to play!\nInstructions first. **If emojis appear below the question, please use them to respond. Otherwise, type your answers.** These answers will be editable later, but be sure to check for typos before hitting enter, as your answers affect the direction these questions go.\n_ _")}}
+	{{sendMessage .Channel.ID (joinStr "" "Please be advised that by starting a new registration, any previous registration has been erased. You must complete THIS registration.")}}
+	{{if $admin}}
+		{{deleteMessage 658354135221141533 $admin}}
+	{{end}}
+	{{if $public}}
+		{{deleteMessage 658352884701724733 $public}}
+	{{end}}
+	{{$Q = "Age"}}
+	{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+	{{sendMessage .Channel.ID (joinStr "" .User.Mention ", how old are you?")}}
+{{end}}
