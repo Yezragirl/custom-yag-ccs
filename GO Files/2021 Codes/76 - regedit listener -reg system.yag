@@ -16,25 +16,26 @@
 	{{else}}
 		{{if eq (toString $Q) "Edit GT"}}
 			{{$gt = (toString .Message.Content)}}{{$reg.Set "gt" $gt}}
-			{{$Q = "End Edit"}}{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+			{{$Q = "Edit"}}{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
 			{{sendMessage nil (joinStr "" "Gamertag updated to " $gt ".")}}
 			{{execCC 73 nil 0 ""}}{{execCC 74 nil 0 ""}}
 		{{else if eq (toString $Q) "Edit Name"}}
 			{{if gt (len (toString .Message.Content)) 25}}{{sendMessage nil (joinStr "" "Sorry " .User.Mention ", that's too long for a name. I'll ask again, What would you like to use as your In Game Name?")}}
+			{{else if eq (toString .Message.Content) $name}}{{sendMessage nil (joinStr "" "Sorry " .User.Mention ", that's already your name. I'll ask again, what would you like to use as your In Game Name? *If you want to keep your name as is, you'll have to change it, and then change it back.*")}}
 			{{else if (in $names (toString .Message.Content))}}{{sendMessage nil (joinStr "" "Sorry " .User.Mention ", that name is already taken. Since names need to be unique, I'll ask again, what would you like to use as your In Game Name?")}}
 			{{else if reFind (print "(?i)" (joinStr "|" $badWords.StringSlice)) .Message.Content}}{{sendMessage nil (joinStr "" "Sorry " .User.Mention ", that contains some inappropriate words. While this IS an 18+ server, we allow the children of players to play. They have no access to the chat, but they can and do see your In Game Name, so we try to keep those at least PG13. So lets try again, what would you like to use as your In Game Name?")}}
 			{{else}}
-				{{- range $names -}}
-					{{- if ne . $name -}}
-					{{- $names_new = $names_new.Append . -}}
+{{$nameCheck := cslice}}
+{{- range $names -}} 
+                    {{- if ne . $name -}}
+                    {{- $names_new = $names_new.Append . -}}
 					{{- end -}}
 				{{end}}
-			{{dbSet 0 "names" $names_new}}
 			{{$name = (toString .Message.Content)}}
 			{{$reg.Set "name" $name}}
-			{{dbSet 0 "names" ($names.AppendSlice (cslice $name))}}
+			{{dbSet 0 "names" ($names_new.AppendSlice (cslice $name))}}
 			{{editNickname (toString $name)}}
-			{{$Q = "End Edit"}}{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+			{{$Q = "Edit"}}{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
 			{{sendMessage nil (joinStr "" "Name updated to " $name ".")}}
 			{{execCC 73 nil 0 ""}}{{execCC 74 nil 0 ""}}
 			{{end}}
@@ -53,7 +54,7 @@
 				{{$reg.Set "tribe" $tribe}}
 				{{dbSet 0 "tribes" ($tribes.Append $tribe)}}
 				{{dbSet 0 (joinStr "" "tribe_" (lower $tribe)) (sdict "name" $tribe "owner" (toString .User.ID))}}
-				{{$Q = "End Edit"}}{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+				{{$Q = "Edit"}}{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
 				{{sendMessage nil (joinStr "" "Tribe " $tribe ", created. " .User.Mention " set as owner.")}}
 				{{removeRoleID 658469834589208616}}
 				{{execCC 74 nil 0 ""}}
@@ -73,7 +74,7 @@
 				{{$reg.Set "tribe2" $tribe2}}
 				{{dbSet 0 "tribes" ($tribes.Append $tribe2)}}
 				{{dbSet 0 (joinStr "" "tribe_" (lower $tribe2)) (sdict "name" $tribe2 "owner" (toString .User.ID))}}
-				{{$Q = "End Edit"}}{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+				{{$Q = "Edit"}}{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
 				{{sendMessage nil (joinStr "" "Tribe " $tribe2 ", created. " .User.Mention " set as owner.")}}
 				{{removeRoleID 658469834589208616}}
 				{{execCC 74 nil 0 ""}}
@@ -134,20 +135,17 @@
 			{{$Q = "Edit Second Tribe Join"}}{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
 		{{else if eq (toString $Q) "Edit Pin"}}
 			{{$pin = (toString .Message.Content)}}{{$reg.Set "pin" $pin}}
-			{{$Q = "End Edit"}}{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+			{{$Q = "Edit"}}{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
 			{{sendMessage nil (joinStr "" "Pin updated to " $pin ".")}}
 			{{execCC 73 nil 0 ""}}{{execCC 74 nil 0 ""}}
 		{{else if eq (toString $Q) "Edit ParentGuardian"}}
 			{{$parentguardian = (toString .Message.Content)}}{{$reg.Set "parentguardian" $parentguardian}}
-			{{$Q = "End Edit"}}{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+			{{$Q = "Edit"}}{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
 			{{sendMessage nil (joinStr "" "Parent/Guardian updated to " $parentguardian ".")}}
 			{{execCC 73 nil 0 ""}}{{execCC 74 nil 0 ""}}
 		{{else if eq (toString $Q) "Edit Age"}}
 			{{$msg := sendMessageRetID nil (joinStr "" .User.Mention ", did you have a birthday?")}}
 			{{addMessageReactions nil $msg ":yes:658376626639339533" ":no:658376639322783745"}}
-		{{else if eq (toString $Q) "End Edit"}}
-			{{$msg := sendMessageRetID nil (joinStr "" .User.Mention ", got it. Do you want to edit something else?")}}
-			{{addMessageReactions nil $msg ":yes:658376626639339533" ":no:658376639322783745"}} 
 		{{end}}
 	{{end}}
 {{end}}

@@ -8,6 +8,8 @@
 	{{$Q := $reg.Q}}{{$admin := $reg.admin}}{{$age := $reg.age}}{{$gt := $reg.gt}}{{$name := $reg.name}}{{$pin := $reg.pin}}{{$public := $reg.public}}{{$ref := $reg.ref}}{{$parentguardian := $reg.parentguardian}}
 	{{if not $parentguardian}}{{$parentguardian = "Not a Minor"}}{{$reg.Set "parentguardian" $parentguardian}}{{end}}{{$tribe := $reg.tribe}}
 	{{if not $tribe}}{{$tribe = "Unregistered"}}{{$reg.Set "tribe" $tribe}}{{end}}
+
+71: Q = {{$Q}}
 	{{if not $Q}}
 		{{$Q = "Edit Name"}}{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
 		{{sendMessage nil (joinStr "" .User.Mention ", how old are you?")}}

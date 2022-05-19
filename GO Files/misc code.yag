@@ -166,7 +166,7 @@ len (toRune $x)  - for length of nickname
 {{$reg := sdict}}{{range $k,$v := $db.Value}}{{$reg.Set $k $v}}{{end}}
 
 {{if reFind `\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d` .Key}} Matches Pattern
-{{if getChannel .Key}}
+{{if getChannelOrThread .Key}}
 {{dbSet (toInt64 .Key) "ticket_control" .Value}}{{dbDel .UserID .Key}} New Database Entry Created. 
  {{else}} {{dbDel .UserID .Key}} Deleted {{end}}{{end}}
 {{end}}

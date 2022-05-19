@@ -5,6 +5,7 @@
 {{if not $tribe}}{{$tribe = "Unregistered"}}{{$reg.Set "tribe" $tribe}}{{dbSet .User.ID "reg" $reg}}{{end}}
 {{if not $tribe2}}{{$tribe2 = "Unregistered"}}{{$reg.Set "tribe2" $tribe2}}{{dbSet .User.ID "reg" $reg}}{{end}}
 {{$color := randInt 111111 999999 }}
+
 {{if (eq .Channel.ParentID 635305499600093214)}} 
 {{if (hasRoleID 607041870966685706)}}{{/*Has Registered Role*/}}
 {{if and (eq .Reaction.Emoji.Name "1️⃣") (eq (toString $Q) "Edit")}}
@@ -101,12 +102,12 @@
 {{sleep 3}}
 {{exec "tickets close" "Done Editing Registration"}}
 {{/*Would you like to edit something else?*/}}
-{{else if and (eq .Reaction.Emoji.ID 658376626639339533) (eq (toString $Q) "End Edit")}}{{/*yes*/}}
+{{else if and (eq .Reaction.Emoji.ID 658376626639339533) (eq (toString $Q) "Edit")}}{{/*yes*/}}
 {{deleteAllMessageReactions nil $msgID}}
 {{$Q = "Done"}}
 {{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
 {{execCC 73 nil 0 ""}}
-{{else if and (eq .Reaction.Emoji.ID 658376639322783745) (eq (toString $Q) "End Edit")}}{{/*no*/}}
+{{else if and (eq .Reaction.Emoji.ID 658376639322783745) (eq (toString $Q) "Edit")}}{{/*no*/}}
 {{deleteAllMessageReactions nil $msgID}}
 {{$Q = "Done"}}
 {{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}

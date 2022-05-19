@@ -4,7 +4,7 @@
 {{$reg := (dbGet .User.ID "reg").Value}}
 {{$Q := $reg.Q}}{{$admin := $reg.admin}}{{$age := $reg.age}}{{$gt := $reg.gt}}{{$name := $reg.name}}{{$pin := $reg.pin}}{{$public := $reg.public}}{{$ref := $reg.ref}}{{$parentguardian := $reg.parentguardian}}
 {{$tribe := $reg.tribe}}
-{{$ticketnum := (dbGet 0 "ticketnum").Value}}
+
 {{if and (eq .Reaction.Emoji.ID 658376626639339533) (eq (toString $Q) "Ref")}}{{/*Yes*/}}
 {{deleteAllMessageReactions nil $msgID}}
 {{$Q = "Ref2"}}{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
