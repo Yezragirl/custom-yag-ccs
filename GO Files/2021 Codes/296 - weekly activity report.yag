@@ -23,6 +23,7 @@
 
 
 
+
 {{$entries := dbTopEntries "weeklytickets" 10 0}}
 {{range $entries}}
     {{$weekly := (dbGet .UserID "weekly").Value}}

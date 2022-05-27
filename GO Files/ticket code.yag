@@ -1,0 +1,18 @@
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**Make a Ticket**__"
+	"Description" "React to this message with the appropriate Emoji to open the type of ticket that you need."
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "1️⃣ Arkmart" "value" "Use this ticket type to make purchases from the Arkmart." ) 
+	(sdict "name" "2️⃣ SponsorMart" "value" "Use this ticket type to make purchases from the SponsorMart." ) 
+	(sdict "name" "3️⃣ Private Map Changes" "value" "Use this ticket type to setup or make changes to a Private Map." ) 
+	(sdict "name" "4️⃣ Registration" "value" "Use this ticket type to register a tribe, or base, or to make changes to any previous registrations." ) 
+	(sdict "name" "5️⃣ In Game Assistance" "value" "Use this ticket type to get assistance with anything in game, such as issues with tribes, bases, traps, etc." ) 
+	(sdict "name" "6️⃣ Quests" "value" "Use this ticket type to acquire a Quest Vault, turn in New Player Quests, or get assistance with anything Quest related." ) 
+	(sdict "name" "7️⃣ Events" "value" "Use this ticket type to claim any event prizes." ) 
+	(sdict "name" "8️⃣ Auction" "value" "Use this ticket type to submit dinos for the Live Auction." ) 
+	(sdict "name" "9️⃣ General/Discord" "value" "Use this ticket type for any issues not covered by the above, or for Discord specific issues." ) ) }}
+{{$msg := sendMessageRetID nil $embed}}
+{{addReactions}}
+{{deleteTrigger 1}}
