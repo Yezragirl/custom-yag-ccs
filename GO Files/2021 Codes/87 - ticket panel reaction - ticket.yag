@@ -1,81 +1,70 @@
 {{/*Ticket Panel Reaction*/}}
-{{$capture := ""}}
-{{$ID := ""}}
-{{$message := ""}}
 {{$type := ""}}
-{{$panel := (toString .ReactionMessage.ID)}}
-{{$emoji := ""}}
-{{$days := 0}}
-{{$ticketnum := (dbGet 0 "ticketnum").Value}}
+{{$name := ""}}
+{{$exists := false}}
+{{$admin := false}}
+{{$adminRoles := cslice 573210843840249889 634598489732546588}}
 
-{{if eq .Reaction.Emoji.Name "1️⃣"}}
-{{if (eq .Channel.ID 575676562872074290)}} 
-{{$type = "vault"}}
-{{$emoji = "1️⃣"}}
+
+{{$opened := sdict}}
+{{with dbGet .User.ID "openedTickets"}}
+	{{$opened = .Value}}
+{{end}}
+
+{{range $adminRoles}}
+	{{- if hasRoleID . -}}
+		{{- $admin = true -}}
+		{{- break -}}
+	{{- end -}}
+{{end}}
+
+{{$type := (dict
+    "1️⃣" "mart"
+    "2️⃣" "smart"
+    "3️⃣" "map"
+    "4️⃣" "regedit"
+    "5️⃣" "assist"
+    "6️⃣" "quest"
+    "7️⃣" "event"
+    "8️⃣" "auction"
+    "9️⃣" "general"
+).Get .Reaction.Emoji.Name}}
+
+{{define "addEmoji"}}
+    {{if eq .channel 980247662118985758}}
+        {{return (print "⏺️" .type)}}
+    {{else if eq .channel 660329324976799754}}
+        {{return (print "❎" .type)}}
+    {{end}}
+{{end}}
+
+
+{{if or (eq $type "regedit") (eq $type "general")}}
+    {{$name = $type}}
 {{else}}
-{{$type = "mart"}}
-{{$emoji = "1️⃣"}}
-{{end}}
-{{else if eq .Reaction.Emoji.Name "2️⃣"}}
-{{$type = "auction"}}
-{{$emoji = "2️⃣"}}
-
-{{else if eq .Reaction.Emoji.Name "3️⃣"}}
-{{$type = "base"}}
-{{$emoji = "3️⃣"}}
-
-{{else if eq .Reaction.Emoji.Name "4️⃣"}}
-{{$type = "dino"}}
-{{$emoji = "4️⃣"}}
-
-{{else if eq .Reaction.Emoji.Name "5️⃣"}}
-{{$type = "discord"}}
-{{$emoji = "5️⃣"}}
-
-{{else if eq .Reaction.Emoji.Name "6️⃣"}}
-{{$type = "quest"}}
-{{$emoji = "6️⃣"}}
-
-{{else if eq .Reaction.Emoji.Name "7️⃣"}}
-{{$type = "trap"}}
-{{$emoji = "7️⃣"}}
-
-{{else if eq .Reaction.Emoji.Name "8️⃣"}}
-{{$type = "tribe"}}
-{{$emoji = "8️⃣"}}
-
-{{else if eq .Reaction.Emoji.Name "9️⃣"}}
-{{$type = "regedit"}}
-{{$emoji = "9️⃣"}}
-
-{{else if eq .Reaction.Emoji.Name "🔟"}}
-{{$type = "general"}}
-{{$emoji = "🔟"}}
-
-{{else if eq .Reaction.Emoji.Name "🏁"}}
-{{$type = "hunt"}}
-{{$emoji = "🏁"}}
-
-{{else if eq .Reaction.Emoji.Name "🇭"}}
-{{$type = "hardcore"}}
-{{$emoji = "🇭"}}
-
-{{else if eq .Reaction.Emoji.Name "🇸"}}
-{{$type = "smart"}}
-{{$emoji = "🇸"}}
-
-{{else if eq .Reaction.Emoji.Name "🇲"}}
-{{$type = "map"}}
-{{$emoji = "🇲"}}
+    {{$dict := sdict "channel" .Channel.ID "type" $type}}
+    {{$name = execTemplate "addEmoji" $dict}}
 {{end}}
 
-{{if and (eq .Reaction.Emoji.Name "🇸") (not (hasRoleID 580491796556283904))}}
-{{sendDM "Sorry, only those with the Sponsors role can open Sponsor Mart tickets."}}
-{{deleteAllMessageReactions nil $panel}}
-{{addMessageReactions nil $panel $emoji}}
+{{with $opened.Get $name}}
+    {{if getChannel .}}
+        {{$exists = true}}
+    {{end}}
+{{end}}
+
+{{if or (not $exists) $admin}}
+	{{if and (eq .Reaction.Emoji.Name "2️⃣") (not (hasRoleID 580491796556283904))}}
+		{{sendDM "Sorry, only those with the Sponsors role can open Sponsor Mart tickets."}}
+	{{else if and (eq .Channel.ID 980247662118985758) (eq $type "map")}}
+		{{sendDM "Steam private maps are not available at this time"}}
+	{{else}}
+        {{$x := createTicket nil $name}}
+        {{$opened.Set $name $x.ChannelID}}
+        {{dbSet $x.ChannelID "ticket_control" (sdict "old" (trimSpace $x.Title))}}
+        {{dbSet .User.ID "openedTickets" $opened}}
+    {{end}}
 {{else}}
-{{$capture = exec "ticket open" $type}}
-{{$ID = reFind `\d+` (reFind `<#\d+>` $capture)}}
-{{deleteAllMessageReactions nil $panel}}
-{{addMessageReactions nil $panel $emoji}}
+	{{sendDM "You already have a ticket of this type open."}}
 {{end}}
+{{deleteAllMessageReactions nil .ReactionMessage.ID}}
+{{addMessageReactions .Reaction.ChannelID .Reaction.MessageID "1️⃣" "2️⃣" "3️⃣" "4️⃣" "5️⃣" "6️⃣" "7️⃣" "8️⃣" "9️⃣"}}

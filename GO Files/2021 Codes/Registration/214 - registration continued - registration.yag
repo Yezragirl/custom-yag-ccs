@@ -1,79 +1,107 @@
 {{/*continuation of the reg code.*/}}
+{{$xbox := ": Stay tuned to this channel! A member of the <@&634598489732546588> will be along as soon as possible to give you the information on how to get your starter.\nIn the meantime, Please log into our Starter Map, ***Yez's Refuge*** to collect your starter. **This map is intended as a temporary map for those who want to get a few levels before joining the standard cluster maps,  or new players who are not yet familiar with the games mechanics. If you don't feel like you need to stay, please move on. You can NOT transfer IN to Refuge, only out. Be warned, the dinos on our standard maps are max level 450, with increased damage and resistance. Be prepared before you transfer.**\n\nThe Community Center there can be found along the southern coast at approximately 85, 63. It can be reached by spawning at South 2 or 3, and running along the beach. Check your map. Starter pick up info will be provided shortly. ||Code 214||"}}
+{{$steam := ", to get to the server, you can use our IP Links in <#615578347581472778> to log into our main map ***Yez's Arrakis***. Spawn at Jungle 2, and take the Teleporter there to the Community Center. Inside you'll find a Starter Pick up Area containing a vault. Open the vault, and select **Reward Menu** from the center panel.\nThere you will find a starter package you can purchase for free. *You are limited to 1 starter package per Steam ID.*\nYou have your choice of glow pet, so if you don't like the one with the 1x next to it, just click on the 1, change it to 0, and find the one you'd like and change the 0 to 1. ***This is fully self-service!***\nOnce you've purchased your rewards, don't forget to remove them from the reward vault!\nYou'll need to **consume** the dinos to get them. I suggest you do that *outside* as they will materialize in front of you.\n **Don't waste any time! The reward dinos will expire if you don't consume them in a certain amount of time.**||Code 214||"}}
 {{if (eq .Channel.ParentID 635305499600093214)}} 
 	{{$reg := (dbGet .User.ID "reg").Value}}
-{{$Q := $reg.Q}}{{$admin := $reg.admin}}{{$age := $reg.age}}{{$gt := $reg.gt}}{{$name := $reg.name}}{{$pin := $reg.pin}}{{$public := $reg.public}}{{$ref := $reg.ref}}{{$parentguardian := $reg.parentguardian}}
-{{$tribe := $reg.tribe}}{{$tribe2 := $reg.tribe2}}
-{{if not $tribe}}{{$tribe = "Unregistered"}}{{$reg.Set "tribe" $tribe}}{{dbSet .User.ID "reg" $reg}}{{end}}
-{{if not $tribe2}}{{$tribe2 = "Unregistered"}}{{$reg.Set "tribe2" $tribe2}}{{dbSet .User.ID "reg" $reg}}{{end}}
+	{{$graphics := sdict "Both" "https://cdn.discordapp.com/attachments/665932077853704202/982095282013618226/dual_logo_transparent.png" "Steam" "https://cdn.discordapp.com/attachments/665932077853704202/982096294451499018/unknown.png"  "Xbox" "https://cdn.discordapp.com/attachments/665932077853704202/982096249341763694/unknown.png" }}
+	{{$gtnames := sdict "Both" "Gamer Tag/Steam Name" "Steam" "Steam Name"  "Xbox" "Gamer Tag" }}
+	{{$admin := $reg.admin}}{{$public := $reg.public}}
+	{{if not $reg.tribe}}{{$reg.Set "tribe" "Unregistered"}}{{dbSet .User.ID "reg" $reg}}{{end}}
+	{{if not $reg.tribe2}}{{$reg.Set "tribe2" "Unregistered"}}{{dbSet .User.ID "reg" $reg}}{{end}}
+	{{if not $reg.pt}}{{if and (hasRoleName "Xbox") (hasRoleName "Steam")}}{{$reg.Set "pt" "Both"}}{{else if hasRoleName "Xbox"}}{{$reg.Set "pt" "Xbox"}}{{else}}{{$reg.Set "pt" "Steam"}}{{end}}{{dbSet .User.ID "reg" $reg}}{{end}}
+	{{$gtname := $gtnames.Get $reg.pt}}
+	{{$url := $graphics.Get $reg.pt}}
 	{{$color := randInt 111111 999999 }}
-	{{if eq (toString $Q) "Done"}}
-	{{$embed := cembed 
+	{{if eq (toString $reg.Q) "Done"}}
+		{{$embed := cembed 
 			"Title" "Initializing" }}
-	{{$embed2 := cembed 
+		{{$embed2 := cembed 
 			"Title" "Initializing" }}
-		{{if eq $parentguardian "Not a Minor"}}
+		{{if eq $reg.parentguardian "Not a Minor"}}
 			{{$embed = cembed 
 			"color" $color
 			"fields" (cslice 
-			(sdict "name" "In Game Name" "value" (toString $name) ) 
-			(sdict "name" "Gamer Tag" "value" (toString $gt) ) 
-			(sdict "name" "Tribe Name" "value" (joinStr "/" (toString $tribe) (toString $tribe2)) ) )
-			"thumbnail" (sdict "url" (.User.AvatarURL "1024")) }}
+			(sdict "name" "In Game Name" "value" (toString $reg.name) ) 
+			(sdict "name" $gtname "value" (toString $reg.gt) ) 
+			(sdict "name" "Tribe Name" "value" (joinStr "/" (toString $reg.tribe) (toString $reg.tribe2)) ) )
+			"thumbnail" (sdict "url" $url) }}
 			{{$embed2 = cembed 
 			"color" $color
 			"fields" (cslice 
 			(sdict "name" "Discord Name" "value" .User.Username ) 
-			(sdict "name" "In Game Name" "value" (toString $name) ) 
-			(sdict "name" "Gamer Tag" "value" (toString $gt) ) 
-			(sdict "name" "Referral" "value" (toString $ref) ) 
-			(sdict "name" "Pin" "value" (toString $pin) ))
-			"thumbnail" (sdict "url" (.User.AvatarURL "1024")) }}
+			(sdict "name" "In Game Name" "value" (toString $reg.name) ) 
+			(sdict "name" $gtname "value" (toString $reg.gt) ) 
+			(sdict "name" "Referral" "value" (toString $reg.ref) ) 
+			(sdict "name" "Pin" "value" (toString $reg.pin) ))
+			"thumbnail" (sdict "url" $url) }}
 		{{else}}
 			{{$embed = cembed 
 			"color" $color
 			"fields" (cslice 
 			(sdict "name" "__***MINOR***__" "value" "_ _" ) 
-			(sdict "name" "In Game Name" "value" (toString $name) ) 
-			(sdict "name" "Tribe Name" "value" (joinStr "/" (toString $tribe) (toString $tribe2)) ) 
-			(sdict "name" "Gamer Tag" "value" (toString $gt) ) )
-			"thumbnail" (sdict "url" (.User.AvatarURL "1024")) }}
+			(sdict "name" "In Game Name" "value" (toString $reg.name) ) 
+			(sdict "name" "Tribe Name" "value" (joinStr "/" (toString $reg.tribe) (toString $reg.tribe2)) ) 
+			(sdict "name" $gtname "value" (toString $reg.gt) ) )
+			"thumbnail" (sdict "url" $url) }}
 			{{$embed2 = cembed 
 			"color" $color
 			"fields" (cslice 
 			(sdict "name" "Discord Name" "value" .User.Username ) 
-			(sdict "name" "__***MINOR***__" "value" (toString (toInt $age)) ) 
-			(sdict "name" "In Game Name" "value" (toString $name) ) 
-			(sdict "name" "Gamer Tag" "value" (toString $gt) ) 
-			(sdict "name" "Tribe Name" "value" (joinStr "/" (toString $tribe) (toString $tribe2)) ) 
-			(sdict "name" "Parent/Guardian" "value" (toString $parentguardian) )
-			(sdict "name" "Pin" "value" (toString $pin) ))
-			"thumbnail" (sdict "url" (.User.AvatarURL "1024")) }}
+			(sdict "name" "__***MINOR***__" "value" (toString (toInt $reg.age)) ) 
+			(sdict "name" "In Game Name" "value" (toString $reg.name) ) 
+			(sdict "name" $gtname "value" (toString $reg.gt) ) 
+			(sdict "name" "Tribe Name" "value" (joinStr "/" (toString $reg.tribe) (toString $reg.tribe2)) ) 
+			(sdict "name" "Parent/Guardian" "value" (toString $reg.parentguardian) )
+			(sdict "name" "Pin" "value" (toString $reg.pin) ))
+			"thumbnail" (sdict "url" $url) }}
 		{{end}}
+		{{deleteMessage 658352884701724733 $public}}
 		{{$public = (toString (sendMessageRetID 658352884701724733 $embed))}}
 		{{$reg.Set "public" $public}}
-		
+		{{deleteMessage 658354135221141533 $admin}}
 		{{$admin = (toString (sendMessageRetID 658354135221141533 $embed2))}}
 		{{$reg.Set "admin" $admin}}{{dbSet .User.ID "reg" $reg}}
-		{{execCC 213 nil 604800 ""}}
-		{{sendDM "Welcome to Yez's Ark Cluster! The password can be found on the #current-server-password channel, which you should now have access to. Please be aware that giving out this password is a ***bannable offense*** as is allowing people to piggyback off your login. To find the server make sure you are on unofficial PC sessions and have the password box checked. Do a search for Yez. Please be sure to read over the rules in the #pve-rules channel.\n\n__**Quests**__\nEvery other week we offer *quests*, where you *collect*, **tame**, and/or __breed__ in order to receive rewards like bbs, coupons, element, and max level tames! We also offer ***new player quests*** until you hit level 100, which are designed to teach you how to play this game. If you are interested in participating, head over to #quest-rules, where you can read about how they work, and request a quest vault. \n\n__**Roles**__\nTo keep from pinging everyone, all the time, we've created various *Roles* for each of the things we usually ping people over. You can self-assign these roles by going to the #roles channel.\n\n__**Discord**__\nOur currency system is entirely Discord based, so having Discord is essential. **Leaving the Discord is seen as leaving the server.** If you leave the discord without contacting an admin, we will assume you have left, clearing your bases and confiscating your dinos for auction.\n\nWe hope you enjoy your time here at Yez's Ark Cluster. If you need any assistance, you can head over to #make-a-ticket."}}
+		{{$color := randInt 111111 999999 }}
+		{{$embeddm := cembed 
+		"Title" "Welcome to Yez's Ark Cluster"
+		"color" $color
+		"fields" (cslice 
+		   (sdict "name" "Password" "value" "The password can be found on the #current-server-password channel, which you should now have access to. Please be aware that giving out this password is a ***bannable offense*** as is allowing people to piggyback off your login." ) 
+		   (sdict "name" "Quests" "value" "Every other week we offer *quests*, where you *collect*, **tame**, and/or __breed__ in order to receive rewards like bbs, coupons, element, and max level tames! We also offer ***new player quests*** until you hit level 100, which are designed to teach you how to play this game. If you are interested in participating, head over to #quest-rules, where you can read about how they work, then #make-a-ticket to request a Quest Vault." )
+		   (sdict "name" "Roles" "value" "To keep from pinging everyone, all the time, we've created various *Roles* for each of the things we usually ping people about. You can self-assign these roles by going to the #roles channel." )
+		   (sdict "name" "Discord" "value" "Our currency system is entirely Discord based, so having Discord is essential. **Leaving the Discord is seen as leaving the server.** If you leave the discord without contacting an admin, we will assume you have left, clearing your bases and confiscating your dinos for auction." )
+		   (sdict "name" "Multi-Platform" "value" "Yez's Ark Cluster has expanded! We are now a two platform Cluster! We have Xbox/Win 10 servers, and now we also have STEAM servers. To help differentiate Xbox from Steam here in the discord, we have labeled all Xbox specific channels with ❎ and Steam specific channels with ⏺️. Please use these when asking about a specific platform in a non-labeled channel." )
+		   (sdict "name" "_ _" "value" "We hope you enjoy your time here at Yez's Ark Cluster. If you need any assistance, you can head over to #make-a-ticket." ) ) }}
+   {{sendDM $embeddm}}
 		{{if .ExecData}}
 			{{if eq .ExecData.starter "none"}}
 			{{else}}
-			{{sendMessageNoEscape nil (joinStr "" .User.Mention ": Stay tuned to this channel! A member of the <@&634598489732546588> will be along as soon as possible to give you the information on how to get your starter. In the meantime, Please log into our Starter Map, ***Yez's Refuge*** to collect your starter. **This map is intended as a temporary map for those who want to get a few levels before joining the standard cluster maps,  or new players who are not yet familiar with the games mechanics. If you don't feel like you need to stay, please move on. You can NOT transfer IN to Refuge, only out. Be warned, the dinos on our standard maps are max level 450, with increased damage and resistance. Be prepared before you transfer.**\n\nThe Community Center there can be found along the southern coast at approximately 85, 63. It can be reached by spawning at South 2 or 3, and running along the beach. Check your map. Starter pick up info will be provided shortly.")}}
+				{{if eq $reg.pt "Xbox"}}
+					{{sendMessageNoEscape nil (print .User.Mention $xbox)}}
+				{{else if eq $reg.pt "Steam"}}
+					{{$msgsteam := sendMessageRetID nil (print .User.Mention $steam "\n\nPlease hit the <:gcrystal:662677298431918092> below when you've collected your items to close this ticket.")}}
+					{{addMessageReactions nil $msgsteam ":gcrystal:662677298431918092"}}
+				{{else if eq $reg.pt "Both"}}
+					{{sendMessage nil (print .User.Mention ", two platforms means two starters!\n\n__**STEAM**__\n" $steam "\n\n__**Xbox/Win 10**__\n" $xbox)}}
+				{{end}}
 			{{end}}
 		{{end}}
-		{{if eq $parentguardian "Not a Minor"}}
+		{{if or (eq $reg.parentguardian "Not a Minor") (eq $reg.parentguardian "NA")}}
 			{{giveRoleID .User.ID 573210479753691170}}{{giveRoleID .User.ID 607041870966685706}}{{removeRoleID 606566506922377257}}
-			{{editNickname (toString $name)}}
-			{{sendMessage 573245421066125324 (joinStr "" "Let's all welcome " .User.Mention " to the Cluster!")}}
-			{{if not (eq $ref "None")}}
-				{{$message := sendMessageRetID 573860427721605120 (joinStr "" "Pay referral fee to " $ref " for " $name " after <t:" (currentTime.Add (mult -24 $.TimeHour | toDuration)) ":>")}}{{addMessageReactions 573860427721605120 $message "✔️" "❌"}}
+			{{editNickname (toString $reg.name)}}
+			{{sendMessage 573245421066125324 (print  "Let's all welcome " .User.Mention " to the Cluster!")}}
+			{{if not (eq $reg.ref "None")}}
+				{{$message := sendMessageRetID 573860427721605120 (joinStr ""  "Pay referral fee to " $reg.ref " for " $reg.name " after <t:" (currentTime.Add (mult 24 $.TimeHour | toDuration)).Unix ">")}}{{addMessageReactions 573860427721605120 $message "✔️" "❌"}}
 			{{end}}
 		{{else}}
-			{{giveRoleID .User.ID 645404993863811072}}{{removeRoleID 606566506922377257}}
-			{{editNickname (joinStr "" $name "(M)")}}
-			{{sendMessage 646033978721173523 (joinStr "" "Let's all welcome " .User.Mention " to the Cluster!")}}
-			{{$message := sendMessageRetID 573860427721605120 (joinStr "" "Add Parent Role to  " $parentguardian " for " $name)}}{{addMessageReactions 573860427721605120 $message "✔️" "❌"}}
+			{{giveRoleID .User.ID 645404993863811072}}{{removeRoleID 606566506922377257}}{{giveRoleID .User.ID 607041870966685706}}
+			{{editNickname (print  $reg.name "(M)")}}
+			{{sendMessage 646033978721173523 (print  "Let's all welcome " .User.Mention " to the Cluster!")}}
+			{{$message := sendMessageRetID 573860427721605120 (print  "Add Parent Role to  " $reg.parentguardian " for " $reg.name)}}{{addMessageReactions 573860427721605120 $message "✔️" "❌"}}
+		{{end}}
+		{{if eq $reg.pt "Both" }}{{addRoleName "Xbox"}}{{addRoleName "Steam"}}{{addRoleName "Both"}}
+		{{else if eq $reg.pt "Xbox"}}{{addRoleName "Xbox"}}
+		{{else}}{{addRoleName "Steam"}}
 		{{end}}
 	{{end}}
 {{end}}

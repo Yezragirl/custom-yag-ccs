@@ -4,22 +4,25 @@
 (carg "userid" "user")}}
 {{$user := (userArg ($args.Get 0))}}
 {{$reg := (dbGet $user.ID "reg").Value}}
-{{$Q := $reg.Q}}{{$admin := $reg.admin}}{{$age := $reg.age}}{{$gt := $reg.gt}}{{$name := $reg.name}}{{$pin := $reg.pin}}{{$public := $reg.public}}{{$ref := $reg.ref}}{{$parentguardian := $reg.parentguardian}}
-{{$tribe := $reg.tribe}}{{$tribe2 := $reg.tribe2}}
-{{if not $tribe}}{{$tribe = "Unregistered"}}{{$reg.Set "tribe" $tribe}}{{dbSet $user.ID "reg" $reg}}{{end}}
-{{if not $tribe2}}{{$tribe2 = "Unregistered"}}{{$reg.Set "tribe2" $tribe2}}{{dbSet $user.ID "reg" $reg}}{{end}}
+{{$graphics := sdict "Both" "https://cdn.discordapp.com/attachments/665932077853704202/982095282013618226/dual_logo_transparent.png" "Steam" "https://cdn.discordapp.com/attachments/665932077853704202/982096294451499018/unknown.png"  "Xbox" "https://cdn.discordapp.com/attachments/665932077853704202/982096249341763694/unknown.png" }}
+	{{$gtnames := sdict "Both" "Gamer Tag/Steam Name" "Steam" "Steam Name"  "Xbox" "Gamer Tag" }}
+{{if not $reg.tribe}}{{$reg.Set "tribe" "Unregistered"}}{{dbSet $user.ID "reg" $reg}}{{end}}
+{{if not $reg.tribe2}}{{$reg.Set "tribe2" "Unregistered"}}{{dbSet $user.ID "reg" $reg}}{{end}}
+{{if not $reg.pt}}{{if and (hasRoleName "Xbox") (hasRoleName "Steam")}}{{$reg.Set "pt" "Both"}}{{else if hasRoleName "Xbox"}}{{$reg.Set "pt" "Xbox"}}{{else}}{{$reg.Set "pt" "Steam"}}{{end}}{{dbSet .User.ID "reg" $reg}}{{end}}
+	{{$gtname := $gtnames.Get $reg.pt}}
+	{{$url := $graphics.Get $reg.pt}}
 			{{$embed := cembed 
 				"title" "Registration Lookup"
 				"description" "Here is the registration information as requested."
 				"fields" (cslice 
 				(sdict "name" "Discord Name" "value" (toString $user.Username) ) 
-				(sdict "name" "In Game Name" "value" (toString $name) ) 
-				(sdict "name" "Tribe Name" "value" (joinStr "/" (toString $tribe) (toString $tribe2)) ) 
-				(sdict "name" "Gamer Tag" "value" (toString $gt) ) 
-				(sdict "name" "Pin" "value" (toString $pin) )
-				(sdict "name" "Age" "value" (toString (toInt $age)) )
-				(sdict "name" "Referred By" "value" (toString $ref)))
-				"thumbnail" (sdict "url" ($user.AvatarURL "1024")) }}
+				(sdict "name" "In Game Name" "value" (toString $reg.name) ) 
+				(sdict "name" "Tribe Name" "value" (joinStr "/" (toString $reg.tribe) (toString $reg.tribe2)) ) 
+				(sdict "name" $gtname "value" (toString $reg.gt) ) 
+				(sdict "name" "Pin" "value" (toString $reg.pin) )
+				(sdict "name" "Age" "value" (toString (toInt $reg.age)) )
+				(sdict "name" "Referred By" "value" (toString $reg.ref)))
+				"thumbnail" (sdict "url" $url) }}
 {{sendMessage nil $embed}}
 {{ $dur := currentTime.Sub $start }}
 {{ if gt $dur.Seconds 5.0 }}

@@ -1,9 +1,11 @@
 {{/*collected*/}}
 {{if .ExecData}}
+{{if (eq .Channel.ParentID 635305499600093214)}}
 {{$target := .ExecData.target}}
  {{$msg := sendMessageRetID nil (joinStr ""  (userArg $target).Mention ", if there is nothing else, please hit the <:gcrystal:662677298431918092> below to close this ticket.")}}
  {{addMessageReactions nil $msg ":gcrystal:662677298431918092" }}
 {{execCC .CCID nil 86400 (sdict "target" (toInt64 $target)) }}
+{{end}}
 {{else}}
 
 {{$args := parseArgs 1 "syntax `-collected Who Map Locker Pin`"
@@ -34,7 +36,7 @@
 {{$mapname = "Phoenix"}}
 {{else if eq $map "<:Medusa:640697225684713473>"}}
 {{$mapname = "Medusa"}}
-{{else if eq $map "<:Sanctuary1:798361386438098974>"}}
+{{else if eq $map "<:Sanctuary:97519029715599400>"}}
 {{$mapname = "Sanctuary"}}
 {{else if eq $map "<:Refuge:797670477081608202>"}}
 {{$mapname = "Refuge"}}
@@ -44,8 +46,6 @@
 {{$mapname = "Merlin"}}
 {{else if eq $map "<:Haven:796125877633024051>"}}
 {{$mapname = "Haven"}}
-{{else if eq $map "<:Jupiter:795749721657573446>"}}
-{{$mapname = "Jupiter"}}
 {{else if eq $map "<:Hades:797518674616909914>"}}
 {{$mapname = "Hades"}}
 {{else if eq $map "<:Excelsior:797519872115343360>"}}
@@ -56,6 +56,18 @@
 {{$mapname = "Forge"}}
 {{else if eq $map "<:Orca:854481845848768573>"}}
 {{$mapname = "Orca"}}
+{{else if eq $map "<:Jasper:923790844119625738>"}}
+{{$mapname = "Jasper"}}
+{{else if eq $map "<:Trebuchet:923790637705347152>"}}
+{{$mapname = "Trebuchet"}}
+{{else if eq $map "<:Dresden:986385122142060574>"}}
+{{$mapname = "Dresden"}}
+{{else if eq $map "<:Caladan:980351481200902154>"}}
+{{$mapname = "Caladan"}}
+{{else if eq $map "<:Halkirk:986385074775810209>"}}
+{{$mapname = "Halkirk"}}
+{{else if eq $map "<:Arrakis:980355207600939058>"}}
+{{$mapname = "Arrakis"}}
 {{end}}
 
 {{if gt (len .Args) 2}}

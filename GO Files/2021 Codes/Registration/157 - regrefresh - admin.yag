@@ -3,88 +3,89 @@
 (carg "userid" "user")}}
 {{$user := (userArg ($args.Get 0))}}
 {{$reg := (dbGet $user.ID "reg").Value}}
-{{$Q := $reg.Q}}{{$admin := $reg.admin}}{{$age := $reg.age}}{{$gt := $reg.gt}}{{$name := $reg.name}}{{$pin := $reg.pin}}{{$public := $reg.public}}{{$ref := $reg.ref}}{{$parentguardian := $reg.parentguardian}}
-{{$tribe := $reg.tribe}}{{$tribe2 := $reg.tribe2}}
-{{if not $tribe}}{{$tribe = "Unregistered"}}{{$reg.Set "tribe" $tribe}}{{dbSet $user.ID "reg" $reg}}{{end}}
-{{if not $tribe2}}{{$tribe2 = "Unregistered"}}{{$reg.Set "tribe2" $tribe2}}{{dbSet $user.ID "reg" $reg}}{{end}}
+{{$graphics := sdict "Both" "https://cdn.discordapp.com/attachments/665932077853704202/982095282013618226/dual_logo_transparent.png" "Steam" "https://cdn.discordapp.com/attachments/665932077853704202/982096294451499018/unknown.png"  "Xbox" "https://cdn.discordapp.com/attachments/665932077853704202/982096249341763694/unknown.png" }}
+{{$gtnames := sdict "Both" "Gamer Tag/Steam Name" "Steam" "Steam Name"  "Xbox" "Gamer Tag" }}
+{{if eq $reg.parentguardian "NA"}}{{$reg.Set "parentguardian" "Not a Minor"}}{{dbSet $user.ID "reg" $reg}}{{end}}
+{{if not $reg.tribe}}{{$reg.Set "tribe" "Unregistered"}}{{dbSet $user.ID "reg" $reg}}{{end}}
+{{if not $reg.tribe2}}{{$reg.Set "tribe2" "Unregistered"}}{{dbSet $user.ID "reg" $reg}}{{end}}
+{{if not $reg.pt}}{{if and (hasRoleName "Xbox") (hasRoleName "Steam")}}{{$reg.Set "pt" "Both"}}{{else if hasRoleName "Xbox"}}{{$reg.Set "pt" "Xbox"}}{{else}}{{$reg.Set "pt" "Steam"}}{{end}}{{dbSet $user.ID "reg" $reg}}{{end}}
 {{$nick := (getMember $user.ID).Nick}}
+{{$gtname := $gtnames.Get $reg.pt}}
+{{$url := $graphics.Get $reg.pt}}
 {{if not $nick}}
-	{{if not $name}}
-	{{$name = $user.Username}}{{$reg.Set "name" $name}}{{dbSet $user.ID "reg" $reg}}
-	{{end}}
+    {{if not $reg.name}}
+    {{$reg.Set "name" $user.Username}}{{dbSet $user.ID "reg" $reg}}
+    {{end}}
 {{else}}
-{{$name = $nick}}{{$reg.Set "name" $nick}}{{dbSet $user.ID "reg" $reg}}
+    {{$reg.Set "name" $nick}}{{dbSet $user.ID "reg" $reg}}
 {{end}}
-{{if (targetHasRoleID $user.ID 607041870966685706)}}{{/*Has Registered Role*/}}
-        {{$color := randInt 111111 999999 }}
-        {{$embed := cembed 
-            "color" $color
-            "fields" (cslice 
-            (sdict "name" "In Game Name" "value" (toString $name) "inline" false) 
-            (sdict "name" "Gamer Tag" "value" (toString $gt) "inline" false) 
-            (sdict "name" "Tribe Name" "value" (joinStr "/" (toString $tribe) (toString $tribe2)) "inline" false) )
-            "thumbnail" (sdict "url" ($user.AvatarURL "1024")) }}
-		{{if $public}}
-		{{editMessage 658352884701724733 $public $embed}}
-Public Registration Updated.
-		{{else}}
-		{{$msg := sendMessageRetID 658352884701724733 $embed}}
-No Public Registration to Update. New Public Registration Created.
-		{{$reg.Set "public" $msg}}
-		{{end}}
-        {{$embed2 := cembed 
-            "color" $color
-            "fields" (cslice 
-            (sdict "name" "Discord Name" "value" (toString $user.Username) "inline" false) 
-            (sdict "name" "In Game Name" "value" (toString $name) "inline" false) 
-            (sdict "name" "Gamer Tag" "value" (toString $gt) "inline" false) 
-            (sdict "name" "Referral" "value" (toString $ref) "inline" false) 
-            (sdict "name" "Pin" "value" (toString $pin) "inline" false) )
-            "thumbnail" (sdict "url" ($user.AvatarURL "1024")) }}
-			{{if $admin}}
-			{{editMessage 658354135221141533 $admin $embed2}}
-Admin Registration Updated.
-			{{else}}
-			{{$msg := sendMessageRetID 658354135221141533 $embed2}}
-No Admin Registration to Update. New Admin Registration Created.
-			{{$reg.Set "admin" $msg}}{{dbSet $user.ID "reg" $reg}}
-			{{end}}
+{{if (targetHasRoleID $user.ID 573210479753691170)}}{{/*Has Yezian Role*/}}
+    {{$color := randInt 111111 999999 }}
+    {{$embed := cembed 
+        "color" $color
+        "fields" (cslice 
+        (sdict "name" "In Game Name" "value" (toString $reg.name) "inline" false) 
+        (sdict "name" $gtname "value" (toString $reg.gt) "inline" false) 
+        (sdict "name" "Tribe Name" "value" (joinStr "/" (toString $reg.tribe) (toString $reg.tribe2)) "inline" false) )
+        "thumbnail" (sdict "url" $url) }}
+    {{if $reg.public}}
+        {{deleteMessage 658352884701724733 $reg.public}}
+        {{sendMessage nil "Existing Public Registration Deleted."}}
+    {{end}}
+    {{$msg := sendMessageRetID 658352884701724733 $embed}}
+    {{sendMessage nil "New Public Registration Created."}}
+    {{$reg.Set "public" $msg}}
+    {{$embed2 := cembed 
+        "color" $color
+        "fields" (cslice 
+        (sdict "name" "Discord Name" "value" (toString $user.Username) "inline" false) 
+        (sdict "name" "In Game Name" "value" (toString $reg.name) "inline" false) 
+        (sdict "name" $gtname "value" (toString $reg.gt) "inline" false) 
+        (sdict "name" "Referral" "value" (toString $reg.ref) "inline" false) 
+        (sdict "name" "Pin" "value" (toString $reg.pin) "inline" false) )
+        "thumbnail" (sdict "url" $url) }}
+    {{if $reg.admin}}
+        {{deleteMessage 658354135221141533 $reg.admin}}
+        {{sendMessage nil "Existing Admin Registration Deleted."}}
+    {{end}}
+    {{$msg2 := sendMessageRetID 658354135221141533 $embed2}}
+    {{sendMessage nil "New Admin Registration Created."}}
+    {{$reg.Set "admin" $msg2}}{{dbSet $user.ID "reg" $reg}}
 {{else if targetHasRoleID $user.ID 645404993863811072}}{{/*Has Kids Role*/}}
-        {{$color := randInt 111111 999999 }}
-        {{$embed := cembed 
-            "color" $color
-            "fields" (cslice 
-            (sdict "name" "__***MINOR***__" "value" "_ _" "inline" false) 
-			(sdict "name" "In Game Name" "value" (toString $name) "inline" false)
-			(sdict "name" "Tribe Name" "value" (joinStr "/" (toString $tribe) (toString $tribe2)) "inline" false)  
-            (sdict "name" "Gamer Tag" "value" (toString $gt) "inline" false) )
-            "thumbnail" (sdict "url" ($user.AvatarURL "1024")) }}
-			{{if $public}}
-		{{editMessage 658352884701724733 $public $embed}}
-Public Registration Updated.
-		{{else}}
-		{{$msg := sendMessageRetID 658352884701724733 $embed}}
-No Public Registration to Update. New Public Registration Created.
-		{{$reg.Set "public" $msg}}
-		{{end}}
-        {{$embed2 := cembed 
-            "color" $color
-            "fields" (cslice 
-            (sdict "name" "Discord Name" "value" $user.Username "inline" false) 
-            (sdict "name" "__***MINOR***__" "value" (toString $age) "inline" false) 
-            (sdict "name" "In Game Name" "value" (toString $name) "inline" false) 
-			(sdict "name" "Gamer Tag" "value" (toString $gt) "inline" false)  
-			(sdict "name" "Tribe Name" "value" (joinStr "/" (toString $tribe) (toString $tribe2)) "inline" false) 
-            (sdict "name" "Parent/Guardian" "value" (toString $parentguardian) "inline" false)
-            (sdict "name" "Pin" "value" (toString $pin) "inline" false))
-            "thumbnail" (sdict "url" ($user.AvatarURL "1024")) }}
-			{{if $admin}}
-			{{editMessage 658354135221141533 $admin $embed2}}
-Admin Registration Updated.
-			{{else}}
-			{{$msg := sendMessageRetID 658354135221141533 $embed2}}
-No Admin Registration to Update. New Admin Registration Created.
-			{{$reg.Set "admin" $msg}}{{dbSet $user.ID "reg" $reg}}
-			{{end}}
-
+    {{$color := randInt 111111 999999 }}
+    {{$embed := cembed 
+        "color" $color
+        "fields" (cslice 
+        (sdict "name" "__***MINOR***__" "value" "_ _" "inline" false) 
+        (sdict "name" "In Game Name" "value" (toString $reg.name) "inline" false)
+        (sdict "name" "Tribe Name" "value" (joinStr "/" (toString $reg.tribe) (toString $reg.tribe2)) "inline" false)  
+        (sdict "name" $gtname "value" (toString $reg.gt) "inline" false) )
+        "thumbnail" (sdict "url" $url) }}
+    {{if $reg.public}}
+        {{deleteMessage 658352884701724733 $reg.public}}
+        {{sendMessage nil "Existing Public Registration Deleted."}}
+    {{end}}
+    {{$msg := sendMessageRetID 658352884701724733 $embed}}
+    {{sendMessage nil "New Public Registration Created."}}
+    {{$reg.Set "public" $msg}}
+    {{$embed2 := cembed 
+        "color" $color
+        "fields" (cslice 
+        (sdict "name" "Discord Name" "value" $user.Username "inline" false) 
+        (sdict "name" "__***MINOR***__" "value" (toString $reg.age) "inline" false) 
+        (sdict "name" "In Game Name" "value" (toString $reg.name) "inline" false) 
+        (sdict "name" $gtname "value" (toString $reg.gt) "inline" false)  
+        (sdict "name" "Tribe Name" "value" (joinStr "/" (toString $reg.tribe) (toString $reg.tribe2)) "inline" false) 
+        (sdict "name" "Parent/Guardian" "value" (toString $reg.parentguardian) "inline" false)
+        (sdict "name" "Pin" "value" (toString $reg.pin) "inline" false))
+        "thumbnail" (sdict "url" $url) }}
+    {{if $reg.admin}}
+        {{deleteMessage 658354135221141533 $reg.admin}}
+        {{sendMessage nil "Existing Admin Registration Deleted."}}
+    {{end}}
+    {{$msg2 := sendMessageRetID 658354135221141533 $embed2}}
+    {{sendMessage nil "New Admin Registration Created."}}
+    {{$reg.Set "admin" $msg2}}{{dbSet $user.ID "reg" $reg}}
 {{end}}
+
+
