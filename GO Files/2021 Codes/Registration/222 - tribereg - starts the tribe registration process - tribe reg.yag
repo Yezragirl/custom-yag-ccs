@@ -1,10 +1,8 @@
 {{/*tribereg starts the tribe registration process*/}}
 {{$msgID := .ReactionMessage.ID}}
 {{$reg := (dbGet .User.ID "reg").Value}}
-{{$Q := $reg.Q}}{{$admin := $reg.admin}}{{$age := $reg.age}}{{$gt := $reg.gt}}{{$name := $reg.name}}{{$pin := $reg.pin}}{{$public := $reg.public}}{{$ref := $reg.ref}}{{$parentguardian := $reg.parentguardian}}
-{{$tribe := $reg.tribe}}{{$tribe2 := $reg.tribe2}}
-{{if not $tribe}}{{$tribe = "Unregistered"}}{{$reg.Set "tribe" $tribe}}{{dbSet .User.ID "reg" $reg}}{{end}}
-{{if not $tribe2}}{{$tribe2 = "Unregistered"}}{{$reg.Set "tribe2" $tribe2}}{{dbSet .User.ID "reg" $reg}}{{end}}{{$color := randInt 111111 999999 }}
+{{if not $reg.tribe}}{{$reg.Set "tribe" "Unregistered"}}{{dbSet .User.ID "reg" $reg}}{{end}}
+{{if not $reg.tribe2}}{{$reg.Set "tribe2" "Unregistered"}}{{dbSet .User.ID "reg" $reg}}{{end}}{{$color := randInt 111111 999999 }}
 {{$tribeedit := .ExecData.tribe}}
 {{$step := .ExecData.step}}
 {{$tribes_db := (dbGet 0 "tribes").Value}}
@@ -13,167 +11,165 @@
 {{$tribes_new := cslice}}
 
 {{define "leave complete"}}
-	{{$tribe := "Unregistered"}}
-	{{.reg.Set .var $tribe}}
-	{{$Q := .Q}}
-	{{.reg.Set "Q" $Q}}{{dbSet .User.ID "reg" .reg}}
+	{{.reg.Set .var "Unregistered"}}
+	{{.reg.Set "Q" .Q}}{{dbSet .User.ID "reg" .reg}}
 	{{removeRoleID 658469834589208616}}
-	{{execCC 74 nil 0 ""}}
+	{{execCC 74 nil 0 ""}}{{execCC 73 nil 0 ""}}{{execCC 347 nil 0 (sdict "dbkey" $dbkey}}
 {{end}}
 
 {{if .ExecData}}
-{{if and (eq $tribeedit "first") (eq $step "join")}}
-	{{sendMessage nil (joinStr "" .User.Mention ", type the first few letters, or words of the tribe you'd like to join.")}}
-	{{$Q = "First Tribe Join"}}
-	{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
-{{else if and (eq $tribeedit "first") (eq $step "leave")}}
-	{{if eq $tribe "Unregistered"}}
-		You can't leave a tribe you haven't registered yet. Please run `-regedit` again and join or create a tribe.
-	{{else}}
-		{{$dbkey := print "tribe_" (lower $tribe)}}Tribe 1 Key: {{$dbkey}}
-		{{$tribeinfo := sdict}}
-		{{$pass := false }}
-		{{with dbGet 0 $dbkey}}
-			{{$tribeinfo = sdict .Value}}
-			{{$pass = true}}
+	{{if eq $step "join"}}
+		{{sendMessage nil (joinStr "" .User.Mention ", type the first few letters, or words of the tribe you'd like to join. Type 'cancel' to cancel.")}}
+		{{if eq $tribeedit "first"}}
+			{{$reg.Set "Q" "First Tribe Join"}}
+		{{else if eq $tribeedit "second"}}
+			{{$reg.Set "Q" "Second Tribe Join"}}
 		{{end}}
-		Tribe 1 Info: {{$tribeinfo}}
-		{{if $pass}}
-		{{$owner := $tribeinfo.owner}}
-		{{if $owner}}Owner Exists
-			{{if eq (toString .User.ID) $owner}}I am owner.
-				{{$members_converted := (cslice).AppendSlice (or $tribeinfo.members cslice)}}
-				{{if gt (len $members_converted) 0}}There are other tribe members.
-					You are the Owner of this tribe. You can not leave this tribe until you have transferred ownership to another member. 
-				{{else}}There are no tribe members.
-					Tribe has no members...deleting tribe {{$tribe}}.
-					{{dbDel 0 (print "tribe_" (lower $tribe))}}
-					{{- range $tribes -}}
-						{{- if ne . $tribe -}}
-							{{- $tribes_new = $tribes_new.Append . -}}
-						{{- end -}}
-					{{end}}
-					{{dbSet 0 "tribes" $tribes_new}}
-				{{end}}
-			{{else}}I am not the owner.
-				{{$members_converted := (cslice).AppendSlice $tribeinfo.members}}
-				{{- range $members_converted -}}
-					{{- if ne . (toString $.User.ID) -}}
-						{{- $members_new = $members_new.Append . -}}
-					{{- end -}}
-					{{$tribeinfo.Set "members" $members_new}}
-					{{dbSet 0 $dbkey $tribeinfo}}
-				{{end}}
-			{{end}}
-			{{sendMessage nil (joinStr "" .User.Mention ", ok, you have left " (toString $tribe) ".")}}
-		{{else}}No owner exists. 
-			{{$members_converted := (cslice).AppendSlice $tribeinfo.members}}
-			{{if gt (len $members_converted) 1}}There are other tribe members.
-				{{- range $members_converted -}}
-					{{- if ne . (toString $.User.ID) -}}
-						{{- $members_new = $members_new.Append . -}}
-					{{- end -}}
-					{{$tribeinfo.Set "members" $members_new}}
-					{{dbSet 0 $dbkey $tribeinfo}}
-				{{end}}
-			{{else}}There are no other tribe members. 
-				Tribe has no members, and no owner...deleting tribe {{$tribe}}.
-				{{dbDel 0 (print "tribe_" (lower $tribe))}}
-				{{- range $tribes -}}
-					{{- if ne . $tribe -}}
-						{{- $tribes_new = $tribes_new.Append . -}}
-					{{- end -}}
-				{{end}}
-				{{dbSet 0 "tribes" $tribes_new}}
-			{{end}}
-			{{sendMessage nil (joinStr "" .User.Mention ", ok, you have left " (toString $tribe) ".")}}
+		{{dbSet .User.ID "reg" $reg}}
+	{{else if eq $step "create"}}
+		{{sendMessage nil (joinStr "" .User.Mention ", ok, type what you would like the Tribe to be called. Type 'cancel' to cancel.")}}
+		{{if eq $tribeedit "first"}}
+			{{$reg.Set "Q" "First Tribe Create"}}
+		{{else if eq $tribeedit "second"}}
+			{{$reg.Set "Q" "Second Tribe Create"}}
 		{{end}}
+		{{dbSet .User.ID "reg" $reg}}
+	{{else if and (eq $tribeedit "first") (eq $step "leave")}}
+		{{if eq $reg.tribe "Unregistered"}}
+			{{sendMessage nil "You can't leave a tribe you haven't registered yet. Please run `-regedit` again and join or create a tribe."}}
 		{{else}}
-		{{sendMessage nil (joinStr "" .User.Mention ", ok, " (toString $tribe) " cleared from your registration.")}}
-		{{end}}{{/*if pass*/}}
-		{{$temp := sdict "reg" $reg "Q" "First Tribe Leave" "var" "tribe" "User" .User}}
-		{{template "leave complete" $temp}}
-	{{end}}
-{{else if and (eq $tribeedit "first") (eq $step "create")}}
-	{{sendMessage nil (joinStr "" .User.Mention ", ok, type what you would like the Tribe to be called.")}}
-	{{$Q = "First Tribe Create"}}
-	{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
-{{else if and (eq $tribeedit "second") (eq $step "join")}}
-	{{sendMessage nil (joinStr "" .User.Mention ", type the first few letters, or words of the tribe you'd like to join.")}}
-	{{$Q = "Second Tribe Join"}}
-	{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
-{{else if and (eq $tribeedit "second") (eq $step "leave")}}
-	{{if eq $tribe2 "Unregistered"}}
-		You can't leave a tribe you haven't registered yet. Please run `-regedit` again and join or create a tribe.
-	{{else}}
-		{{$dbkey := print "tribe_" (lower $tribe2)}}Tribe 2 Key: {{$dbkey}}
-		{{$tribeinfo := sdict}}
-		{{$pass := false }}
-		{{with dbGet 0 $dbkey}}
-			{{$tribeinfo = sdict .Value}}
-			{{$pass = true}}
-		{{end}}
-		Tribe 2 Info: {{$tribeinfo}}
-		{{if $pass}}
-		{{$owner := $tribeinfo.owner}}
-		{{if $owner}}Owner Exists
-			{{if eq (toString .User.ID) $owner}}I am owner.
-				{{$members_converted := (cslice).AppendSlice (or $tribeinfo.members cslice)}}
-				{{if gt (len $members_converted) 0}}There are other tribe members.
-					You are the Owner of this tribe. You can not leave this tribe until you have transferred ownership to another member. 
-				{{else}}There are no tribe members.
-					Tribe has no members...deleting tribe {{$tribe2}}.
-					{{dbDel 0 (print "tribe_" (lower $tribe2))}}
-					{{- range $tribes -}}
-						{{- if ne . $tribe2 -}}
-							{{- $tribes_new = $tribes_new.Append . -}}
-						{{- end -}}
+			{{$dbkey := print "tribe_" (lower $reg.tribe)}}Tribe 1 Key: {{$dbkey}}
+			{{$tribeinfo := sdict}}
+			{{$pass := false }}
+			{{with dbGet 0 $dbkey}}
+				{{$tribeinfo = sdict .Value}}
+				{{$pass = true}}
+			{{end}}
+			||Tribe 1 Info: {{$tribeinfo}}||
+			{{if $pass}}
+				{{$owner := $tribeinfo.owner}}
+				{{if $owner}}{{/*Owner Exists*/}}
+					{{if eq (toString .User.ID) $owner}}{{/*I am owner.*/}}
+					{{$members_converted := (cslice).AppendSlice (or $tribeinfo.members cslice)}}
+						{{if gt (len $members_converted) 0}}{{/*There are other tribe members.*/}}
+							{{sendMessage nil "You are the Owner of this tribe. You can not leave this tribe until you have transferred ownership to another member."}} ADD SEND TO TRIBE MANAGEMENT
+						{{else}}{{/*There are no tribe members.*/}}
+							{{sendMessage nil (print "Tribe has no members...deleting tribe " $reg.tribe ".")}}
+							{{dbDel 0 (print "tribe_" (lower $reg.tribe))}}
+							{{- range $tribes -}}
+								{{- if ne . $reg.tribe -}}
+									{{- $tribes_new = $tribes_new.Append . -}}
+								{{- end -}}
+							{{end}}
+							{{dbSet 0 "tribes" $tribes_new}}
+						{{end}}
+					{{else}}{{/*I am not the owner.*/}}
+						{{$members_converted := (cslice).AppendSlice $tribeinfo.members}}
+						{{- range $members_converted -}}
+							{{- if ne . (toString $.User.ID) -}}
+								{{- $members_new = $members_new.Append . -}}
+							{{- end -}}
+							{{$tribeinfo.Set "members" $members_new}}
+							{{dbSet 0 $dbkey $tribeinfo}}
+						{{end}}
 					{{end}}
-					{{dbSet 0 "tribes" $tribes_new}}
+					{{sendMessage nil (joinStr "" .User.Mention ", ok, you have left " (toString $reg.tribe) ".")}}{{execCC 73 nil 0 ""}}
+				{{else}}{{/*No owner exists.*/}} 
+					{{$members_converted := (cslice).AppendSlice $tribeinfo.members}}
+					{{if gt (len $members_converted) 1}}{{/*There are other tribe members.*/}}
+						{{- range $members_converted -}}
+							{{- if ne . (toString $.User.ID) -}}
+								{{- $members_new = $members_new.Append . -}}
+							{{- end -}}
+							{{$tribeinfo.Set "members" $members_new}}
+							{{dbSet 0 $dbkey $tribeinfo}}
+						{{end}}
+					{{else}}{{/*There are no other tribe members.*/}} 
+						{{sendMessage nil (print "Tribe has no members, and no owner...deleting tribe " $reg.tribe ".")}}
+						{{dbDel 0 (print "tribe_" (lower $reg.tribe))}}
+						{{- range $tribes -}}
+							{{- if ne . $reg.tribe -}}
+								{{- $tribes_new = $tribes_new.Append . -}}
+							{{- end -}}
+						{{end}}
+						{{dbSet 0 "tribes" $tribes_new}}
+					{{end}}
+					{{sendMessage nil (joinStr "" .User.Mention ", ok, you have left " (toString $reg.tribe) ".")}}
 				{{end}}
-			{{else}}I am not the owner.
-				{{$members_converted := (cslice).AppendSlice $tribeinfo.members}}
-				{{- range $members_converted -}}
-					{{- if ne (toString .) (toString $.User.ID) -}}
-						{{- $members_new = $members_new.Append (toString .) -}}
-					{{- end -}}
-					{{$tribeinfo.Set "members" $members_new}}
-					{{dbSet 0 $dbkey $tribeinfo}}
-				{{end}}
-			{{end}}
-			{{sendMessage nil (joinStr "" .User.Mention ", ok, you have left " (toString $tribe2) ".")}}
-		{{else}}No owner exists. 
-			{{$members_converted := (cslice).AppendSlice $tribeinfo.members}}
-			{{if gt (len $members_converted) 1}}There are other tribe members.
-				{{- range $members_converted -}}
-					{{- if ne (toString .) (toString $.User.ID) -}}
-						{{- $members_new = $members_new.Append (toString .) -}}
-					{{- end -}}
-					{{$tribeinfo.Set "members" $members_new}}
-					{{dbSet 0 $dbkey $tribeinfo}}
-				{{end}}
-			{{else}}There are no other tribe members. 
-				Tribe has no members, and no owner...deleting tribe {{$tribe2}}.
-				{{dbDel 0 (print "tribe_" (lower $tribe2))}}
-				{{- range $tribes -}}
-					{{- if ne . $tribe2 -}}
-						{{- $tribes_new = $tribes_new.Append . -}}
-					{{- end -}}
-				{{end}}
-				{{dbSet 0 "tribes" $tribes_new}}
-			{{end}}
-			{{sendMessage nil (joinStr "" .User.Mention ", ok, you have left " (toString $tribe2) ".")}}
+			{{else}}
+				{{sendMessage nil (joinStr "" .User.Mention ", ok, " (toString $reg.tribe) " cleared from your registration.")}}
+			{{end}}{{/*if pass*/}}
+			{{$temp := sdict "reg" $reg "Q" "First Tribe Leave" "var" "tribe" "User" .User}}
+			{{template "leave complete" $temp}}
 		{{end}}
+	{{else if and (eq $tribeedit "second") (eq $step "leave")}}
+		{{if eq $tribe2 "Unregistered"}}
+			{{sendMessage nil "You can't leave a tribe you haven't registered yet. Please run `-regedit` again and join or create a tribe."}}
 		{{else}}
-		{{sendMessage nil (joinStr "" .User.Mention ", ok, " (toString $tribe2) " cleared from your registration.")}}
-		{{end}}{{/*if pass*/}}
-		{{$temp := sdict "reg" $reg "Q" "Second Tribe Leave" "var" "tribe2" "User" .User}}
-		{{template "leave complete" $temp}}
+			{{$dbkey := print "tribe_" (lower $tribe2)}}||Tribe 2 Key: {{$dbkey}}||
+			{{$tribeinfo := sdict}}
+			{{$pass := false }}
+			{{with dbGet 0 $dbkey}}
+				{{$tribeinfo = sdict .Value}}
+				{{$pass = true}}
+			{{end}}
+			||Tribe 2 Info: {{$tribeinfo}}||
+			{{if $pass}}
+				{{$owner := $tribeinfo.owner}}
+				{{if $owner}}{{/*Owner Exists*/}}
+					{{if eq (toString .User.ID) $owner}}{{/*I am owner.*/}}
+						{{$members_converted := (cslice).AppendSlice (or $tribeinfo.members cslice)}}
+						{{if gt (len $members_converted) 0}}{{/*There are other tribe members.*/}}
+							{{sendMessage nil "You are the Owner of this tribe. You can not leave this tribe until you have transferred ownership to another member."}} SEND TO TRIBE MANAGEMENT  
+						{{else}}{{/*There are no tribe members.*/}}
+							{{sendMessage nil (print "Tribe has no members...deleting tribe " $tribe2 ".")}}
+							{{dbDel 0 (print "tribe_" (lower $tribe2))}}
+							{{- range $tribes -}}
+								{{- if ne . $tribe2 -}}
+									{{- $tribes_new = $tribes_new.Append . -}}
+								{{- end -}}
+							{{end}}
+							{{dbSet 0 "tribes" $tribes_new}}
+						{{end}}
+					{{else}}{{/*I am not the owner.*/}}
+						{{$members_converted := (cslice).AppendSlice $tribeinfo.members}}
+						{{- range $members_converted -}}
+							{{- if ne (toString .) (toString $.User.ID) -}}
+								{{- $members_new = $members_new.Append (toString .) -}}
+							{{- end -}}
+							{{$tribeinfo.Set "members" $members_new}}
+							{{dbSet 0 $dbkey $tribeinfo}}
+						{{end}}
+					{{end}}
+					{{sendMessage nil (joinStr "" .User.Mention ", ok, you have left " (toString $tribe2) ".")}}
+				{{else}}{{/*No owner exists.*/}} 
+				{{$members_converted := (cslice).AppendSlice $tribeinfo.members}}
+					{{if gt (len $members_converted) 1}}{{/*There are other tribe members.*/}}
+						{{- range $members_converted -}}
+							{{- if ne (toString .) (toString $.User.ID) -}}
+								{{- $members_new = $members_new.Append (toString .) -}}
+							{{- end -}}
+							{{$tribeinfo.Set "members" $members_new}}
+							{{dbSet 0 $dbkey $tribeinfo}}
+						{{end}}
+					{{else}}{{/*There are no other tribe members.*/}}
+						{{sendMessage nil (print "Tribe has no members, and no owner...deleting tribe "$tribe2 ".")}}
+						{{dbDel 0 (print "tribe_" (lower $tribe2))}}
+						{{- range $tribes -}}
+							{{- if ne . $tribe2 -}}
+								{{- $tribes_new = $tribes_new.Append . -}}
+							{{- end -}}
+						{{end}}
+						{{dbSet 0 "tribes" $tribes_new}}
+					{{end}}
+					{{sendMessage nil (joinStr "" .User.Mention ", ok, you have left " (toString $tribe2) ".")}}
+				{{end}}
+			{{else}}
+				{{sendMessage nil (joinStr "" .User.Mention ", ok, " (toString $tribe2) " cleared from your registration.")}}
+			{{end}}{{/*if pass*/}}
+			{{$temp := sdict "reg" $reg "Q" "Second Tribe Leave" "var" "tribe2" "User" .User "dbkey" $dbkey}}
+			{{template "leave complete" $temp}}
+		{{end}}
 	{{end}}
-{{else if and (eq $tribeedit "second") (eq $step "create")}}
-	{{sendMessage nil (joinStr "" .User.Mention ", ok, type what you would like the Tribe to be called.")}}
-	{{$Q = "Second Tribe Create"}}
-	{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
-{{end}}
 {{end}}
 

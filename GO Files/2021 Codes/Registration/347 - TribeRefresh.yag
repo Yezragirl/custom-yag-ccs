@@ -1,0 +1,38 @@
+{{/*triberefresh should update the registration posts with any edited info. */}}
+||Code 347||
+{{$tribeinfo := sdict (dbGet 0 "tribe_testing tribe").Value}}
+{{if $tribeinfo.public}}
+    {{$delpublic := deleteMessage 769590958131904532 (toInt64 $tribeinfo.public) 0}}
+{{end}}
+{{$admins := or $tribeinfo.admins sdict}}
+{{$members := or $tribeinfo.members sdict}}
+{{$memberslist := ""}}
+{{if eq (len $members) 0}}
+	{{$memberslist = "No Members"}}
+{{else}}
+	{{- range $members -}}
+		{{$who := userArg .}}
+        {{$memberlist = (joinStr ", " $memberlist .)}}
+	{{- end}}
+{{end}}
+    {{$adminslist := ""}}
+{{if eq (len $admins) 0}}
+	{{$adminslist = "No Admins"}}
+{{else}}
+	{{- range $admins -}}
+		{{$who := userArg .}}
+        {{$adminslist = (joinStr ", " $adminslist .)}}
+	{{- end}}
+{{end}}
+    {{$color := randInt 111111 999999 }}
+    {{$embed := cembed 
+        "color" $color
+        "fields" (cslice 
+        (sdict "name" "Tribe Name" "value" (toString $tribeinfo.name) ) 
+        (sdict "name" "Owner" "value" (userArg $tribeinfo.owner).Mention ) 
+        (sdict "name" "Admins" "value" $adminslist ) 
+        (sdict "name" "Members" "value" $memberslist))
+        "thumbnail" (sdict "url" "https://cdn.discordapp.com/attachments/665932077853704202/988642543963086878/Home.png" )}}
+        {{$public := sendMessageRetID 769590958131904532 $embed}}
+        {{$tribeinfo.Set "public" (toString $public)}}
+    {{dbSet 0 "tribe_testing tribe" $tribeinfo}}

@@ -1,9 +1,7 @@
 {{if (eq .Channel.ParentID 635305499600093214)}}
 	{{$reg := (dbGet .User.ID "reg").Value}}
-	{{$Q := $reg.Q}}{{$admin := $reg.admin}}{{$age := $reg.age}}{{$gt := $reg.gt}}{{$name := $reg.name}}{{$pin := $reg.pin}}{{$public := $reg.public}}{{$ref := $reg.ref}}{{$parentguardian := $reg.parentguardian}}
-	{{$tribe := $reg.tribe}}{{$tribe2 := $reg.tribe2}}
-	{{if not $tribe}}{{$tribe = "Unregistered"}}{{$reg.Set "tribe" $tribe}}{{dbSet .User.ID "reg" $reg}}{{end}}
-	{{if not $tribe2}}{{$tribe2 = "Unregistered"}}{{$reg.Set "tribe2" $tribe2}}{{dbSet .User.ID "reg" $reg}}{{end}}
+	{{if not $reg.tribe}}{{$reg.Set "tribe" "Unregistered"}}{{dbSet .User.ID "reg" $reg}}{{end}}
+	{{if not $reg.tribe2}}{{$reg.Set "tribe2" "Unregistered"}}{{dbSet .User.ID "reg" $reg}}{{end}}
 {{$MsgID := .Reaction.MessageID}}
 {{$tribeselect := ""}}
 {{$tribesave := ""}}
@@ -22,14 +20,14 @@
 
 {{$tribeBitsLookup := sdict "Edit First Tribe Join" (sdict "ordinal" "first" "key" "tribe") "Edit Second Tribe Join" (sdict "ordinal" "second" "key" "tribe2") 	}}
 	
-	{{if $tribeBits := $tribeBitsLookup.Get (toString $Q)}}
+	{{if $tribeBits := $tribeBitsLookup.Get (toString $reg.Q)}}
 		{{if eq $tribeselect "Try Again"}}
 			{{execCC 222 nil 0 (sdict "tribe" $tribeBits.ordinal "step" "join")}}
 		{{else}}
 			{{if eq $tribeBits.ordinal "first"}}
-				{{$tribesave = $tribe}}
+				{{$tribesave = $reg.tribe}}
 			{{else}}
-				{{$tribesave = $tribe2}}
+				{{$tribesave = $reg.tribe2}}
 			{{end}}
 Tribesave {{$tribesave}}
 			{{if eq $tribesave "Unregistered"}}
@@ -38,10 +36,10 @@ Tribesave {{$tribesave}}
 				{{$tribeinfo := sdict (dbGet 0 $dbkey).Value}}
 				{{$tribeinfo.Set "members" (((cslice).AppendSlice (or $tribeinfo.members cslice)).Append (toString .User.ID))}}
 				{{dbSet 0 $dbkey $tribeinfo}}
-				Added Tribe {{$tribeselect}} to your registration.
-				Added {{.User.Mention}} to {{$tribeselect}} member roster.
+				{{sendMessage nil (print "Added Tribe " $tribeselect " to your registration.")}}
+				{{sendMessage nil (print "Added " .User.Mention " to " $tribeselect " member roster."}}
 				{{removeRoleID 658469834589208616}}
-				{{execCC 74 nil 0 ""}}
+				{{execCC 74 nil 0 ""}}{{execCC 222 nil 0 ""}}
 			{{else}}
 				{{$dbkey := print "tribe_" (lower $tribesave)}}key {{$dbkey}} 
 				{{$tribeinfo := or ((sdict (dbGet 0 $dbkey).Value) sdict)}}tribe info {{$tribeinfo}}

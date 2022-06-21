@@ -1,0 +1,418 @@
+Thatch
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**Thatch Tier**__"
+	"Description" "Single Dino - 500 <:bbs:583143695927214091>\nSingle Dino - Gender Specific - 600 <:bbs:583143695927214091>\nBreeding Pair - 1,100 <:bbs:583143695927214091>\nSingle Variant Dino - 750 <:bbs:583143695927214091>\nSingle Variant Dino - Gender Specific - 825 <:bbs:583143695927214091>\nVariant Breeding Pair - 1,650 <:bbs:583143695927214091>"
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "Available on XBox/Win 10 and Steam" "value" "Achatina, Archaeopteryx, Bulbdog, Compy, Dilophosaur, Dimorphodon, Dodo, Electrophorus, Featherlight, Giant Bee, Glowtail, Hesperornis, Ichthyornis, Jerboa, Kairuku, Lystrosaurus, Mesopithecus, Microraptor, Onychonycteris, Otter, Oviraptor, Ovis, Pegomastax, Scout, Shinehorn, Vulture" ) 
+	(sdict "name" "Available on Steam Only" "value" "Arganodus, Arowana, Binturong, Chinlea, Giant Vampire Squid, Lungfish, Perch, Pike, Pygmy Gryphon" )) }}
+{{sendMessage nil $embed}}
+{{deleteTrigger 1}}
+
+Wood
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**Wood Tier**__"
+	"Description" "Single Dino - 1,000 <:bbs:583143695927214091>\nSingle Dino - Gender Specific - 1,200 <:bbs:583143695927214091>\nBreeding Pair - 2,200 <:bbs:583143695927214091>\nSingle Variant Dino - 1,500 <:bbs:583143695927214091>\nSingle Variant Dino - Gender Specific - 1,800 <:bbs:583143695927214091>\nVariant Breeding Pair - 3,300 <:bbs:583143695927214091>"
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "Available on XBox/Win 10 and Steam" "value" "Anglerfish, Araneo, Beelzebufo, Carbonemys, Dimetrodon, Diplocaulus, Dung Beetle, Gallimimus, Gasbag, Hyaenodon, Ichthyosaurus, Lymantria, Manta, Moschops, Pachy, Pachyrhinosaurus, Parasaur, Pelagornis, Phiomia, Procoptodon, Pteranodon, Pulmonoscorpius, Sabertooth, Tapejara, Terror Bird, Troodon" ) 
+	(sdict "name" "Available on Steam Only" "value" "Acrophyseter, Banguela, Elephantosaurus, Fiddler Crab, Giant Octopus, Leopard Seal, Metriacanthosaurus, Phosphatodraco, Piraiba Catfish, Psittacosaurus, Red Panda, Walrus" )) }}
+{{sendMessage nil $embed}}
+{{deleteTrigger 1}}
+
+Glass
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**Glass Tier**__"
+	"Description" "Single Dino - 1,500 <:bbs:583143695927214091>\nSingle Dino - Gender Specific - 1,800 <:bbs:583143695927214091>\nBreeding Pair - 3,300 <:bbs:583143695927214091>\nSingle Variant Dino - 2,250 <:bbs:583143695927214091>\nSingle Variant Dino - Gender Specific - 2,700 <:bbs:583143695927214091>\nVariant Breeding Pair - 4,950 <:bbs:583143695927214091>"
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "Available on XBox/Win 10 and Steam" "value" "Ankylosaurus, Castoroides, Direwolf, Doedicurus, Enforcer, Equus, Gigantopithecus, Iguanodon, Megaloceros, Morellatops, Triceratops" ) 
+	(sdict "name" "Available on Steam Only" "value" "Anthracosaurus, Concavenator, Deltadromeus, Dinocrocuta, Gigantophis, Gigantspinosaurus, Hadal Dragonfish, Helicoprion, Nigersaurus, Ophthalmosaurus, Protostega, Qianzhousaurus, Saurapelta, Shunosaurus, Styracosaurus, Titan Sailfish, Torosaur, Zygophyseter" )) }}
+{{sendMessage nil $embed}}
+{{deleteTrigger 1}}
+
+Stone
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**Stone Tier**__"
+	"Description" "Single Dino - 2,000 <:bbs:583143695927214091>\nSingle Dino - Gender Specific - 2,400 <:bbs:583143695927214091>\nBreeding Pair - 4,400 <:bbs:583143695927214091>\nSingle Variant Dino - 3,000 <:bbs:583143695927214091>\nSingle Variant Dino - Gender Specific - 3,600 <:bbs:583143695927214091>\nVariant Breeding Pair - 6,600 <:bbs:583143695927214091>"
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "Available on XBox/Win 10 and Steam" "value" "Argentavis, Arthropluera, Baryonyx, Daeodon, Fjordhawk, Kaprosuchus, Kentrosaurus, Mantis, Megalosaurus, Purlovia, Raptor, Ravager, Roll Rat, Sarco, Sinomacrops, Stegosaurus, Thorny Dragon, Titanoboa" ) 
+	(sdict "name" "Available on Steam Only" "value" "Anteosaurus, Austroraptor, Camarasaurus, Cryptoclidus, Daspletosaurus, Dilophovenatrix, Europasaurus, Harpogornis, Herrerasaurus, Hydrotherosaurus, Ichthyovenator, Kronosaurus, Plateosaurus, Saltwater Crocodile, Stygimoloch, Tylosaurus" )) }}
+{{sendMessage nil $embed}}
+{{deleteTrigger 1}}
+
+Adobe
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**Adobe Tier**__"
+	"Description" "Single Dino - 2,500 <:bbs:583143695927214091>\nSingle Dino - Gender Specific - 3,000 <:bbs:583143695927214091>\nBreeding Pair - 5,500 <:bbs:583143695927214091>\nSingle Variant Dino - 3,750 <:bbs:583143695927214091>\nSingle Variant Dino - Gender Specific - 4,500 <:bbs:583143695927214091>\nVariant Breeding Pair - 8,250 <:bbs:583143695927214091>"
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "Available on XBox/Win 10 and Steam" "value" "Allosaurus, Andrewsarchus, Basilosaurus, Carnotaurus, Chalicotherium, Deinonychus, Diplodocus, Direbear, Dunkleosteus, Exo-Mek, Ferox, Gacha, Mammoth, Megalania, Megalodon, Megatherium, Paraceratherium, Snow Owl, Therizinosaur, Thylacoleo, Tropeognathus" ) 
+	(sdict "name" "Available on Xbox Only" "value" "Griffin" )
+    (sdict "name" "Available on Steam Only" "value" "Anomalocaris, Archaeoindris, Australovenator, Balaur, Carcharodontosaurus, Chunkykingosaurus, Eastmanosteus, Epanterias, Eryops, Gargoyleosaurus, Goonch Catfish, Narwhal, Rajasaurus, Rhizodus, Segnosaurus, Tarbosaurus, Torvosaurus" )) }}
+{{sendMessage nil $embed}}
+{{deleteTrigger 1}}
+
+Metal
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**Metal Tier**__"
+	"Description" "Single Dino - 5,000 <:bbs:583143695927214091>\nSingle Dino - Gender Specific - 6,000 <:bbs:583143695927214091>\nBreeding Pair - 11,000 <:bbs:583143695927214091>\nSingle Variant Dino - 7,500 <:bbs:583143695927214091>\nSingle Variant Dino - Gender Specific - 9,000 <:bbs:583143695927214091>\nVariant Breeding Pair - 16,500 <:bbs:583143695927214091>"
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "Available on XBox/Win 10 and Steam" "value" "Blood Wyvern, Dinopithecus, Ember Wyvern, Fire Wyvern, Ice Wyvern, Lightning Wyvern, Maewing, Managarmr, Noglin, Plesiosaur, Poison Wyvern, Quetzal, Rex, Spinosaur, Tropical Wyvern, Velonasaur, Yutyrannus" ) 
+	(sdict "name" "Available on Steam Only" "value" "Apatasaurus, Arctic Gryphon, Becklespinax, Belluasaurus, Broadtooth Mako Shark, Corrosion Wyvern, Gigatitan, Goliath Tigerfish, Great Hammerhead Shark, Great White Shark, Hydrarchos, Lucanidae, Mountain Gryphon, Oxalaia, Pentaceratops, Shantungosaurus, Shonisaurus, Sinotyrannus, Suchomimus, Thorned Dreadweaver, Tiger Shark" )) }}
+{{sendMessage nil $embed}}
+{{deleteTrigger 1}}
+
+Tek
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**Tek Tier**__"
+	"Description" "Single Dino - 10,000 <:bbs:583143695927214091>\nSingle Dino - Gender Specific - 12,000 <:bbs:583143695927214091>\nBreeding Pair - 22,000 <:bbs:583143695927214091>\nSingle Variant Dino - 15,000 <:bbs:583143695927214091>\nSingle Variant Dino - Gender Specific - 18,000 <:bbs:583143695927214091>\nVariant Breeding Pair - 33,000 <:bbs:583143695927214091>"
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "Available on XBox/Win 10 and Steam" "value" "Amargasaurus, Astrodelphis, Basilisk, Bloodstalker, Desmodus, Giganotosaurus, Karkinos, Magmasaur, Megachelon, Mek, Mosasaurus, Phoenix, Reaper, Rock Drake, Rock Elemental, ShadowMane, Tek Hover Skiff, Tusoteuthis, Unicorn, Voidwyrm" ) 
+	(sdict "name" "Available on Steam Only" "value" "Brachauchenius, Deinocheirus, Fasolasuchus, Hatzegopteryx, Vipertooth Dragon, Fireball Dragon, Ridgeback Dragon, Ironbelly Dragon, Vipertooth Wyvern, Fireball Wyvern, Ironbelly Wyvern, Ridgeback Wyvern" )) }}
+{{sendMessage nil $embed}}
+{{deleteTrigger 1}}
+
+High Quality Tools
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**High Quality Tools**__"
+	"Description" "Ramshackle - 25 <:bbs:583143695927214091>\nApprentice - 50 <:bbs:583143695927214091>\nJourneyman - 100 <:bbs:583143695927214091>\nMastercraft - 200 <:bbs:583143695927214091>"
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "Available on XBox/Win 10 and Steam" "value" "Fishing Net, Fishing Rods, Climbing Picks, Metal Hatchets, Metal Picks, Metal Scythes" ) ) }}
+{{sendMessage nil $embed}}
+{{deleteTrigger 1}}
+
+Simple Tools
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**Simple Tools**__"
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "Available on XBox/Win 10 and Steam" "value" "Compass, Spyglass, Paintbrush, Parachute - 5 <:bbs:583143695927214091> each
+    Change Battery, Flare Gun, Scissors, Pliers, Spray Painter - 15 <:bbs:583143695927214091> each
+    25 Glowsticks  - 5 <:bbs:583143695927214091>" ) 
+	(sdict "name" "Available on Steam Only" "value" "Awesome Spyglass - 5 <:bbs:583143695927214091>" )) }}
+{{sendMessage nil $embed}}
+{{deleteTrigger 1}}
+
+Electronics and Traps
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**Electronics and Traps**__"
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "Available on XBox/Win 10 and Steam" "value" "Camera - 25 <:bbs:583143695927214091>\nBear Trap - 10 <:bbs:583143695927214091>\nLarge Bear Trap - 25 <:bbs:583143695927214091> " ) 
+) }}
+{{sendMessage nil $embed}}
+{{deleteTrigger 1}}
+
+Saddles
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**Saddles**__"
+	"Description" "Standard Saddles, not Tek, or Platform\nRamshackle - 50 <:bbs:583143695927214091>\nApprentice - 100 <:bbs:583143695927214091>\nJourneyman - 200 <:bbs:583143695927214091>\nMastercraft - 400 <:bbs:583143695927214091>"
+	"color" $color }}
+{{sendMessage nil $embed}}
+{{deleteTrigger 1}}
+
+Tek Saddles
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**Tek Saddles**__"
+	"Description" "*Tek Saddles have no Quality*\nAll Tek Saddles - 600 <:bbs:583143695927214091>"
+	"color" $color }}
+{{sendMessage nil $embed}}
+{{deleteTrigger 1}}
+
+Platform Saddles
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**Platform Saddles**__"
+	"Description" "Ramshackle - 250 <:bbs:583143695927214091>\nApprentice - 350 <:bbs:583143695927214091>\nJourneyman - 450 <:bbs:583143695927214091>\nMastercraft - 650 <:bbs:583143695927214091>"
+	"color" $color}}
+{{sendMessage nil $embed}}
+{{deleteTrigger 1}}
+
+Skins
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**Skins**__"
+	"Description" "*All Skins for Dinos or Players, including Glider Suit and Zipline Motor Attachment* - 25 <:bbs:583143695927214091> each"
+	"color" $color }}
+{{sendMessage nil $embed}}
+{{deleteTrigger 1}}
+
+Armor - Non-Tek
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**Armor - Non-Tek**__"
+	"Description" "*Each Piece Sold Separately*\nRamshackle - 25 <:bbs:583143695927214091>\nApprentice - 50 <:bbs:583143695927214091>\nJourneyman - 100 <:bbs:583143695927214091>\nMastercraft - 200 <:bbs:583143695927214091>"
+	"color" $color}}
+{{sendMessage nil $embed}}
+{{deleteTrigger 1}}
+
+Tek Armor
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**Tek Armor**__"
+	"Description" "*Tek Armor has no Quality*\nTek Armor Pieces, Tek Shield - 250 <:bbs:583143695927214091>"
+	"color" $color }}
+{{sendMessage nil $embed}}
+{{deleteTrigger 1}}
+
+Simple Weapons
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**Simple Weapons**__"
+	"Description" "Ramshackle - 25 <:bbs:583143695927214091>\nApprentice - 50 <:bbs:583143695927214091>\nJourneyman - 100 <:bbs:583143695927214091>\nMastercraft - 200 <:bbs:583143695927214091>"
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "Available on XBox/Win 10 and Steam" "value" "Pike, Metal Sword, Shotgun, Crossbow, Compound Bow, Shields, Simple Pistol, Longneck Rifle, Harpoon, Whip" ) 
+	(sdict "name" "Available on Steam Only" "value" "Huntsman's Boomerang, Muhreetle" )) }}
+{{sendMessage nil $embed}}
+{{deleteTrigger 1}}
+
+Advanced Weapons
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**Advanced Weapons**__"
+	"Description" "Ramshackle - 50 <:bbs:583143695927214091>\nApprentice - 100 <:bbs:583143695927214091>\nJourneyman - 200 <:bbs:583143695927214091>\nMastercraft - 400 <:bbs:583143695927214091>"
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "Available on XBox/Win 10 and Steam" "value" "Chainsaw, Fabricated Pistol, Pump Action Shotgun, Assault Rifle, Sniper Rifle, Flamethrower, Mek Attachments, Minigun, Mining Drill, Tek Bow, Tek Grenade Launcher, Tek Shoulder Cannon, Tek Rifle, Tek Claws, Tek Sword, Tek Railgun, Tek Pistol" ) 
+	(sdict "name" "Available on Steam Only" "value" "CAA Dart Rifle, Mineral Saw" )) }}
+{{sendMessage nil $embed}}
+{{deleteTrigger 1}}
+
+Ammo
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**Ammo**__"
+	"Description" "**Sold in Stacks of 25**"
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "Available on XBox/Win 10 and Steam" "value" "Flame Arrow, Grappling Hook, Metal Arrow, Spear Bolt, Tranq Arrow, Zipline Anchor - 25 <:bbs:583143695927214091>\nChain Bola, Simple Bullet, Simple Rifle Ammo, Simple Shotgun Ammo, Tranq Spear Bolt, Tranquilizer Dart - 50 <:bbs:583143695927214091>\nAdvanced Bullet, Advanced Rifle Bullet, Advanced Sniper Bullet, Cannon Ball, Flamethrower Ammo, Net Projectile, Pheromone Dart, Rocket Propelled Grenade, Shocking Tranquilizer Dart- 100 <:bbs:583143695927214091>\nRocket Homing Missile - 150 <:bbs:583143695927214091>" ) 
+	(sdict "name" "Available on Steam Only" "value" "Empty CO2 Cartridge, Shotput, Taco-Venom Arrow, Wooden Spear Bolt - 25 <:bbs:583143695927214091>\nCO2 Cartridge, Modified Tranquilizer Dart, Mothball Grenades - 50 <:bbs:583143695927214091>\nModified Shocking Tranquilizer Dart - 100 <:bbs:583143695927214091>\nImproved Tranquilizer Dart - 150 <:bbs:583143695927214091>" )) }}
+{{sendMessage nil $embed}}
+{{deleteTrigger 1}}
+
+Tek Utility Items
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**Tek Utility Items**__"
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "Available on XBox/Win 10 and Steam" "value" "Tek Canteen - 25 <:bbs:583143695927214091>\nDedicated Storage,  Pressure Plate, Tek Sensor - 50 <:bbs:583143695927214091>\nTek Jump Pad - 100 <:bbs:583143695927214091>\nTek Crop Plot, Sleeping Pod, Trough - 200 <:bbs:583143695927214091>\nGenerator - 300 <:bbs:583143695927214091>\nTransmitter - 400 <:bbs:583143695927214091>\nTeleporter - 850 <:bbs:583143695927214091>\nTek Forcefield - 1000 <:bbs:583143695927214091>" ) 
+	(sdict "name" "Available on Steam Only" "value" "Repulser Plate - 100 <:bbs:583143695927214091>\nCharge Injector - 300 <:bbs:583143695927214091>\nCharge Station, Drone Terminal, Planetary Shield - 1,000 <:bbs:583143695927214091>" )) }}
+{{sendMessage nil $embed}}
+{{deleteTrigger 1}}
+
+Advanced Structures
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**Advanced Structures**__"
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "Available on XBox/Win 10 and Steam" "value" "Beer Barrel, Refining Forge, Smithy - 100 <:bbs:583143695927214091>\nLoadout Manniquin - 500 <:bbs:583143695927214091>\nChemistry Bench, Fabricator, Industrial Cooker, Industrial Grill, Industrial Grinder, Ammo Box - 1,000 <:bbs:583143695927214091>\nIndustrial Forge, Tek Replicator, Egg Incubator, Remote Surveillance Console - 2,500 <:bbs:583143695927214091>" ) 
+	(sdict "name" "Available on Steam Only" "value" "Masonary Crafting Table, Settler Crafting Table, Villager Crafting Table - 100 <:bbs:583143695927214091>\nAD&W Crafting Table, Gryphon Nest, Transpositional Anvil, Science Table, CKFR Cooking Station, CKFR Grill - 1,000 <:bbs:583143695927214091>\nFarmer, Gardener, Harvester, Hatchery, Item Collector, Nanny, Sheep Herder, CKFR Forge, Laboratory - 2,500 <:bbs:583143695927214091>" )) }}
+{{sendMessage nil $embed}}
+{{deleteTrigger 1}}
+
+Consumables
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**Consumables**__"
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "Available on XBox/Win 10 and Steam" "value" "Bloodpacks - 1 <:bbs:583143695927214091> each\nElement, Soap, Nameless Venom, Leech Blood, Ambergris - 5 <:bbs:583143695927214091> each\nWyvern Milk, Box of Chocolates - 10 <:bbs:583143695927214091> each\nRegular Seeds, R-Seeds (stack of 25) - 5 <:bbs:583143695927214091>\nInstagrow Seeds (stack of 25) - 100 <:bbs:583143695927214091>\nRed Gems, Blue Gems, Green Gems (stack of 25) - 10 <:bbs:583143695927214091>\nMutagel (stack of 100) - 100 <:bbs:583143695927214091>" ) 
+	(sdict "name" "Available on Steam Only" "value" "Fiddler Crab Claws - 5 <:bbs:583143695927214091> each\nAberrant Polyplant Seeds, Strawberry Seeds (stack of 25) - 5 <:bbs:583143695927214091>\nAlpha Blood (Stack of 500) - 1,000 <:bbs:583143695927214091>" )) }}
+{{sendMessage nil $embed}}
+{{deleteTrigger 1}}
+
+Element Conversion
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**Element Dust Conversion**__"
+	"Description" "Minimum of 50,000 Dust - 1 <:bbs:583143695927214091> per Element\n*Includes conversion and transfer to one destination.*"
+	"color" $color}}
+{{sendMessage nil $embed}}
+{{deleteTrigger 1}}
+
+Resources
+{{$color := randInt 111111 999999 }}
+{{$embed1 := cembed 
+	"Title" "__**Resources**__"
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "Available on XBox/Win 10 and Steam" "value" "Water Vein - Free, up to 2 per base. 1500 <:bbs:583143695927214091> each after that\nOil Vein or City Terminal or Charging Station (Some of these are only available on select maps)- 5,000 <:bbs:583143695927214091>\nGas Vein or Wild Plant Species Z - 2,500 <:bbs:583143695927214091>" ))}}
+{{sendMessage nil $embed1}}
+{{deleteTrigger 1}}
+
+Chibis
+{{$color := randInt 111111 999999 }}
+{{$embed2 := cembed 
+	"Title" "__**Chibis**__"
+	"Description" "Common - 100 <:bbs:583143695927214091>\nUncommon - 200 <:bbs:583143695927214091>\nRare - 300 <:bbs:583143695927214091>\nVery Rare - 400 <:bbs:583143695927214091>\nLegendary - 500 <:bbs:583143695927214091>"
+	"color" $color}}
+{{sendMessage nil $embed2}}
+{{deleteTrigger 1}}
+
+Services
+{{$color := randInt 111111 999999 }}
+{{$embed3 := cembed 
+	"Title" "__**Services**__"
+	"Description" "**Subject to Admin Availability - No Discount**\n*Funds go to the Admin performing the Service*"
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "Available on XBox/Win 10 and Steam" "value" "Base Sitting - 200 <:bbs:583143695927214091>/Month (see `?base-sitting` for details)\nBase Clearing - 500 <:bbs:583143695927214091>/outpost, 1,000 <:bbs:583143695927214091>/base" ) 
+	(sdict "name" "Available on Xbox/Win 10 Only" "value" "Piping/Wiring - underground 1,000 <:bbs:583143695927214091>\nPiping/Wiring - removal 1,000 <:bbs:583143695927214091>" )) }}
+{{sendMessage nil $embed3}}
+{{deleteTrigger 1}}
+
+Blueprints
+{{$color := randInt 111111 999999 }}
+{{$embed4 := cembed 
+	"Title" "__**Blueprints**__"
+	"Description" "Blueprints cost 3x the price of the item.\n*Exceptions: Tek is 2x, Mining Drill & Fishing Rod is 1.5x.*"
+	"color" $color}}
+{{sendMessage nil $embed4}}
+{{deleteTrigger 1}}
+
+Paint
+{{$color := randInt 111111 999999 }}
+{{$embed5 := cembed 
+	"Title" "__**Paint**__"
+	"Description" "Paint Set: Includes 100 of Each Color - 1,000 <:bbs:583143695927214091>"
+	"color" $color}}
+{{sendMessage nil $embed5}}
+{{deleteTrigger 1}}
+
+
+Dino Painting or Imprinting
+{{$color := randInt 111111 999999 }}
+{{$embed6 := cembed 
+	"Title" "__**Dino Painting or Imprinting**__"
+	"Description" "Permanent Dino Painting - Changes the Region Colors and does transfer via Breeding\n100% Imprinting or Removal of Imprint\nNon-Breedables - 500 <:bbs:583143695927214091>\nBreedables - 1,000 <:bbs:583143695927214091>\n***This price is the cost to Imprint OR Paint, not both.***"
+	"color" $color}}
+{{sendMessage nil $embed6}}
+{{deleteTrigger 1}}
+
+Boss Fight Kit
+{{$color := randInt 111111 999999 }}
+{{$embed8 := cembed 
+	"Title" "__**Boss Fight Kit**__"
+	"Description" "All artifacts and trophies needed to start a specific boss fight - 1,000 <:bbs:583143695927214091>"
+	"color" $color}}
+{{sendMessage nil $embed8}}
+{{deleteTrigger 1}}
+
+Transfers
+{{$color := randInt 111111 999999 }}
+{{$embed7 := cembed 
+	"Title" "__**Transfers**__"
+	"Description" "Transfers are NOT available across platforms, only across maps."
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "Element Transfer" "value" "Up to 1,000 Element from 1 Map to 1 Map - 250 <:bbs:583143695927214091>" ) 
+	(sdict "name" "Dino Transfer" "value" "Only available for dinos that can not be transferred. Includes spawning of a new max level dino, painting, and imprinting, and red gunning old dino - 5,000 <:bbs:583143695927214091>" )
+	(sdict "name" "Trophy Transfer" "value" "Up to 100 from 1 Map to 1 Map - 250 <:bbs:583143695927214091>" )) }}
+{{sendMessage nil $embed7}}
+{{deleteTrigger 1}}
+
+
+Coupon Trade Up
+{{$color := randInt 111111 999999 }}
+{{$embed7 := cembed 
+	"Title" "__**Coupon Trade Up**__"
+	"Description" "Sponsors can trade in 3 Blacklist Coupons for 1 Alpha coupon."
+	"color" $color}}
+{{sendMessage nil $embed7}}
+{{deleteTrigger 1}}
+
+
+Raw Materials
+{{$color := randInt 111111 999999 }}
+{{$embed7 := cembed 
+	"Title" "__**Raw Materials**__"
+	"Description" "Price includes 10,000 of the Listed Material, and a Dedicated Storage Box to keep it in."
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "Tier 1 - 2,500 <:bbs:583143695927214091>" "value" "Chitin, Clay, Fiber, Flint, Fungal Wood, Hide, Keratin, Raw Salt, Sand, Silk, Stone, Sulfur, Thatch, Wood" ) 
+	(sdict "name" "Tier 2 - 5,000 <:bbs:583143695927214091>" "value" "Ambergris, Ammonite Bile, AnglerGel, Bio Toxin, Blue Crystalized Sap, Blue Gem, Cactus Sap, Charcoal, Congealed Gas Ball, Crystal, Fragmented Green Gem, Green Gem, Human Hair, Metal, Obsidian, Oil, Pelt, Primal Crystal, Red Crystalized Sap, Red Gem, Sap, Scrap Metal, Shell Fragment, Silica Pearls, Wool (Additionally available on STEAM Only: Carbon, Coal, Anthracite)" )
+	(sdict "name" "Tier 3 - 7,500 <:bbs:583143695927214091>" "value" "Achatina Paste, Black Pearl, Cementing Paste, Mutagel, Polymer (Additionally available on STEAM Only: Tungsten)" )) }}
+{{sendMessage nil $embed7}}
+{{deleteTrigger 1}}
+
+Dino Insurance
+{{$color := randInt 111111 999999 }}
+{{$embed7 := cembed 
+	"Title" "__**Dino Insurance**__"
+	"Description" "Dino insurance is a one time flat fee paid to protect a given dino. This dino will be cloned, and the original stored in an Admin Cryofridge. Should your dino die, and proof be given, your original dino will be returned to you. At which time, you can decide to re-insure it, or withdrawal it from the Admin Insurance Program."
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "Price" "Value" "5,000 <:bbs:583143695927214091>" )) }}
+{{sendMessage nil $embed7}}
+{{deleteTrigger 1}}
+
+Floating Platforms
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+	"Title" "__**Floating Platforms**__"
+	"Description" "*Price is for 1 platform. Can be Tree, Cliff or Ocean.*\n\nWhen using Floating Platforms, the current PVE rules will still apply. Please make sure that you review before you request a floating platform(s) to be placed via a Sponsormart ticket.\n\nIf the Floating Platform is being used as your base, it cannot not be in render of any usable land or areas which are unbuildable based on the PVE rules.\n\nIf the Floating Platform is being used as an addition to your base/outpost, it must be in render and will still follow the guidelines for size on the base/outpost.\n\nFor Outposts, a maximum of 1 floating platform is allowed.\nFor Bases, a maximum of 4 floating platforms are allowed."
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "Price" "Value" "5,000 <:bbs:583143695927214091>" )) }}
+{{sendMessage nil $embed7}}
+{{deleteTrigger 1}}
+
+Ascendant Level Items/Blueprints
+{{$color := randInt 111111 999999 }}
+{{$embed7 := cembed 
+	"Title" "__**Ascendant Level Items/Blueprints**__"
+	"Description" "*Any item or blueprint can be bought at the Ascendant level at the price of 2x the Arkmart Mastercraft cost. (Spawned at Quality 10)\nThese items are of better quality than Arkmart items purchased with Ascendant Upgrade Coupons. (Spawned at Quality 5)*"
+	"color" $color  }}
+{{sendMessage nil $embed7}}
+{{deleteTrigger 1}}
+
+Building Packs
+{{$color := randInt 111111 999999 }}
+{{$embed7 := cembed 
+	"Title" "__**Building Packs**__"
+	"Description" "Each pack consists of 25 pieces. All **Building** Pieces are available including Behemoth sizes and platforms. When ordering, please specify which pieces you would like. You can mix and match within the same pack i.e. Metal and Glass, or Wood and Adobe."
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "1,000 <:bbs:583143695927214091>" "value" "For Xbox/Win 10 and Steam this can include Wood/Adobe.\nFor Steam Only this can additionally include Settler/Stable." ) 
+	(sdict "name" "1,500 <:bbs:583143695927214091>" "value" "For Xbox/Win 10 and Steam this can include Stone.\nFor Steam Only this can additionally include Villager." )
+	(sdict "name" "2,000 <:bbs:583143695927214091>" "value" "For Xbox/Win 10 and Steam this can include Metal/Greenhouse.\nFor Steam Only this can additionally include Glass/Castle." )
+	(sdict "name" "2,500 <:bbs:583143695927214091>" "value" "For Xbox/Win 10 and Steam this can include Tek." )) }}
+{{sendMessage nil $embed7}}
+{{deleteTrigger 1}}
+
+200% Imprint
+{{$color := randInt 111111 999999 }}
+{{$embed7 := cembed 
+	"Title" "__**200% Imprint**__"
+	"Description" "Adding a 200% imprint to any imprintable dino. - 2,500 <:bbs:583143695927214091>\n*This price covers an imprint from 0% to 200%. The price is fixed and does not scale if the dino already has an imprint of any amount.*"
+	"color" $color}}
+{{sendMessage nil $embed7}}
+{{deleteTrigger 1}}
+
+
+{{$args := parseArgs 1 "-am messageID"
+    (carg "string" "Message ID")}}
+	{{$msg := $args.Get 0}}
+
+{{editMessage nil $msg $embed}}
+

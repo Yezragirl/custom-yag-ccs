@@ -13,7 +13,7 @@
 {{$rank := 0}}{{$emote := ""}}
 {{range (index .Message.Embeds 0).Fields -}}
 	{{- $parts := cslice -}}
-	{{- if or (eq $Q "owner") (eq $Q "member") -}}
+	{{- if or (eq $reg.Q "owner") (eq $reg.Q "member") -}}
 		{{$parts = reFindAllSubmatches `([^ ]+) (.+)` .Value -}}
 	{{- else -}}
 		{{$parts = reFindAllSubmatches `([^ ]+) (.+)` .Name -}}
@@ -58,8 +58,7 @@
 	{{- range $addEmotes -}}
 		{{- addMessageReactions nil $msg . -}}
 	{{- end -}}
-	{{$Q = "owner"}}
-	{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+	{{$reg.Set "Q" "owner"}}{{dbSet .User.ID "reg" $reg}}
 {{else if eq $optionselect "Manage Tribe Members"}}BUILD MEMBER LIST
 	{{$dbkey := print "tribe_" (lower $tribeedit)}}
 	{{$tribeinfo := sdict (dbGet 0 $dbkey).Value}}
@@ -86,35 +85,19 @@
 	{{- range $addEmotes -}}
 		{{- addMessageReactions nil $msg . -}}
 	{{- end -}}
-	{{$Q = "member"}}
-	{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+	{{$reg.Set "Q" "member"}}{{dbSet .User.ID "reg" $reg}}
 {{else if eq $optionselect "Change Tribe Name"}} CHANGE TRIBE NAME
 
 	{{$dbkey := print "tribe_" (lower $tribeedit)}}
 	{{$tribeinfo := sdict (dbGet 0 $dbkey).Value}}
 	{{$color := randInt 111111 999999 }}
 	{{sendMessage nil (joinStr "" "What would you like to change the name of " $tribeinfo.name " to?")}}
-	{{$Q = "change tribe name"}}
-	{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+	{{$reg.Set "Q" "change tribe name"}}{{dbSet .User.ID "reg" $reg}}
 
-{{else if eq $optionselect "Manage Tribe Bases"}} BUILD BASE LIST
+{{else if eq $optionselect "Manage Tribe Bases"}} Transfering to Base Registration.
+{{execCC 345 nil 0}}
 
-	{{$dbkey := print "tribe_" (lower $tribeedit)}}
-	{{$tribeinfo := sdict (dbGet 0 $dbkey).Value}}
-	{{$color := randInt 111111 999999 }}
-	{{$embed := cembed 
-	"Title" (joinStr "" "Tribe Management for " $tribeedit)
-	"color" $color
-	"fields" (cslice 
-	(sdict "name" "1️⃣ Transfer Tribe Ownership" "value" "Transfer ownership of this tribe to another tribe member." "inline" false) 
-	(sdict "name" "2️⃣ Manage Tribe Members" "value" "Remove Tribe Members." "inline" false) 
-	(sdict "name" "3️⃣ Change Tribe Name" "value" "Change the Tribe Name." "inline" false) 
-	(sdict "name" "4️⃣ Manage Tribe Bases" "value" "Edit/Remove Tribe Bases." "inline" false)
-	(sdict "name" "5️⃣ Cancel" "value" "Cancel Tribe Management." "inline" false))
-	"thumbnail" (sdict "url" "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/46b63d3c-ae67-464c-9a37-670829b2a157/d9eh2nw-f682acd6-3622-461c-8293-e7907bcc11d8.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOiIsImlzcyI6InVybjphcHA6Iiwib2JqIjpbW3sicGF0aCI6IlwvZlwvNDZiNjNkM2MtYWU2Ny00NjRjLTlhMzctNjcwODI5YjJhMTU3XC9kOWVoMm53LWY2ODJhY2Q2LTM2MjItNDYxYy04MjkzLWU3OTA3YmNjMTFkOC5wbmcifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6ZmlsZS5kb3dubG9hZCJdfQ.Tsz77fz2XHArjp78X1vPBVJTrKNZYpUP2cR-lKp_wo8") }}
-	{{$msg := sendMessageRetID nil $embed}}
-	{{addMessageReactions nil $msg "1️⃣" "2️⃣" "3️⃣" "4️⃣" "5️⃣"}}
-{{else if eq $Q "TribeMan"}}
+{{else if eq $reg.Q "TribeMan"}}
 	{{$tribeedit = $optionselect}}
 	{{$dbkey := print "tribe_" (lower $tribeedit)}}
 	{{$test := (dbGet 0 $dbkey).Value}}{{$test}}
@@ -133,25 +116,25 @@
 	"thumbnail" (sdict "url" "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/46b63d3c-ae67-464c-9a37-670829b2a157/d9eh2nw-f682acd6-3622-461c-8293-e7907bcc11d8.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOiIsImlzcyI6InVybjphcHA6Iiwib2JqIjpbW3sicGF0aCI6IlwvZlwvNDZiNjNkM2MtYWU2Ny00NjRjLTlhMzctNjcwODI5YjJhMTU3XC9kOWVoMm53LWY2ODJhY2Q2LTM2MjItNDYxYy04MjkzLWU3OTA3YmNjMTFkOC5wbmcifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6ZmlsZS5kb3dubG9hZCJdfQ.Tsz77fz2XHArjp78X1vPBVJTrKNZYpUP2cR-lKp_wo8") }}
 	{{$msg := sendMessageRetID nil $embed}}
 	{{addMessageReactions nil $msg "1️⃣" "2️⃣" "3️⃣" "4️⃣" "5️⃣"}}
-{{else if eq $Q "owner"}}
+{{else if eq $reg.Q "owner"}}
 	{{$newowner := toString (reFind `(\d+)` $optionselect)}}
 	{{$dbkey := print "tribe_" (lower $tribeedit)}}
 	{{$tribeinfo := or (dbGet 0 $dbkey).Value sdict}}
 	{{$currentowner := $tribeinfo.owner}}
-	{{$members_converted := (cslice).AppendSlice $tribeinfo.members}}Removing New Owner from Member Roster.
+	{{$members_converted := (cslice).AppendSlice $tribeinfo.members}}{{sendMessage nil "Removing New Owner from Member Roster."}}
 	{{$members_new := cslice}}
 				{{- range $members_converted -}}
 					{{- if ne (toString .) $newowner -}}
 						{{- $members_new = $members_new.Append . -}}
 					{{- end -}}
 					{{$tribeinfo.Set "members" $members_new}}
-					{{$tribeinfo.Set "members" (((cslice).AppendSlice (or $tribeinfo.members cslice)).Append $currentowner)}}Adding Old Owner to Member Roster.
-					{{$tribeinfo.Set "owner" $newowner}}Setting New Owner. 
+					{{$tribeinfo.Set "members" (((cslice).AppendSlice (or $tribeinfo.members cslice)).Append $currentowner)}}{{sendMessage nil "Adding Old Owner to Member Roster."}}
+					{{$tribeinfo.Set "owner" $newowner}}{{sendMessage nil "Setting New Owner."}} 
 					{{dbSet 0 $dbkey $tribeinfo}}
-Ownership transfered from {{(userArg $currentowner).Mention}} to {{(userArg $newowner).Mention}}.
+					{{sendMessage nil (print "Ownership transfered from " (userArg $currentowner).Mention " to "(userArg $newowner).Mention ".")}}
 	{{removeRoleID 770393574734692363}}{{/*Tribe Management Role*/}}
 				{{end}}
-{{else if eq $Q "member"}}
+{{else if eq $reg.Q "member"}}
 {{$optionselect}}
 
 

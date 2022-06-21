@@ -1,41 +1,47 @@
 {{$msgID := .ReactionMessage.ID}}
 {{$reg := (dbGet .User.ID "reg").Value}}
-{{$Q := $reg.Q}}{{$admin := $reg.admin}}{{$age := $reg.age}}{{$gt := $reg.gt}}{{$name := $reg.name}}{{$pin := $reg.pin}}{{$public := $reg.public}}{{$ref := $reg.ref}}{{$parentguardian := $reg.parentguardian}}
-{{$tribe := $reg.tribe}}{{$tribe2 := $reg.tribe2}}
-{{if not $tribe}}{{$tribe = "Unregistered"}}{{$reg.Set "tribe" $tribe}}{{dbSet .User.ID "reg" $reg}}{{end}}
-{{if not $tribe2}}{{$tribe2 = "Unregistered"}}{{$reg.Set "tribe2" $tribe2}}{{dbSet .User.ID "reg" $reg}}{{end}}
+{{if not $reg.tribe}}{{$reg.Set "tribe" "Unregistered"}}{{dbSet .User.ID "reg" $reg}}{{end}}
+{{if not $reg.tribe2}}{{$reg.Set "tribe2" "Unregistered"}}{{dbSet .User.ID "reg" $reg}}{{end}}
 {{$color := randInt 111111 999999 }}
-
+{{$graphics := sdict "Both" "https://cdn.discordapp.com/attachments/665932077853704202/982095282013618226/dual_logo_transparent.png" "Steam" "https://cdn.discordapp.com/attachments/665932077853704202/982096294451499018/unknown.png"  "Xbox" "https://cdn.discordapp.com/attachments/665932077853704202/982096249341763694/unknown.png" }}
+{{$gtnames := sdict "Both" "Gamer Tag/Steam Name" "Steam" "Steam Name"  "Xbox" "Gamer Tag" }}
+{{$gtname := $gtnames.Get $reg.pt}}
+{{$url := $graphics.Get $reg.pt}}
 {{if (eq .Channel.ParentID 635305499600093214)}} 
 {{if (hasRoleID 607041870966685706)}}{{/*Has Registered Role*/}}
-{{if and (eq .Reaction.Emoji.Name "1️⃣") (eq (toString $Q) "Edit")}}
-{{$Q = "Edit Name"}}
-{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+{{if and (eq .Reaction.Emoji.Name "1️⃣") (eq (toString $reg.Q) "Edit")}}
+{{$reg.Set "Q" "Edit Name"}}{{dbSet .User.ID "reg" $reg}}
 {{deleteAllMessageReactions nil $msgID}}
-{{sendMessage nil (joinStr "" .User.Mention ", what's your *new* **in game name**?")}}
-{{else if and (eq .Reaction.Emoji.Name "2️⃣") (eq (toString $Q) "Edit")}}
-{{$Q = "Edit Tribe"}}
-{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+{{sendMessage nil (joinStr "" .User.Mention ", what's your *new* **in game name**? Type 'cancel' to cancel.")}}
+{{else if (and (eq .Reaction.Emoji.Name "6️⃣") (eq  (toString $reg.Q) "Edit"))}}
+	{{deleteAllMessageReactions nil $msgID}}
+	{{$reg.Set "Q" "Done"}}{{dbSet .User.ID "reg" $reg}}
+	{{execCC 74 nil 0 ""}}
+	{{removeRoleID 658469834589208616}}
+	{{sleep 3}}
+	{{exec "tickets close" "Done Editing Registration"}}
+{{else if and (eq .Reaction.Emoji.Name "2️⃣") (eq  (toString $reg.Q) "Edit")}}
+{{$reg.Set "Q" "Edit Tribe"}}{{dbSet .User.ID "reg" $reg}}
 {{deleteAllMessageReactions nil $msgID}}
 {{$embed := cembed 
 	"color" $color
 	"Title" "Tribe Edit Menu"
-	"description" "Please select the tribe information you would like to edit by reacting to the number associated."
+	"description" "Please select the tribe information you would like to edit by reacting to the number associated. You can Create, Join, or Leave a tribe."
 	"fields" (cslice 
-	(sdict "name" ":one: Tribe 1" "value" (toString $tribe) ) 
-	(sdict "name" ":two: Tribe 2" "value" (toString $tribe2) ) 
+	(sdict "name" ":one: Tribe 1" "value" (toString $reg.tribe) ) 
+	(sdict "name" ":two: Tribe 2" "value" (toString $reg.tribe2) ) 
 	(sdict "name" ":three: Done Editing" "value" "Use this to stop editing your registration information." ))
 	"thumbnail" (sdict "url" (.User.AvatarURL "1024"))}}
 	{{$msg := sendMessageRetID nil $embed}}
 	{{addMessageReactions nil $msg "1️⃣" "2️⃣" "3️⃣"}}
 	{{deleteAllMessageReactions nil $msgID}}
-{{else if or (and (eq .Reaction.Emoji.Name "1️⃣") (eq (toString $Q) "Edit Tribe")) (and .ExecData (eq (toString $Q) "Edit Tribe"))}}
+{{else if or (and (eq .Reaction.Emoji.Name "1️⃣") (eq  (toString $reg.Q) "Edit Tribe")) (and .ExecData (eq  (toString $reg.Q) "Edit Tribe"))}}
 {{$embed := cembed 
 	"color" $color
 	"Title" "Tribe Edit Menu"
 	"description" "Please select the tribe information you would like to edit by reacting to the number associated."
 	"fields" (cslice 
-	(sdict "name" "Current Tribe 1" "value" (toString $tribe) ) 
+	(sdict "name" "Current Tribe 1" "value" (toString $reg.tribe) ) 
 	(sdict "name" ":one: Join/Change Tribe 1" "value" "** **" ) 
 	(sdict "name" ":two: Leave Tribe 1" "value" "** **" ) 
 	(sdict "name" ":three: Create New Tribe" "value" "** **" ) 
@@ -43,16 +49,15 @@
 	"thumbnail" (sdict "url" (.User.AvatarURL "1024"))}}
 	{{$msg := sendMessageRetID nil $embed}}
 	{{addMessageReactions nil $msg "1️⃣" "2️⃣" "3️⃣" "4️⃣"}}
-{{$Q = "First Tribe"}}
-{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+{{$reg.Set "Q" "First Tribe"}}{{dbSet .User.ID "reg" $reg}}
 {{deleteAllMessageReactions nil $msgID}}
-{{else if and (eq .Reaction.Emoji.Name "2️⃣") (eq (toString $Q) "Edit Tribe")}}
+{{else if and (eq .Reaction.Emoji.Name "2️⃣") (eq  (toString $reg.Q) "Edit Tribe")}}
 {{$embed := cembed 
 	"color" $color
 	"Title" "Tribe Edit Menu"
 	"description" "Please select the tribe information you would like to edit by reacting to the number associated."
 	"fields" (cslice 
-	(sdict "name" "Current Tribe 2" "value" (toString $tribe2) ) 
+	(sdict "name" "Current Tribe 2" "value" (toString $reg.tribe2) ) 
 	(sdict "name" ":one: Join/Change Tribe 2" "value" "** **" ) 
 	(sdict "name" ":two: Leave Tribe 2" "value" "** **" ) 
 	(sdict "name" ":three: Create New Tribe" "value" "** **" ) 
@@ -60,57 +65,56 @@
 	"thumbnail" (sdict "url" (.User.AvatarURL "1024"))}}
 	{{$msg := sendMessageRetID nil $embed}}
 	{{addMessageReactions nil $msg "1️⃣" "2️⃣" "3️⃣" "4️⃣"}}
-{{$Q = "Second Tribe"}}
-{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+{{$reg.Set "Q" "Second Tribe"}}{{dbSet .User.ID "reg" $reg}}
 {{deleteAllMessageReactions nil $msgID}}
-{{else if  (eq (toString $Q) "Edit First Tribe Join")}}
-{{else if  (eq (toString $Q) "Edit Second Tribe Join")}}
-{{else if and (eq .Reaction.Emoji.Name "1️⃣") (eq (toString $Q) "First Tribe")}}
+{{else if  (eq  (toString $reg.Q) "Edit First Tribe Join")}}
+{{else if  (eq  (toString $reg.Q) "Edit Second Tribe Join")}}
+{{else if and (eq .Reaction.Emoji.Name "1️⃣") (eq  (toString $reg.Q) "First Tribe")}}
 {{execCC 222 nil 0 (sdict "tribe" "first" "step" "join")}}
 {{deleteAllMessageReactions nil $msgID}}
-{{else if and (eq .Reaction.Emoji.Name "2️⃣") (eq (toString $Q) "First Tribe")}}
+{{else if and (eq .Reaction.Emoji.Name "2️⃣") (eq  (toString $reg.Q) "First Tribe")}}
 {{execCC 222 nil 0 (sdict "tribe" "first" "step" "leave")}}
 {{deleteAllMessageReactions nil $msgID}}
-{{else if and (eq .Reaction.Emoji.Name "3️⃣") (eq (toString $Q) "First Tribe")}}
+{{else if and (eq .Reaction.Emoji.Name "3️⃣") (eq  (toString $reg.Q) "First Tribe")}}
 {{execCC 222 nil 0 (sdict "tribe" "first" "step" "create")}}
 {{deleteAllMessageReactions nil $msgID}}
-{{else if and (eq .Reaction.Emoji.Name "1️⃣") (eq (toString $Q) "Second Tribe")}}
+{{else if and (eq .Reaction.Emoji.Name "1️⃣") (eq  (toString $reg.Q) "Second Tribe")}}
 {{execCC 222 nil 0 (sdict "tribe" "second" "step" "join")}}
 {{deleteAllMessageReactions nil $msgID}}
-{{else if and (eq .Reaction.Emoji.Name "2️⃣") (eq (toString $Q) "Second Tribe")}}
+{{else if and (eq .Reaction.Emoji.Name "2️⃣") (eq  (toString $reg.Q) "Second Tribe")}}
 {{execCC 222 nil 0 (sdict "tribe" "second" "step" "leave")}}
 {{deleteAllMessageReactions nil $msgID}}
-{{else if and (eq .Reaction.Emoji.Name "3️⃣") (eq (toString $Q) "Second Tribe")}}
+{{else if and (eq .Reaction.Emoji.Name "3️⃣") (eq  (toString $reg.Q) "Second Tribe")}}
 {{execCC 222 nil 0 (sdict "tribe" "second" "step" "create")}}
 {{deleteAllMessageReactions nil $msgID}}
-{{else if and (eq .Reaction.Emoji.Name "3️⃣") (eq (toString $Q) "Edit")}}
-{{$Q = "Edit GT"}}
-{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+{{else if and (eq .Reaction.Emoji.Name "3️⃣") (eq  (toString $reg.Q) "Edit")}}
+{{$reg.Set "Q" "Edit GT"}}{{dbSet .User.ID "reg" $reg}}
 {{deleteAllMessageReactions nil $msgID}}
-{{sendMessage nil (joinStr "" .User.Mention ", what's your *new* **Gamer Tag**?")}}
-{{else if and (eq .Reaction.Emoji.Name "4️⃣") (eq (toString $Q) "Edit")}}
-{{$Q = "Edit Pin"}}
-{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+{{sendMessage nil (joinStr "" .User.Mention ", what's your *new* **" $gtname "**? Type 'cancel' to cancel.")}}
+{{else if and (eq .Reaction.Emoji.Name "4️⃣") (eq  (toString $reg.Q) "Edit")}}
+{{$reg.Set "Q" "Edit PT"}}{{dbSet .User.ID "reg" $reg}}
 {{deleteAllMessageReactions nil $msgID}}
-{{sendMessage nil (joinStr "" .User.Mention ", what's your *new* **Pin**?")}}
-{{else if or (and (eq .Reaction.Emoji.Name "5️⃣") (eq (toString $Q) "Edit")) (and (eq .Reaction.Emoji.Name "3️⃣") (eq (toString $Q) "Edit Tribe")) (and (eq .Reaction.Emoji.Name "4️⃣") (eq (toString $Q) "First Tribe")) (and (eq .Reaction.Emoji.Name "4️⃣") (eq (toString $Q) "Second Tribe"))}}
+{{$msg := sendMessageRetID nil (print  .User.Mention ", Please indicate which Platform you will be playing on? Use <:Xbox:980137454428389387> for Xbox only, <:Steam:980137536183758858> for Steam only, and <:XboxSteam:981771943176986714> for Both.")}}
+{{addMessageReactions nil $msg ":Xbox:980137454428389387" ":Steam:980137536183758858" ":XboxSteam:981771943176986714"}}
+{{else if or (and (eq .Reaction.Emoji.Name "5️⃣") (eq  (toString $reg.Q) "Edit"))}}
+{{$reg.Set "Q" "Edit Pin"}}{{dbSet .User.ID "reg" $reg}}
 {{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}
-{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+{{sendMessage nil (joinStr "" .User.Mention ", what's your *new* **Pin**? Type 'cancel' to cancel.")}}
+{{else if or (and (eq .Reaction.Emoji.Name "3️⃣") (eq (toString $reg.Q) "Edit Tribe")) (and (eq .Reaction.Emoji.Name "4️⃣") (eq (toString $reg.Q) "First Tribe")) (and (eq .Reaction.Emoji.Name "4️⃣") (eq  (toString $reg.Q) "Second Tribe"))}}
+{{deleteAllMessageReactions nil $msgID}}
+{{$reg.Set "Q" "Done"}}{{dbSet .User.ID "reg" $reg}}
 {{execCC 74 nil 0 ""}}
 {{removeRoleID 658469834589208616}}
 {{sleep 3}}
 {{exec "tickets close" "Done Editing Registration"}}
 {{/*Would you like to edit something else?*/}}
-{{else if and (eq .Reaction.Emoji.ID 658376626639339533) (eq (toString $Q) "Edit")}}{{/*yes*/}}
+{{else if and (eq .Reaction.Emoji.ID 658376626639339533) (eq  (toString $reg.Q) "Edit")}}{{/*yes*/}}
 {{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}
-{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+{{$reg.Set "Q" "Done"}}{{dbSet .User.ID "reg" $reg}}
 {{execCC 73 nil 0 ""}}
-{{else if and (eq .Reaction.Emoji.ID 658376639322783745) (eq (toString $Q) "Edit")}}{{/*no*/}}
+{{else if and (eq .Reaction.Emoji.ID 658376639322783745) (eq  (toString $reg.Q) "Edit")}}{{/*no*/}}
 {{deleteAllMessageReactions nil $msgID}}
-{{$Q = "Done"}}
-{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+{{$reg.Set "Q" "Done"}}{{dbSet .User.ID "reg" $reg}}
 {{execCC 74 nil 0 ""}}
 {{sleep 3}}
 {{removeRoleID 658469834589208616}}
@@ -119,10 +123,26 @@
 {{else if (eq .Reaction.Emoji.Name "gcrystal")}}
 {{deleteAllMessageReactions nil $msgID}}
 {{exec "tickets close" "Picked up Items"}}
+{{else if and (eq .Reaction.Emoji.ID 980137454428389387) (eq  (toString $reg.Q) "Edit PT")}}{{/*Xbox*/}}
+	{{$reg.Set "pt" "Xbox"}}{{$reg.Set "Q" "Edit"}}
+	{{dbSet .User.ID "reg" $reg}}
+	{{execCC 73 nil 0 ""}}{{execCC 74 nil 0 ""}}
+	{{removeRoleID 980247028196065310}}{{/*Steam*/}}
+	{{removeRoleID 986819576878759977}}{{/*Both*/}}
+	{{addRoleID 980246828723355698}}{{/*Xbox*/}}
+{{else if and (eq .Reaction.Emoji.ID 980137536183758858) (eq  (toString $reg.Q) "Edit PT")}}{{/*Steam*/}}
+	{{$reg.Set "pt" "Steam"}}{{$reg.Set "Q" "Edit"}}{{dbSet .User.ID "reg" $reg}}
+	{{execCC 73 nil 0 ""}}{{execCC 74 nil 0 ""}}
+	{{removeRoleID 980246828723355698}}{{/*Xbox*/}}
+	{{removeRoleID 986819576878759977}}{{/*Both*/}}
+	{{addRoleID 980247028196065310}}{{/*Steam*/}}
+{{else if and (eq .Reaction.Emoji.ID 981771943176986714) (eq  (toString $reg.Q) "Edit PT")}}{{/*Both*/}}
+	{{$reg.Set "pt" "Both"}}{{$reg.Set "Q" "Edit"}}{{dbSet .User.ID "reg" $reg}}
+	{{execCC 73 nil 0 ""}}{{execCC 74 nil 0 ""}}
+	{{addRoleID 980247028196065310}}{{/*Steam*/}}
+	{{addRoleID 980246828723355698}}{{/*Xbox*/}}
+	{{addRoleID 986819576878759977}}{{/*Both*/}}
 {{end}}
-{{/*RegEdit-Kid*/}}
-{{else if hasRoleID 645404993863811072}}{{/*Has Kids Role*/}}
-{{execCC 225 nil 0 (sdict "msgID" $msgID)}}
 {{end}}{{end}}
 
 
