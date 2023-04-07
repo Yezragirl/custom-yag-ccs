@@ -1,0 +1,10 @@
+{{$ccRegRefresh := 171}}
+{{$args := parseArgs 3 "correct syntax is `setreg @who field Value`"
+(carg "user" "admin")
+(carg "string" "field")
+(carg "string" "Value")}}
+{{$user := (userArg ($args.Get 0))}}
+{{$reg := (dbGet $user.ID "reg").Value}}
+{{$reg.Set ($args.Get 1) ($args.Get 2)}}
+{{dbSet $user.ID "reg" $reg}}
+{{execCC $ccRegRefresh nil 1 (sdict "user" $user)}}

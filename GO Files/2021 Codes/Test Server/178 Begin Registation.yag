@@ -1,0 +1,67 @@
+||{{.CCID}}||
+{{/*Variables*/}}
+{{$tCat := 997232411542814790}} 
+{{$editRole := 997232747540131861}}
+{{$baseRole := 997232827437424730}}
+{{$kidRole := 645690840752062484}}
+{{$yezRole := 645690789544067118}}
+{{$regRole := 645690790240321571}}
+{{$standingRole := 645691100417359882}}
+{{$ccRegedit := 163}}
+{{$ccRefreshreg := 164}}
+{{$ccBaseregcont := 182}}
+{{$ccTriberefresh := 179}}
+{{$tribeReg := 999685730777440376}}
+{{$graphics := sdict "Both" "https://cdn.discordapp.com/attachments/665932077853704202/982095282013618226/dual_logo_transparent.png" "Steam" "https://cdn.discordapp.com/attachments/665932077853704202/982096294451499018/unknown.png"  "Xbox" "https://cdn.discordapp.com/attachments/665932077853704202/982096249341763694/unknown.png" }}
+{{$gtnames := sdict "Both" "Gamer Tag/Steam Name" "Steam" "Steam Name"  "Xbox" "Gamer Tag" }}
+{{$names := (dbGet 0 "names").Value}}
+{{$names_new := cslice}}
+{{$tribes := (dbGet 0 "tribes").Value}}
+{{$badWords := (dbGet 0 "badWords").Value}}
+{{$reg := sdict }}
+{{$message := ""}}
+{{$adminReg := 999496167899533342}}
+{{$publicReg := 999496194046824458}}
+{{/*End Variables*/}}
+
+{{$db := (dbGet .User.ID "reg").Value}}
+{{if $db}}
+{{$reg = $db}}
+{{end}}
+
+{{$Q := $reg.Q}}{{$admin := $reg.admin}}{{$age := $reg.age}}{{$gt := $reg.gt}}{{$name := $reg.name}}{{$pin := $reg.pin}}{{$public := $reg.public}}{{$ref := $reg.ref}}{{$parentguardian := $reg.parentguardian}}
+{{if $parentguardian = "NA"}}{{$parentguardian = ""}}{{end}}
+{{$tribe := $reg.tribe}}
+
+{{if not $name}}
+	{{sendMessage .Channel.ID (joinStr "" "Thanks for joining Yez's Ark Cluster!\n\nJust a few questions, and you'll be registered and ready to play!\nInstructions first. **If emojis appear below the question, please use them to respond. Otherwise, type your answers.** These answers will be editable later, but be sure to check for typos before hitting enter, as your answers affect the direction these questions go.")}}
+	{{$Q = "Age"}}
+    {{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+    {{removeRoleID $kidRole}}{{/*Kids*/}}
+	{{removeRoleID $yezRole}}{{/*Yezians*/}}
+	{{removeRoleID $regRole}}
+	{{giveRoleID .User.ID $standingRole}}
+	{{sendMessage .Channel.ID (joinStr "" .User.Mention ", how old are you?")}}
+{{else}}
+	{{range $names}}
+		{{- if ne . $name -}}
+			{{- $names_new = $names_new.Append . -}}
+		{{- end -}}
+	{{end}}
+	{{dbSet 0 "names" $names_new}}
+    {{removeRoleID $kidRole}}{{/*Kids*/}}
+	{{removeRoleID $yezRole}}{{/*Yezians*/}}
+	{{removeRoleID $regRole}}
+	{{giveRoleID .User.ID $standingRole}}
+	{{sendMessage .Channel.ID (joinStr "" "Thanks for joining Yez's Ark Cluster!\n\nJust a few questions, and you'll be registered and ready to play!\nInstructions first. **If emojis appear below the question, please use them to respond. Otherwise, type your answers.** These answers will be editable later, but be sure to check for typos before hitting enter, as your answers affect the direction these questions go.\n_ _")}}
+	{{sendMessage .Channel.ID (joinStr "" "Please be advised that by starting a new registration, any previous registration has been erased. You must complete THIS registration.")}}
+	{{if $admin}}
+		{{deleteMessage $adminReg $admin}}
+	{{end}}
+	{{if $public}}
+		{{deleteMessage $publicReg $public}}
+	{{end}}
+	{{$Q = "Age"}}
+	{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+	{{sendMessage .Channel.ID (joinStr "" .User.Mention ", how old are you?")}}
+{{end}}

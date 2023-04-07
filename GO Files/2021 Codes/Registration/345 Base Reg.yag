@@ -1,0 +1,74 @@
+{{$baseReg := sdict "step" 1 "id" 0}}||345||
+{{with dbGet .User.ID "baseRegistration"}}
+    {{$baseReg = .Value}}
+{{end}}
+{{addRoleID 760904971465654302}}
+{{$nums := cslice "1️⃣" "2️⃣" "3️⃣" "4️⃣" "5️⃣" "6️⃣" "7️⃣" "8️⃣"}}
+{{$servers := sdict
+    "xbox" (cslice 
+        (sdict "name" "island" "servers" (cslice "refuge" "zelda" "fenris"))
+        (sdict "name" "center" "servers" (cslice "merlin" "elysian"))
+        (sdict "name" "valguero" "servers" (cslice "everest" "artemis"))
+        (sdict "name" "ragnarok" "servers" (cslice "haven" "manticore"))
+        (sdict "name" "scorched earth" "servers" (cslice "phoenix"))
+        (sdict "name" "aberration" "servers" (cslice "gryphon" "excelsior"))
+        (sdict "name" "extinction" "servers" (cslice "medusa" "hades"))
+        (sdict "name" "genesis 1" "servers" (cslice "beowulf"))
+        (sdict "name" "genesis 2" "servers" (cslice "forge" "orca"))
+        (sdict "name" "lost island" "servers" (cslice "jasper" "trebuchet"))
+        (sdict "name" "crystal isles" "servers" (cslice "osiris" "sanctuary"))
+        (sdict "name" "fjordur" "servers" (cslice "halkirk" "dresden"))
+        (sdict "name" "breeding map" "servers" (cslice "aphrodite"))
+        (sdict "name" "shop map" "servers" (cslice "zanzibar"))
+    )
+    "steam" (cslice
+        (sdict "name" "ragnarok" "servers" (cslice "arrakis"))
+        (sdict "name" "fjordur" "servers" (cslice "caladan"))
+        (sdict "name" "island" "servers" (cslice "topaz"))
+    )
+}}
+{{if eq $baseReg.step 1}}
+{{$desc := }}
+
+
+
+    {{$baseReg.Set "id" (sendMessageRetID nil (cembed
+    "title" "Base Registration"
+    "description" $desc
+    "footer" (sdict "text" "React with ➡️ to go to the next page")
+    "color" 16776960
+))}}
+{{else if eq $baseReg.step 2}}
+{{else if eq $baseReg.step 3}}
+{{end}}
+
+{{$platform := $servers.Get "xbox"}}
+
+{{/* sdict: dict: severs list, platform: platform, max: maximum index, count: current index */}}
+{{define "mapsList"}}
+    {{$str := ""}}
+    {{$em := 0}}
+    {{range (seq .count .max)}}
+        {{- $str = joinStr "\n" $str (print (index $.nums $em) " " (title (index $.dict .).name)) -}}
+        {{- $em = add $em 1 -}}
+    {{end}}
+    {{return $str}}
+{{end}}
+
+
+    {{$d := sdict "dict" $platform "max" 7 "nums" $nums "count" 0}}
+    {{$desc := execTemplate "mapsList" $d}}
+
+    {{$desc = print "```" $desc "```"}}
+    {{$baseReg.Set "id" (sendMessageRetID nil (cembed
+        "title" "Base Registration"
+        "description" $desc
+        "footer" (sdict "text" "React with ➡️ to go to the next page")
+        "color" 16776960
+    ))}}
+    {{$numStr := cslice}}
+    {{range (seq 0 (len (reFindAllSubmatches `\n` $desc) | add 1))}}
+        {{addMessageReactions nil $baseReg.id $numStr (index $nums .)}}
+    {{end}}
+    {{addMessageReactions nil $baseReg.id $numStr "➡️" "🇽"}}
+{{dbSet .User.ID "baseRegistration" $baseReg}}

@@ -346,7 +346,7 @@ Raw Materials
 {{$color := randInt 111111 999999 }}
 {{$embed7 := cembed 
 	"Title" "__**Raw Materials**__"
-	"Description" "Price includes 10,000 of the Listed Material, and a Dedicated Storage Box to keep it in."
+	"Description" "Price includes 10,000 of ONE of the Listed Materials, and a Dedicated Storage Box to keep it in."
 	"color" $color
 	"fields" (cslice 
 	(sdict "name" "Tier 1 - 2,500 <:bbs:583143695927214091>" "value" "Chitin, Clay, Fiber, Flint, Fungal Wood, Hide, Keratin, Raw Salt, Sand, Silk, Stone, Sulfur, Thatch, Wood" ) 
@@ -416,3 +416,67 @@ Building Packs
 
 {{editMessage nil $msg $embed}}
 
+
+
+
+
+{{$embed := cembed 
+	"Title" "__**Quests**__"
+	"Description" "Quests run for 2 Weeks. Xbox/Win 10 and Steam are staggered so that one platform ends each week. For more info on Quest, including the current set, and its Due Date, please see the links below."
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "__**Xbox/Win 10**__" "value" "<#575676562872074290>" ) 
+	(sdict "name" "__**Steam**__" "value" "<#981649740838088745>" ))}}
+
+
+
+{{$embed := cembed 
+	"Title" "__**Long Term Xbox/Win 10 Event**__"
+	"Description" "Long Term Events run for 4 Weeks, with a 4 Week break between."
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "__**Event**__" "value" "Currently on Break." ) 
+	(sdict "name" "__**Due Date**__" "value" "Next Event begins <t:1661529600:R>." ))}}
+
+	{{$embed := cembed 
+	"Title" "__**Long Term Steam 10 Event**__"
+	"Description" "Long Term Events run for 4 Weeks, with a 4 Week break between."
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "__**Event**__" "value" "Currently running **Arkitektually Challenged. See <#1003689610217525350> for details." ) 
+	(sdict "name" "__**Due Date**__" "value" "Event ends <t:1661788800:R>." ))}}
+
+
+{{$embed := cembed 
+	"Title" "__**200% Imprint**__"
+	"Description" "Adding a 200% imprint to any imprintable dino. - 2,500 <:bbs:583143695927214091>\n*This price covers an imprint from 0% to 200%. The price is fixed and does not scale if the dino already has an imprint of any amount.*"
+	"color" $color}}
+
+	{{$embed := cembed 
+	"Title" "__**Long Term Steam 10 Event**__"
+	"Description" "Long Term Events run for 4 Weeks, with a 4 Week break between."
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "__**Event**__" "value" "Currently running **Arkitektually Challenged. See <#1003689610217525350> for details." ) 
+	(sdict "name" "__**Due Date**__" "value" "Event ends <t:1661788800:R>." ))}}
+
+
+
+	{{$embed := cembed 
+	"Title" "__**Xbox/Win 10**__"
+	"color" $color
+	"fields" (cslice 
+	(sdict "name" "__**Long Term Event**__" "value" "Currently on Break. Next Event begins <t:1661529600:R>." ) 
+	(sdict "name" "__**Quests**__" "value" "See <#575676562872074290> for more details." )
+	(sdict "name" "__**Scavenger Hunt**__" "value" "Hidden cross all the PVE Maps are Flags! How many can you find? See <#964277313854378004> for more details!" )
+	(sdict "name" "__**Weekly Events**__" "value" "We host events each week. For details on whats currently scheduled, see <#580400941048528900>. Events are usually posted on Thursday for the coming weekend." )
+	)}}
+
+	{{$embed := cembed 
+	"Title" "__**Steam**__"
+	"color" 255
+	"fields" (cslice 
+	(sdict "name" "__**Long Term Event**__" "value" "Currently running **Arkitektually Challenged**. See <#1003689610217525350> for details. Event ends <t:1661788800:R>." ) 
+	(sdict "name" "__**Quests**__" "value" "See <#981649740838088745> for more details." )
+	(sdict "name" "__**Weekly Events**__" "value" "We host events each week. For details on whats currently scheduled, see <#981650380163285022>. Events are usually posted on Thursday for the coming weekend." )
+	)}}

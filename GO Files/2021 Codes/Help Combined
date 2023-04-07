@@ -1,0 +1,43 @@
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed}}
+{{if reFind "xp" .Message.Content}}
+{{$embed = cembed 
+	"Title" "XP System Info"
+    "Description" "Our new XP system was coded by Yez herself, so try not to be too harsh."
+	"color" $color
+    "fields" (cslice
+    (sdict "name" "Current Standings" "value" "To see your current standings, use `-xp` in any channel.")
+    (sdict "name" "Leaderboard" "value" "To see the leaderboard, use `-lb` in any channel. ")
+    (sdict "name" "Level Colors" "value" "You get a new Level Color every **5** levels.")
+    (sdict "name" "Earn XP" "value" (print "To gain XP, just **chat** in the main chat channels. The Fun channels are also currently included. You get between " ((dbGet 0 "minimum").Value) " and " ((dbGet 0 "maximum").Value) " XP for every message you send. "))
+    (sdict "name" "Cooldown" "value" (print "There is a cooldown of " ((dbGet 0 "cooldown").Value) " seconds, so spamming the channels will not help you."))
+    ) }}
+
+{{else if reFind "games" .Message.Content}}
+{{$embed = cembed 
+	"Title" "Games Available"
+	"color" $color
+	"fields" (cslice 
+	 (sdict "name" "__**Instructions**__" "value" "Use the following commands for more info on each game" "inline" false) 
+	 (sdict "name" "__**Commands**__" "value" "?Hangman\n?Acrophobia\n?Tic-Tac-Toe\n?Trivia\n?Never-Have-I-Ever\n?Truth-or-Dare\n?Blackjack\n?Roulette\n?Cock-Fight\n?Russian-Roulette\n?Slot-Machine" "inline" false)) }}
+
+
+{{else if reFind "earn" .Message.Content}}
+
+ {{$embed = cembed 
+ "color" $color
+"Title" "How to Earn Yez's Ark Cluster Currency - <:bbs:583143695927214091>"
+"Description" "There are several ways to earn <:bbs:583143695927214091>, our server currency."
+ "fields" (cslice 
+ (sdict "name" "__**Participate in Events**__" "value" "Even if you don't win, you will earn participation <:bbs:583143695927214091>." "inline" false) 
+ (sdict "name" "__**Complete Quests**__" "value" "Some quests have <:bbs:583143695927214091> as the reward." "inline" false) 
+ (sdict "name" "__**Coupon Buyback Day**__" "value" "Each month, on the 25th, players are invited to sell back any coupons they do not need for <:bbs:583143695927214091>. You can see the value of your coupons on <#770719386012876821>." "inline" false) 
+ (sdict "name" "__**Chat**__" "value" "You earn <:bbs:583143695927214091> just for chatting in certain discord channels. (XP too!)" "inline" false) 
+ (sdict "name" "__**Giveaways**__" "value" "We give away <:bbs:583143695927214091> all the time on <#589437097602056203>." "inline" false) 
+ (sdict "name" "__**Gambling**__" "value" "If you are brave enough, you can gamble your <:bbs:583143695927214091> to possibly get more, on <#574418811134935040>." "inline" false) 
+ (sdict "name" "__**Boosting**__" "value" "Boosting a map is a great way to earn some quick <:bbs:583143695927214091>. For every boost of $9.99, you get 2,500 <:bbs:583143695927214091>. Make sure to let someone know you boosted, and which map, as there is no automated notification. See <#573222208449675338> for details." "inline" false) 
+ (sdict "name" "__**Become a Sponsor**__" "value" "Sponsors receive  a monthly amount of <:bbs:583143695927214091>. Visit <#574610930508234752> for more details." "inline" false)) }}
+
+
+{{end}}
+{{sendMessage nil $embed}}

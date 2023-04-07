@@ -1,0 +1,94 @@
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed}}
+{{if reFind "commands" .Message.Content}}
+{{$embed = cembed 
+    "color" $color
+   "Title" "Common Admin Commands"
+   "Description" "These commands can only be used by Admins."
+    "fields" (cslice 
+    (sdict "name" "To Give Someone Money" "value" "~add-money cash [member] [amount]" "inline" false) 
+    (sdict "name" "To Take Someones Money" "value" "~remove-money bank [member] [amount]" "inline" false) 
+    (sdict "name" "To Give Someone a Coupon" "value" "~give-item [member] [quantity] [Item name (use \" \" if there are spaces in it)]" "inline" false) 
+    (sdict "name" "To Take Someones Coupon" "value" "~take-item [member] [quantity] [Item name (use \" \" if there are spaces in it)]" "inline" false) 
+    (sdict "name" "Check Someones Inventory " "value" "~inv [member]" "inline" false)) }}
+
+{{else if reFind "sponsor" .Message.Content}}
+{{$roles := (getMember .User.ID).Roles}}
+{{$pos := 0}}
+{{$color := 0}}
+{{range .Guild.Roles}}
+{{if in $roles .ID}}
+{{if and (lt $pos .Position) (.Color)}}
+{{$pos = .Position}}
+{{$color = .Color}}
+{{end}}
+{{end}}
+{{end}}
+{{$embed = (cembed
+"title" "Sponsorship" 
+"color" $color 
+"description" "Below is some information on Sponsorships."
+ "fields" (cslice 
+ (sdict "name" "__**What is Sponsorship?**__" "value" "Sponsorship is a monthly donation to the cluster to assist with the costs & maintenance of the day to day running of each map. To find out more about sponsorship, visit https://www.patreon.com/YezsArkCluster for Xbox/Win 10 or https://www.patreon.com/YezsArkSteamCluster for Steam." "inline" false) 
+ (sdict "name" "__**How's It Work?**__" "value" "First, you join the Patreon page, select your tier, and link your Discord account to your Patreon account. Your credit card will be charged **immediately**. Then, let Yez know you signed up by DMing her! Once it's verified, your sponsor perks will be deposited into your bank account/inventory. Then, once a month, on the **1st**, your credit card is charged the monthly Sponsorship fee, and your monthly benefits are deposited in your bank/inventory within 5 days." "inline" false) 
+  (sdict "name" "__**Tiers?**__" "value" "There are many tiers of Sponsorship, each one costing a different amount, with its own set of perks. Now that we have two separate platform clusters, you can sponsor one or the other, or both! See <#574610930508234752> for more details." "inline" false)))}}
+
+{{else if reFind "fun" .Message.Content}}
+    {{$embed = cembed 
+    "color" $color
+   "Title" "Random Fun"
+   "Description" "Here at Yez's Ark Cluster, we like to have fun! Here are some of the fun commands you can use here."
+    "fields" (cslice 
+    (sdict "name" "__**Throw**__" "value" "`-throw @mention`\nThis command will throw a random thing at the person mentioned. There is a chance of throwing 2 things, or even 3 things!" "inline" false) 
+    (sdict "name" "__**Steal**__" "value" "`-steal @mention`\nThis command will steal a random thing from the person mentioned. It's just good fun, and nothing is actually taken. There is a chance of stealing 2 or 3 things." "inline" false) 
+    (sdict "name" "__**Insult**__" "value" "`-insult @mention`\nThis command will generate a random insult directed at the person mentioned. It's meant to be funny, not offensive." "inline" false) 
+    (sdict "name" "__**Battle**__" "value" "`-battle @mention`\nThis command will begin a battle between you and the person mentioned. `?battle` will give you more information on what exactly that means.\n\n**This command is still in Beta Testing.**" "inline" false) ) }}
+
+{{else if reFind "battle" .Message.Content}}
+    {{$embed = cembed 
+    "color" $color
+   "Title" "Ark Battle!"
+   "Description" "Yez has programmed a fun mini-game for us!"
+    "fields" (cslice 
+    (sdict "name" "__**Commands**__" "value" "`-battle @mention`\nThis command will begin the battle, against the person mentioned.\n`-endbattle`\nThis command will end the battle before it is complete." "inline" false) 
+    (sdict "name" "__**HP**__" "value" "HP or Hit Points. Each person starts with 25 HP when they join the server. You get 1 additional HP every time you win a battle." "inline" false)  
+    (sdict "name" "__**Sword**__" "value" "<:sword:633311599020736531>\nAttacking with the Sword will do between 5 and 10 base damage to your opponent." "inline" false) 
+    (sdict "name" "__**Shield**__" "value" "<:shield:667754698639540254>\nUsing a shield will still let you swing your sword, but at a reduced rate of between 0 and 5 base damage. Also, it will reduce the next attack against you by 25-50%. Shield's are no protection against a Railgun." "inline" false)  
+    (sdict "name" "__**Club**__" "value" "<:Club:670664127324356608>\nAttacking with the Club will do 50% of the standard 5 -10 base damage, and also gives a 50% chance that your opponent will be too stunned to take any action next round." "inline" false)  
+   (sdict "name" "__**Riot Shield**__" "value" "<:Riot_Shield:670664127806570496>\nHiding behind a Riot Shield will do no damage, but it will reduce the next attack against you by 50-75%. Riot Shield's can protect you from Railguns." "inline" false) 
+    (sdict "name" "__**Railgun**__" "value" "<:Railgun:670664127588466708>\nRailgun's require one round to charge before they can be used. It does 2x the 5-10 base damage of other weapons." "inline" false) 
+    (sdict "name" "__**Medical Brew**__" "value" "<:Medical_Brew:670664127701581829>\nDrinking a medical brew will increase your HP between 5 and 10 points, but does no damage that round." "inline" false) ) }}
+
+{{else if reFind "referral" .Message.Content}}
+    {{$embed = cembed 
+    "color" $color
+   "Title" "Referrals"
+   "Description" "When you refer someone to Yez's Ark Cluster, here are the benefits:"
+    "fields" (cslice 
+    (sdict "name" "__**Referrer**__" "value" "1,000 <:bbs:583143695927214091>" "inline" false)
+    (sdict "name" "__**How to Get**__" "value" "To get the bonus above, the person most list you as their referral when they register, and remain in the discord for more than 24 hours." "inline" false) ) }}
+
+{{else if reFind "money" .Message.Content}}
+    {{$embed = cembed 
+    "color" $color
+   "Title" "Commonly Used Currency Commands"
+   "Description" "These commands are used to manage your <:bbs:583143695927214091> on Discord.\nEach person has a **Cash** balance, and a **Bank** balance. The sum of these two determines your **Net Worth**. Some activities require you have money in your **Cash** balance to do them, such as gambling, or giving money to others."
+    "fields" (cslice 
+       (sdict "name" "Withdraw" "value" "`~withdraw <amount or all>`\nWithdraws the stated amount from your **bank** to your **cash**. " "inline" false)
+       (sdict "name" "Deposit" "value" "`~deposit <amount or all>`\nDeposits the stated amount from your **cash** to your **bank**. " "inline" false)
+       (sdict "name" "Give" "value" "`~give-money <member> <amount or all>`\nGive the stated amount to the stated member of the server." "inline" false)
+       (sdict "name" "Balance" "value" "`~money`\n`~bal`\n`~balance`\nChecks your balance." "inline" false)) }}
+{{else if reFind "maps" .Message.Content}}
+        {{$embed = cembed 
+        "color" $color
+       "Title" "Yez's Ark Cluster Maps"
+       "Description" "For more info on a given map, type `-map name` in any chat channel. Only use the short name though, gryphon, medusa, manticore, etc. We also have Private Access maps for certain sponsorship levels. If you are interested, please type ?sponsor for more information."
+       "fields" (cslice
+       (sdict "name" "__**Xbox/Win10 PVE Maps**__" "value" "Yez's Artemis - US Valguero\nYez's Beowulf - US Genesis\nYez's Dresden - US Fjordur\nYez's Medusa - US Extinction\nYez's Merlin - EU Center\nYez's Elysian - US Center\nYez's Everest - EU Valguero\nYez's Excelsior - EU Aberration\nYez's Fenris - EU Island\nYez's Forge - US Genesis 2\nYez's Gryphon - US Aberration\nYez's Hades - EU Extinction\nYez's Halkirk - EU Fjordur\nYez's Haven - EU Ragnarok\nYez's Jasper - US Lost Island\nYez's Manticore - US Ragnarok\nYez's Orca - EU Genesis 2\nYez's Osiris - US Crystal Isles\nYez's Phoenix - US Scorched Earth\nYez's Refuge - Island Starter Map\nYez's Sanctuary - EU Crystal Isles\nYez's Trebuchet - EU Lost Island\nYez's Zelda - US Island" "inline" false) 
+       (sdict "name" "__**Steam PVE Maps**__" "value" "Yez's Arrakis - US Ragnarok\nYez's Caladan - US Fjordur")
+       (sdict "name" "__**PVP Event Maps**__" "value" "Yez's Sphinx - US Ragnarok Event Map (Non-Transferable)\nYez's Venus - EU Valguero Event Map (Transferable)" "inline" false) 
+       (sdict "name" "__**Specialty Maps**__" "value" "Yez's Silvestria - Taming Challenge - Ragnarok\nYez's Rembrandt - Rotating Taming Challenge\nYez's Aphrodite - Breeding Map - Ragnarok\nYez's Zanzibar - Trading Map - Crystal Isles" "inline" false)
+       (sdict "name" "__**Private Maps**__" "value" "Any map that includes a Player's name is a private map. These maps have different passwords that can only be obtained from the Player who owns the map. For more info on how to get your own private map, please see <#574610930508234752>. Unfortunately, private maps are currently only available on Xbox/Win 10.") ) }}
+
+{{end}}
+{{sendMessage nil $embed}}

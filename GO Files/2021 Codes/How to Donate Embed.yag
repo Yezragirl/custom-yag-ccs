@@ -1,0 +1,14 @@
+{{deleteTrigger 1}}
+
+{{$color := randInt 111111 999999 }}
+{{$embed := cembed 
+ "color" $color
+ "Title" "How to Donate"
+ "Description" "There are several ways to donate to the server."
+ "fields" (cslice 
+ (sdict "name" "__**Xbox Patreon Sponsorship**__" "value" "A monthly donation to the Cluster, is called Sponsorship. Sponsorship is a great way to support the Cluster! <#574610930508234752> lists all the benefits! Head on over to Patreon to check out the options and sign up! We have several levels of Sponsorship starting at $2.50/month! If you use THIS link, all the sponsorship money will go towards our **Xbox** servers. __https://www.patreon.com/YezsArkCluster__" "inline" false)  
+ (sdict "name" "__**Steam Patreon Sponsorship**__" "value" "A monthly donation to the Cluster, is called Sponsorship. Sponsorship is a great way to support the Cluster! <#574610930508234752> lists all the benefits! Head on over to Patreon to check out the options and sign up! We have several levels of Sponsorship starting at $2.50/month! If you use THIS link, all the sponsorship money will go towards our **Steam** servers. __https://www.patreon.com/YezsArkSteamCluster__" "inline" false) 
+ (sdict "name" "__**'Cash' Donations**__" "value" "" "inline" false) 
+ (sdict "name" "__**Nitrado Boost Code**__" "value" "If you wish to donate via boost please find the individual map boost codes on <#816021950823399495>.  Donations of $9.99 or more will receive 2,500 <:bbs:583143695927214091>." "inline" false) 
+ (sdict "name" "__**Nitro Discord Boosting**__" "value" "If you boost our Discord via Nitro, you will earn 1,250 <:bbs:583143695927214091> for each Boost, each month you leave the boost in place. Nitro does **not** notify is. You will need to open a ticket each month, and post a picture of your boost page showing the number of boosts for this discord, and the dates, to qualify." "inline" false) ) }}
+{{sendMessage nil $embed}}

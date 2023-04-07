@@ -1,6 +1,7 @@
 {{/*Regedit starts teh registration editing process*/}}
 {{if (eq .Channel.ParentID 635305499600093214)}} 
 {{addRoleID 658469834589208616}}
+{{removeRoleID 658469834589208616 300}}
 {{$reg := (dbGet .User.ID "reg").Value}}
 {{if not $reg.tribe}}{{$reg.Set "tribe" "Unregistered"}}{{dbSet .User.ID "reg" $reg}}{{end}}
 {{if not $reg.tribe2}}{{$reg.Set "tribe2" "Unregistered"}}{{dbSet .User.ID "reg" $reg}}{{end}}

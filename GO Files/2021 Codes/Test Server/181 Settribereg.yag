@@ -1,0 +1,7 @@
+{{$args := parseArgs 3 "correct syntax is `settribereg tribe field Value`"
+(carg "string" "tribe")
+(carg "string" "field")
+(carg "string" "Value")}}
+{{$tribeinfo := (dbGet 0 ($args.Get 0)).Value}}
+{{$tribeinfo.Set ($args.Get 1) ($args.Get 2)}}
+{{dbSet 0 ($args.Get 0) $tribeinfo}}

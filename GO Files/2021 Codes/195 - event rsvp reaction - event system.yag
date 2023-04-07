@@ -81,5 +81,5 @@
 {{$event.Set "participants" $participants}}
 {{$event.Set "waitlist" $waitlist}}
 {{dbSet .ReactionMessage.ID "event" $event}}
-{{execCC 196 nil 0 (sdict "MessageID" (toString .ReactionMessage.ID)) }}
+{{execCC 196 nil 0 (sdict "MessageID" (toString .ReactionMessage.ID) "Channel" .Channel.ID) }}
 {{end}}

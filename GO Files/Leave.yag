@@ -1,0 +1,31 @@
+{{$reg := (dbGet .User.ID "reg").Value}}
+{{$Q := $reg.Q}}{{$admin := $reg.admin}}{{$age := $reg.age}}{{$gt := $reg.gt}}{{$name := $reg.name}}{{$pin := $reg.pin}}{{$public := $reg.public}}{{$ref := $reg.ref}}{{$parentguardian := $reg.parentguardian}}
+{{$tribe := $reg.tribe}}{{$tribe2 := $reg.tribe2}}
+{{$names_db := (dbGet 0 "names").Value}}
+{{$join := (dbGet .User.ID "join").Value}}
+{{$names := (cslice).AppendSlice $names_db}}
+{{$names_new := cslice}}
+{{if ($admin)}}
+{{deleteMessage 658354135221141533 $admin 86400}}
+{{end}}
+{{if ($public)}}
+{{deleteMessage 658352884701724733 $public 86400}}
+{{end}}
+{{if $name}}
+{{$message := sendMessageRetID 573860427721605120 (joinStr "" $name " has left the discord. The user has been a member since <t:" $join ":R>. Pod their dinos for auction and clear their bases if appropriate.")}}
+{{addMessageReactions 573860427721605120 $message "✔️" "❌"}}
+{{sendMessage 587858995012698137 (joinStr "" "Deleting registration information for " $name "...")}}
+{{range $names}}
+{{if ne . $name}}
+{{$names_new = $names_new.Append .}}
+{{end}}{{end}}
+{{dbSet 0 "names" $names_new}}
+{{dbDelMultiple (sdict "userID" .User.ID) 100 0}}
+{{else}}
+{{$message := sendMessageRetID 573860427721605120 (joinStr "" .User.Username " has left the discord. The user has been a member since <t:" $join ":R>. Pod their dinos for auction and clear their bases if appropriate.")}}
+{{addMessageReactions 573860427721605120 $message "✔️" "❌"}}
+{{sendMessage 587858995012698137 (joinStr "" "Deleting registration information for " .User.Username "...")}}
+{{dbDelMultiple (sdict "userID" .User.ID) 100 0}}
+{{end}}
+{{exec "delrep" .User.ID}}
+{{$X := dbIncr 0 "newusers" -1}} 

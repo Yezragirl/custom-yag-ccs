@@ -308,9 +308,30 @@ len (toRune $x)  - for length of nickname
         "fields" (cslice 
                (sdict "name" "1st Place - 20,000 <:bbs:583143695927214091>" "value" "*<:BuildingChallenge:871949074826395658>Arkward<:BuildingChallenge:871949074826395658>*" "inline" false) 
                (sdict "name" "2nd Place - 17,500 <:bbs:583143695927214091>" "value" "*The Crows*" "inline" false) 
-               (sdict "name" "3rd Place - 15,000 <:bbs:583143695927214091>" "value" "*Rexual Frustration*" "inline" false)
+               (sdict "name" "3rd Place - 15,000 <::583143695927214091>" "value" "*Rexual Frustration*" "inline" false)
                (sdict "name" "4th Place - 12,500 <:bbs:583143695927214091>" "value" "*Tribe of Witches Gold*" "inline" false)
                (sdict "name" "5th Place - 10,000 <:bbs83143695927214091>" "value" "*Flak to the Future*" "inline" false)
                (sdict "name" "Participation - 2,500 <:bbs:583143695927214091>" "value" "*Reptile Dysfunction*\n*Cloud9*\n*Spanking Legends*" "inline" false)) }}
         {{sendMessage nil $embed}}
         {{deleteTrigger 1}}
+
+
+INdexing an 
+{{ $mID := sendMessageRetID nil (cembed "description" "by the way" "fields" (cslice (sdict "name" "DZ" "value" "likes cookies") ) ) }}
+{{ $embed := index (getMessage nil $mID).Embeds 0 | structToSdict }}
+{{ $lesFields := index $embed.Fields 0 }}
+{{ $embed.Set "Fields" (cslice (sdict "name" $lesFields.Name "value" (reReplace `\x20` $lesFields.Value " a lot of ") ) ) }} 
+{{ editMessage nil $mID (cembed $embed) }}
+
+
+
+
+{{cancelScheduledUniqueCC $mainCCID (joinStr "-" $name "25")}}
+{{cancelScheduledUniqueCC $mainCCID (joinStr "-" $name "10")}}
+{{cancelScheduledUniqueCC $mainCCID (joinStr "-" $name "5")}}
+{{cancelScheduledUniqueCC $mainCCID (joinStr "-" $name "4")}}
+{{cancelScheduledUniqueCC $mainCCID (joinStr "-" $name "3")}}
+{{cancelScheduledUniqueCC $mainCCID (joinStr "-" $name "2")}}
+{{cancelScheduledUniqueCC $mainCCID (joinStr "-" $name "1")}}
+{{cancelScheduledUniqueCC $mainCCID (joinStr "-" $name "End")}}
+Upkeep cancelled. 

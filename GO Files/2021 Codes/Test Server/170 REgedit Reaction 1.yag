@@ -1,0 +1,136 @@
+||{{.CCID}}||
+{{/*Variables*/}}
+{{$ticketCat := 997232411542814790}}
+{{$ccTribeReg := 174}}
+{{$ccRefreshReg := 164}}
+{{$ccRegedit := 163}}
+{{$ccCont := 175}}
+{{$roleReg := 645690790240321571}}
+{{$roleEdit := 997232747540131861}}
+{{$roleXbox := 1003082603877904394}}
+{{$roleSteam := 1003082645187608636}}
+{{$roleBoth := 1003082680994373786}}
+{{$adminWarn := 647785737336520724}}
+{{/*End Variables*/}}
+{{$msgID := .ReactionMessage.ID}}
+{{$reg := (dbGet .User.ID "reg").Value}}
+            {{deleteAllMessageReactions nil $msgID}}
+{{$color := randInt 111111 999999 }}
+{{$graphics := (dbGet 99 "reggraphics").Value}}
+{{$gtnames := (dbGet 99 "reggtnames").Value}}
+{{$gtname := $gtnames.Get $reg.pt}}
+{{$url := $graphics.Get $reg.pt}}
+{{$embedID := 0}}
+{{ $embed := structToSdict (index .Message.Embeds 0) }}
+ {{/* As structToSdict is not deep (only converts 1 layer) we need to range over */}}
+ {{ range $k, $v := $embed }}
+ {{- /* This checks whether the value is a struct, if so, we should convert it to an sdict. We use the `kindOf` function for this with the `indirect` bool set to true. See docs for more. */}}
+ {{- if eq (kindOf $v true) "struct" }}
+ {{- $embed.Set $k (structToSdict $v) }}
+ {{- end -}}
+ {{ end }}
+{{ if $embed.Footer }}
+ {{ $embedID = (reReplace "Embed ID: " $embed.Footer.Text "")}}
+{{ end }}
+{{$embeds := (dbGet 99 "regreactionmeanings").Value}}
+{{$reactions := ($embeds.Get $embedID)}}
+{{$step := ($reactions.Get .Reaction.Emoji.Name)}}
+{{if (eq .Channel.ParentID $ticketCat)}}
+    {{if (hasRoleID $roleReg)}}{{/*Has Registered Role*/}}
+	{{if eq $step "Exit"}}
+            {{$reg.Set "Q" "Done"}}{{dbSet .User.ID "reg" $reg}}
+            {{execCC $ccRefreshReg nil 0 ""}}
+            {{removeRoleID $roleEdit}}
+            {{sleep 3}}
+            {{exec "tickets close" "Done Editing Registration"}}        
+	{{else if eq $step "New Name"}}
+            {{$reg.Set "Q" "Edit Name"}}{{dbSet .User.ID "reg" $reg}}
+            {{sendMessage nil (cembed "title" $step "description" (joinStr "" .User.Mention ", what's your *new* **in game name**?\nType 'cancel' to cancel."))}}
+	{{else if eq $step "New PT"}}
+	    {{$reg.Set "Q" "Edit PT"}}{{dbSet .User.ID "reg" $reg}}
+            {{$msg := sendMessageRetID nil (cembed "title" "New Platform" "description" (print  .User.Mention ", Please indicate which Platform you will be playing on? Use <:Xbox:980137454428389387> for Xbox only, <:Steam:980137536183758858> for Steam only, and <:XboxSteam:981771943176986714> for Both.") "Footer" (sdict "Text" "Embed ID: 2"))}}
+            {{addMessageReactions nil $msg ":Xbox:980137454428389387" ":Steam:980137536183758858" ":XboxSteam:981771943176986714"}}
+	{{else if eq $step "Edit PT Xbox"}}{{/*Xbox*/}}
+            {{$reg.Set "pt" "Xbox"}}{{$reg.Set "Q" "Edit"}}
+            {{dbSet .User.ID "reg" $reg}}
+            {{removeRoleID $roleSteam}}{{/*Steam*/}}
+            {{removeRoleID $roleBoth}}{{/*Both*/}}
+            {{addRoleID $roleXbox}}{{/*Xbox*/}}
+	    {{$embed = cembed
+            "title" "Update"
+            "description" (joinStr "" "Platform updated to " $reg.pt ".")}}
+	     {{sendMessage nil $embed}}
+	     {{execCC $ccRegedit nil 0 ""}}{{execCC $ccRefreshReg nil 0 ""}}
+	{{else if eq $step "Edit PT Steam"}}{{/*Steam*/}}
+            {{$reg.Set "pt" "Steam"}}{{$reg.Set "Q" "Edit"}}{{dbSet .User.ID "reg" $reg}}
+            {{removeRoleID $roleXbox}}{{/*Xbox*/}}
+            {{removeRoleID $roleBoth}}{{/*Both*/}}
+            {{addRoleID $roleSteam}}{{/*Steam*/}}
+	    {{$embed = cembed
+            "title" "Update"
+            "description" (joinStr "" "Platform updated to " $reg.pt ".")}}
+	     {{sendMessage nil $embed}}
+	     {{execCC $ccRegedit nil 0 ""}}{{execCC $ccRefreshReg nil 0 ""}}
+	{{else if eq $step "Edit PT Both"}}{{/*Both*/}}
+            {{$reg.Set "pt" "Both"}}{{$reg.Set "Q" "Edit"}}{{dbSet .User.ID "reg" $reg}}
+            {{addRoleID $roleSteam}}{{/*Steam*/}}
+            {{addRoleID $roleXbox}}{{/*Xbox*/}}
+            {{addRoleID $roleBoth}}{{/*Both*/}}
+	    {{$embed = cembed
+            "title" "Update"
+            "description" (joinStr "" "Platform updated to " $reg.pt ".")}}
+	     {{sendMessage nil $embed}}
+	     {{execCC $ccRegedit nil 0 ""}}{{execCC $ccRefreshReg nil 0 ""}}
+	{{else if eq $step "New GT"}}
+	    {{$reg.Set "Q" "Edit GT"}}{{dbSet .User.ID "reg" $reg}}
+            {{sendMessage nil (cembed "title" (joinStr " " "New" $gtname) "description" (joinStr "" .User.Mention ", what's your *new* **" $gtname "**? Type 'cancel' to cancel."))}}
+	{{else if eq $step "New Pin"}}
+            {{$reg.Set "Q" "Edit Pin"}}{{dbSet .User.ID "reg" $reg}}
+            {{sendMessage nil (cembed "title" $step "description" (joinStr "" .User.Mention ", what's your *new* **Pin**? Type 'cancel' to cancel."))}}
+	{{else if eq $step "New Age"}}
+            {{$reg.Set "Q" "Edit Age"}}{{dbSet .User.ID "reg" $reg}}
+            {{sendMessage nil (cembed "title" $step "description" (joinStr "" .User.Mention ", what's your *new* **Age**? Type 'cancel' to cancel."))}}
+	{{else if eq $step "New Guardian"}}
+            {{$reg.Set "Q" "Edit ParentGuardian"}}{{dbSet .User.ID "reg" $reg}}
+            {{sendMessage nil (cembed "title" $step "description" (joinStr "" .User.Mention ", who's your *new* **Parent/Guardian**? Type 'cancel' to cancel."))}}
+	{{else if eq $step "Tribe Edit"}}
+            {{$reg.Set "Q" "Edit Tribe"}}{{dbSet .User.ID "reg" $reg}}
+            {{$embed := cembed 
+                "color" $color
+                "title" "Tribe Edit Menu"
+                "description" "Please select the tribe information you would like to edit by reacting to the number associated. You can Create, Join, or Leave a tribe."
+                "fields" (cslice 
+                (sdict "name" ":one: Tribe 1" "value" (toString $reg.tribe) ) 
+                (sdict "name" ":two: Tribe 2" "value" (toString $reg.tribe2) ) 
+                (sdict "name" ":three: Tribe 3" "value" (toString $reg.tribe3) ) 
+                (sdict "name" ":four: Done Editing" "value" "Use this to stop editing your registration information." ))
+                "thumbnail" (sdict "url" (.User.AvatarURL "1024"))
+                "Footer" (sdict "Text" "Embed ID: 3")}}
+            {{$msg := sendMessageRetID nil $embed}}
+            {{addMessageReactions nil $msg "1️⃣" "2️⃣" "3️⃣" "4️⃣"}}
+	{{else if (or (eq $step "tribe") (eq $step "tribe3") (eq $step "tribe3"))}}
+            {{$tribe := $step}}
+            {{$embed := cembed 
+                "color" $color
+                "Title" "Tribe Edit Menu"
+                "description" "Please select the tribe information you would like to edit by reacting to the number associated."
+                "fields" (cslice 
+                (sdict "name" "Current Tribe" "value" (toString ($reg.Get $tribe)) ) 
+                (sdict "name" ":one: Join/Change Tribe" "value" "** **" ) 
+                (sdict "name" ":two: Leave Tribe" "value" "** **" ) 
+                (sdict "name" ":three: Create New Tribe" "value" "** **" ) 
+                (sdict "name" ":four: Done Editing" "value" "Use this to stop editing your registration information." ))
+                "thumbnail" (sdict "url" (.User.AvatarURL "1024"))
+                "Footer" (sdict "Text" "Embed ID: 4")}}
+            {{$msg := sendMessageRetID nil $embed}}
+            {{addMessageReactions nil $msg "1️⃣" "2️⃣" "3️⃣" "4️⃣"}}
+            {{$reg.Set "Q" $tribe}}{{$reg.Set "info" (sdict "tribe" $tribe)}}{{dbSet .User.ID "reg" $reg}}
+        {{else if eq $step "Join"}}
+            {{execCC $ccTribeReg nil 0 (sdict "tribe" $reg.info.tribe "step" "join")}}
+        {{else if eq $step "Leave"}}
+            {{execCC $ccTribeReg nil 0 (sdict "tribe" $reg.info.tribe "step" "leave")}}
+        {{else if eq $step "Create"}}
+            {{execCC $ccTribeReg nil 0 (sdict "tribe" $reg.info.tribe "step" "create")}}
+        {{else}}
+            {{execCC $ccCont nil 0 nil}}
+{{end}}{{end}}{{end}}

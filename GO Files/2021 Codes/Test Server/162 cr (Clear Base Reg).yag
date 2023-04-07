@@ -1,0 +1,3 @@
+||{{.CCID}}||
+{{dbDel .User.ID "baseRegistration"}}
+Done

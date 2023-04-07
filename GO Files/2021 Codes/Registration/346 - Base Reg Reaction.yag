@@ -1,0 +1,114 @@
+{{$cid := .Reaction.ChannelID}}||346||
+{{$mid := .Reaction.MessageID}}
+{{$em := .Reaction.Emoji.Name}}
+
+{{$baseReg := sdict "step" 0 "id" 0 "info" nil}}
+{{with dbGet .User.ID "baseRegistration"}}
+    {{$baseReg = .Value}}
+{{end}}
+
+{{$nums := cslice "1️⃣" "2️⃣" "3️⃣" "4️⃣" "5️⃣" "6️⃣" "7️⃣" "8️⃣"}}
+{{$servers := sdict
+    "xbox" (cslice 
+        (sdict "name" "island" "servers" (cslice "refuge" "zelda" "fenris"))
+        (sdict "name" "center" "servers" (cslice "merlin" "elysian"))
+        (sdict "name" "valguero" "servers" (cslice "everest" "artemis"))
+        (sdict "name" "ragnarok" "servers" (cslice "haven" "manticore"))
+        (sdict "name" "scorched earth" "servers" (cslice "phoenix"))
+        (sdict "name" "aberration" "servers" (cslice "gryphon" "excelsior"))
+        (sdict "name" "extinction" "servers" (cslice "medusa" "hades"))
+        (sdict "name" "genesis 1" "servers" (cslice "beowulf"))
+        (sdict "name" "genesis 2" "servers" (cslice "forge" "orca"))
+        (sdict "name" "lost island" "servers" (cslice "jasper" "trebuchet"))
+        (sdict "name" "crystal isles" "servers" (cslice "osiris" "sanctuary"))
+        (sdict "name" "fjordur" "servers" (cslice "halkirk" "dresden"))
+        (sdict "name" "breeding map" "servers" (cslice "aphrodite"))
+        (sdict "name" "shop map" "servers" (cslice "zanzibar"))
+    )
+    "steam" (cslice
+        (sdict "name" "ragnarok" "servers" (cslice "arrakis"))
+        (sdict "name" "fjordur" "servers" (cslice "caladan"))
+    )
+}}
+
+{{$platform := $servers.Get "xbox"}}
+
+{{/* sdict: dict: severs list, platform: platform, max: maximum index, count: current index */}}
+{{define "mapsList"}}
+    {{$str := ""}}
+    {{$em := 0}}
+    {{range (seq .count .max)}}
+        {{- $str = joinStr "\n" $str (print (index $.nums $em) " " (title (index $.dict .).name)) -}}
+        {{- $em = add $em 1 -}}
+    {{end}}
+    {{return $str}}
+{{end}}
+
+
+{{if eq $mid $baseReg.id}}
+    {{if eq $em "🇽"}}
+        {{deleteMessage $cid $mid 1}}
+        {{dbDel .User.ID "baseRegistration"}}
+    {{else if and (eq $em "➡️") (eq $baseReg.step 1)}}
+        {{deleteAllMessageReactions $cid $mid}}
+        {{$oldDesc := (reReplace "\\`\\`\\`" (index (getMessage $cid $mid).Embeds 0 | structToSdict).Description "")}}
+        {{$count := len (reFindAllSubmatches `\n` $oldDesc) | add 1}}
+        {{$d := sdict "dict" $platform "max" (add $count 7) "nums" $nums "count" $count}}
+        {{$desc := execTemplate "mapsList" $d}}
+        {{editMessage $cid $mid (cembed
+            "title" "Base Registration"
+            "description" (print "```" $desc "```")
+            "footer" (sdict "text" "React with ⬅️ to go to the previous page")
+            "color" 16776960
+        )}}
+        {{addMessageReactions $cid $mid "1️⃣" "2️⃣" "3️⃣" "4️⃣" "5️⃣" "6️⃣" "7️⃣" "⬅️" "🇽"}}
+    {{else if and (eq $em "⬅️") (eq $baseReg.step 1)}}
+        {{$d := sdict "dict" $platform "max" 7 "nums" $nums "count" 0}}
+        {{$desc := execTemplate "mapsList" $d}}
+        {{editMessage $cid $mid (cembed
+            "title" "Base Registration"
+            "description" (print "```" $desc "```")
+            "footer" (sdict "text" "React with ➡️ to go to the next page")
+            "color" 16776960
+        )}}
+        {{deleteAllMessageReactions $cid $mid}}
+        {{addMessageReactions $cid $mid "1️⃣" "2️⃣" "3️⃣" "4️⃣" "5️⃣" "6️⃣" "7️⃣" "➡️" "🇽"}}
+    {{else if reFind $em `1️⃣|2️⃣|3️⃣|4️⃣|5️⃣|6️⃣|7️⃣`}}
+        {{if eq $baseReg.step 1}}
+            {{$x := index (split (reReplace "\\`\\`\\`" (index (getMessage $cid $mid).Embeds 0 | structToSdict).Description "") $em) 1}}
+            {{$map := reReplace `\s+` (reFind `(.*\n|.*\S+)` $x) ""}}
+            {{$baseReg.Set "info" (sdict "map" $map)}}
+            {{$desc := ""}}
+            {{deleteAllMessageReactions $cid $mid}}
+            {{$servers := cslice}}
+            {{range $platform}}
+                {{- if eq .name (lower $map) -}}
+                    {{- $servers = .servers}}
+                {{- end -}}
+            {{end}}
+            {{range (seq 0 (len $servers))}}
+                {{- $desc = print $desc "\n" (index $nums .) " " (index $servers .) -}}
+                {{- addMessageReactions $cid $mid (index $nums .) -}}
+            {{end}}
+            {{editMessage $cid $mid (cembed
+                "title" "Base Registration"
+                "description" (print "Please select your server\n```" $desc "```")
+                "footer" (sdict "text" "")
+            )}}
+            {{$baseReg.Set "step" 2}}
+            {{$baseReg.Set "map" $map}}
+            {{$baseReg.Set "id" $mid}}
+        {{else if eq $baseReg.step 2}}
+            {{$x := index (split (reReplace "\\`\\`\\`" (index (getMessage $cid $mid).Embeds 0 | structToSdict).Description "") $em) 1}}
+            {{$server := reReplace `\s+` (reFind `(.*\n|.*\S+)` $x) ""}}
+            {{$baseReg.Set "server" $server}}
+            {{$baseReg.Set "step" 3}}
+            {{editMessage $cid $mid (cembed
+                "title" "Base Registration"
+                "description" (print "Please enter the coordinates of your base")
+                "color" 16776960
+            )}}
+        {{end}}
+        {{dbSet .User.ID "baseRegistration" $baseReg}}
+    {{end}}
+{{end}}

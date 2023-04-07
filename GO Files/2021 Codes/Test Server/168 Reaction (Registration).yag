@@ -1,0 +1,71 @@
+{{/*Registration*/}}
+||{{.CCID}}||
+{{/*Variables*/}}
+{{$ticketCat := 997232411542814790}}
+{{$ccRegex := 167}}
+{{$adminWarn := 647785737336520724}}
+{{/*End Variables*/}}
+{{if (eq .Channel.ParentID $ticketCat)}}
+{{$msgID := .ReactionMessage.ID}}
+{{$reg := (dbGet .User.ID "reg").Value}}
+{{if not $reg.pt}}{{if and (hasRoleName "Xbox") (hasRoleName "Steam")}}{{$reg.Set "pt" "Both"}}{{else if hasRoleName "Xbox"}}{{$reg.Set "pt" "Xbox"}}{{else}}{{$reg.Set "pt" "Steam"}}{{end}}{{dbSet .User.ID "reg" $reg}}{{end}}
+{{$xbox := ": Stay tuned to this channel! A member of the <@&634598489732546588> will be along as soon as possible to give you the information on how to get your starter.\nIn the meantime, Please log into our Starter Map, ***Yez's Refuge*** to collect your starter. **This map is intended as a temporary map for those who want to get a few levels before joining the standard cluster maps,  or new players who are not yet familiar with the game's mechanics. If you don't feel like you need to stay, please move on. You can NOT transfer IN to Refuge, only out. Be warned, the dinos on our standard maps are max level 450, with increased damage and resistance. Be prepared before you transfer.**\n\nThe Community Center there can be found along the southern coast at approximately 85, 63. It can be reached by spawning at South 2 or 3, and running along the beach. Check your map. Starter pick up info will be provided shortly."}}
+{{$steam := ", to get to the server, you can use our IP Links in <#615578347581472778> to log into our main map ***Yez's Arrakis***. Spawn at Jungle 2, and take the Teleporter there to the Community Center. Inside you'll find a Starter Pick up Area containing a vault. Open the vault, and select **Reward Menu** from the center panel.\nThere you will find a starter package you can purchase for free. *You are limited to 1 starter package per Steam ID.*\nYou have your choice of glow pet, so if you don't like the one with the 1x next to it, just click on the 1, change it to 0, and find the one you'd like and change the 0 to 1. ***This is fully self-service!***\nOnce you've purchased your rewards, don't forget to remove them from the reward vault!\nYou'll need to **consume** the dinos to get them. I suggest you do that *outside* as they will materialize in front of you.\n **Don't waste any time! The reward dinos will expire if you don't consume them in a certain amount of time.**"}}
+{{if and (eq .Reaction.Emoji.ID 980137454428389387) (eq (toString $reg.Q) "PT")}}{{/*Xbox*/}}
+    {{deleteAllMessageReactions nil $msgID}}
+    {{$reg.Set "Q" "GT"}}{{$reg.Set "pt" "Xbox"}}{{dbSet .User.ID "reg" $reg}}
+    {{sendMessage nil (joinStr "" .User.Mention ", what is your Gamer Tag?")}}
+{{else if and (eq .Reaction.Emoji.ID 980137536183758858) (eq (toString $reg.Q) "PT")}}{{/*Steam*/}}
+    {{deleteAllMessageReactions nil $msgID}}
+    {{$reg.Set "Q" "GT"}}{{$reg.Set "pt" "Steam"}}{{dbSet .User.ID "reg" $reg}}
+    {{sendMessage nil (joinStr "" .User.Mention ", what is your Steam Name?")}}
+{{else if and (eq .Reaction.Emoji.ID 981771943176986714) (eq (toString $reg.Q) "PT")}}{{/*Both*/}}
+    {{deleteAllMessageReactions nil $msgID}}
+    {{$reg.Set "Q" "GT"}}{{$reg.Set "pt" "Both"}}{{dbSet .User.ID "reg" $reg}}
+    {{sendMessage nil (joinStr "" .User.Mention ", Please provide your Gamer Tag, and Steam Name in the following format: `Gamer Tag/Steam Name`")}}
+{{else if and (eq .Reaction.Emoji.ID 658376626639339533) (eq (toString $reg.Q) "Ref")}}{{/*Yes*/}}
+{{deleteAllMessageReactions nil $msgID}}
+{{$reg.Set "Q" "Ref2"}}{{dbSet .User.ID "reg" $reg}}
+{{sendMessage nil (joinStr "" .User.Mention ", who referred you?")}}
+{{else if and (eq .Reaction.Emoji.ID 658376639322783745) (eq (toString $reg.Q) "Ref")}}{{/*No*/}}
+{{deleteAllMessageReactions nil $msgID}}
+{{$reg.Set "Q" "Pin"}}{{$reg.Set "ref" "None"}}{{dbSet .User.ID "reg" $reg}}
+{{sendMessage nil (joinStr "" .User.Mention ", what 4 digit pin would you like used whenever a pin may be required? (Quest Vaults, or other situations.)")}}
+{{else if and (eq .Reaction.Emoji.ID 658376626639339533) (eq (toString $reg.Q) "Starter")}}{{/*Yes*/}}
+{{deleteAllMessageReactions nil $msgID}}
+{{$reg.Set "Q" "Done"}}{{dbSet .User.ID "reg" $reg}}
+{{execCC $ccRegex nil 0 ""}}
+{{if eq $reg.pt "Xbox"}}
+    {{sendMessageNoEscape nil (print .User.Mention $xbox )}}
+{{else if eq $reg.pt "Steam"}}
+    {{$msgsteam := sendMessageRetID nil (print .User.Mention $steam " \n\nPlease hit the <:gcrystal:662677298431918092> below when you've collected your items to close this ticket.")}}
+    {{addMessageReactions nil $msgsteam ":gcrystal:662677298431918092"}}
+{{else if eq $reg.pt "Both"}}
+    {{sendMessage nil (print .User.Mention ", two platforms means two starters!\n\n__**STEAM**__\n" .User.Mention $steam )}}
+    {{sendMessage nil (print "\n\n__**Xbox/Win 10**__\n" .User.Mention $xbox )}}
+{{end}}
+{{else if and (eq .Reaction.Emoji.ID 658376639322783745) (eq (toString $reg.Q) "Starter")}}{{/*No*/}}
+{{deleteAllMessageReactions nil $msgID}}
+{{$reg.Set "Q" "Done"}}{{dbSet .User.ID "reg" $reg}}
+{{execCC $ccRegex nil 0 (sdict "starter" "none")}}
+{{sendMessage nil "You are off and running! The <#613585635026141185> channel should now be visible to you. This channel will close in 60 seconds."}} {{sleep 60}}
+{{exec "tickets close" "Registration Complete-No Starter Needed"}}
+{{else if and (eq .Reaction.Emoji.ID 658376626639339533) (eq (toString $reg.Q) "ParentGuardian")}}{{/*Yes*/}}
+{{deleteAllMessageReactions nil $msgID}}
+{{$reg.Set "Q" "ParentGuardian2"}}{{dbSet .User.ID "reg" $reg}}
+{{sendMessage nil (joinStr "" .User.Mention ", who is your parent/guardian?")}}
+{{else if and (eq .Reaction.Emoji.ID 658376639322783745) (eq (toString $reg.Q) "ParentGuardian")}}{{/*No*/}}
+{{deleteAllMessageReactions nil $msgID}}
+{{sendMessage nil (joinStr "" .User.Mention ": I'm sorry, but this cluster is for 18+ only. Please come back when you are over 18.")}}
+{{sendMessage $adminWarn (joinStr "" .User.Mention " is being kicked for being " $reg.age ". Please take note in case they attempt to register again and lie.\n<@&573210843840249889>")}}
+{{sleep 10}}
+{{execAdmin "kick" .User.ID "Under age."}}
+{{execAdmin "tickets close underage"}}
+
+{{else if (eq .Reaction.Emoji.Name "gcrystal")}}
+{{deleteAllMessageReactions nil $msgID}}
+{{exec "tickets close" "Picked up Items"}}
+
+
+{{end}}
+{{end}}

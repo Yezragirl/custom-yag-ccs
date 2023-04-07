@@ -1,0 +1,7 @@
+{{$embed := cembed 
+"title" "Table of Contents" 
+"color" 3080447
+"fields" (cslice 
+       (sdict "name" "1 - Tickets" "value" "This category is where you will find any open tickets that you can see." "inline" false)
+       (sdict "name" "2 - Welcome" "value" "This category contains mostly things someone needs before they have registered. Here you will find:\n\n<#588418756569464833> - This is the channel with our welcome message. This is where you start the registration process. If you are inviting people to the cluster, this is the channel you need to invite them to.\n\n<#634509655456088087> - This the channel where you select from our many optional roles. Roles are used for pinging people interested in certain topics.\n\n<#794243166512611388> - This is where you find the cluster's rules." "inline" false)) }}
+{{sendMessage nil $embed}}

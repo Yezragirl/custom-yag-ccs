@@ -26,6 +26,8 @@
 		{{dbSet .User.ID "reg" $reg}}
 		{{execCC 73 nil 1 nil}}
 		{{sendMessage nil "Action cancelled."}}
+	{{else if hasRoleID 760904971465654302}}
+		{{execCC 358 nil 0 ""}}
 	{{else}}
 		{{if not $reg.name}}
 			{{sendMessage nil "You can't edit your registration. You don't have one yet."}}
@@ -90,14 +92,15 @@
 					{{sendMessage nil (joinStr "" "Tribe " $reg.tribe2 ", created. " .User.Mention " set as owner.")}}
 					{{removeRoleID 658469834589208616}}
 					{{execCC 74 nil 0 ""}}{{execCC 73 nil 0 ""}}{{execCC 347 nil 0 (sdict "dbkey" (joinStr "" "tribe_" (lower $reg.tribe2)))}}
-			        {{$color := randInt 111111 999999 }}
-        			{{$embed := cembed 
-			            "color" $color
-    	   	   		    "fields" (cslice 
-		        	    (sdict "name" "Tribe Name" "value" $reg.tribe2 "inline" false) 
-        			    (sdict "name" "Tribe Owner" "value" .User.Mention "inline" false) 
-    			        (sdict "name" "Tribe Memberes" "value" "None" "inline" false) )
-    			        "thumbnail" (sdict "url" $url) }}
+					{{$color := randInt 111111 999999 }}
+					{{$embed := cembed 
+						"color" $color
+						"fields" (cslice 
+						(sdict "name" "Tribe Name" "value" $reg.tribe2 "inline" false) 
+						(sdict "name" "Owner" "value" .User.Mention "inline" false) 
+						(sdict "name" "Admins" "value" "None" "inline" false) 
+						(sdict "name" "Members" "value" "None" "inline" false) )
+						"thumbnail" (sdict "url" $url) }}
 					{{$msg := sendMessageRetID 769590958131904532 $embed}}
 					{{dbSet 0 (joinStr "" "tribe_" (lower $reg.tribe2)) (sdict "name" $reg.tribe2 "owner" (toString .User.ID) "reg" $msg)}}
 				{{end}}

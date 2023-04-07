@@ -1,20 +1,7 @@
 {{/*Automated Tickets*/}}
-{{$capture := ""}}
-{{$ID := ""}}
-{{$message := ""}}
-{{$type := ""}}
-{{$ad := 0}}
-{{$url := "http"}}
-{{$color := randInt 111111 999999 }}
 {{$dTime := currentTime}}
 {{$time := sdict "Day" $dTime.Day "Month" $dTime.Month "Year" $dTime.Year "Hour" 0 "Min" 0 "Sec" 0 }}
 {{if eq $time.Day 17}}
-    {{$type = "Map Sweeps"}}
-    {{$message = "<@&634598489732546588>, it's map sweep time! Please react with your map so that I can close the ticket whenever every map is done."}}
-    {{$capture = exec "ticket open" $type}}
-    {{$ID = reFind `\d+` (reFind `<#\d+>` $capture)}}
-    {{$ticket := sendMessageNoEscapeRetID $ID $message}}
-    {{$second := sendMessageNoEscapeRetID $ID (joinStr "" "Mark off your maps here as you do them. When all maps are done, this ticket will close automagically.")}}
-    {{addMessageReactions $ID $second ":Haven:796125877633024051" ":Medusa:640697225684713473" ":Sanctuary:797519029715599400" ":Artemis:640697096814592040" ":Hades:797518674616909914" ":Zelda:640697492274544643" ":Manticore:640697193052766218" ":Osiris:748895819331141674" ":Elysian:796160062904729600" ":Everest:811680105218179083" ":Merlin:796116046616592445" ":Beowulf:796127204164632638" ":Raiden:655954199476961300" ":Jupiter:795749721657573446" ":Titan:640697323143561276" ":Gryphon:640697148807184384" ":Phoenix:640698407199178771" ":Fenris:797515621222318091" ":Excelsior:797519872115343360" ":Refuge:797670477081608202"}}
-
+   	{{$capture := exec "ticket open" "⏺️map sweeps"}}
+	{{$capture1 := exec "ticket open" "❎map sweeps"}}
 {{end}}

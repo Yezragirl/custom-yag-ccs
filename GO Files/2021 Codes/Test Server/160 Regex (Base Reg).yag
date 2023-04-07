@@ -1,0 +1,64 @@
+||{{.CCID}}||
+{{/*Variables*/}}
+{{$nums := cslice "1️⃣" "2️⃣" "3️⃣" "4️⃣" "5️⃣" "6️⃣" "7️⃣" "8️⃣"}}
+{{$servers := sdict
+    "xbox" (cslice 
+        (sdict "name" "island" "servers" (cslice "refuge" "zelda" "fenris"))
+        (sdict "name" "center" "servers" (cslice "merlin" "elysian"))
+        (sdict "name" "valguero" "servers" (cslice "everest" "artemis"))
+        (sdict "name" "ragnarok" "servers" (cslice "haven" "manticore"))
+        (sdict "name" "scorched earth" "servers" (cslice "phoenix"))
+        (sdict "name" "aberration" "servers" (cslice "gryphon" "excelsior"))
+        (sdict "name" "extinction" "servers" (cslice "medusa" "hades"))
+        (sdict "name" "genesis 1" "servers" (cslice "beowulf"))
+        (sdict "name" "genesis 2" "servers" (cslice "forge" "orca"))
+        (sdict "name" "lost island" "servers" (cslice "jasper" "trebuchet"))
+        (sdict "name" "crystal isles" "servers" (cslice "osiris" "sanctuary"))
+        (sdict "name" "fjordur" "servers" (cslice "halkirk" "dresden"))
+        (sdict "name" "breeding map" "servers" (cslice "aphrodite"))
+        (sdict "name" "shop map" "servers" (cslice "zanzibar"))
+    )
+    "steam" (cslice
+        (sdict "name" "ragnarok" "servers" (cslice "arrakis"))
+        (sdict "name" "fjordur" "servers" (cslice "caladan"))
+	(sdict "name" "island" "servers" (cslice "topaz"))
+    )
+}}
+{{/*End Variables*/}}
+{{$baseReg := sdict "step" 0 "id" 0}}
+{{with dbGet .User.ID "baseRegistration"}}
+    {{$baseReg = .Value}}
+{{end}}
+
+{{$platform := $servers.Get "xbox"}}
+
+{{/* sdict: dict: severs list, platform: platform, max: maximum index, count: current index */}}
+{{define "mapsList"}}
+    {{$str := ""}}
+    {{$em := 0}}
+    {{range (seq .count .max)}}
+        {{- $str = joinStr "\n" $str (print (index $.nums $em) " " (title (index $.dict .).name)) -}}
+        {{- $em = add $em 1 -}}
+    {{end}}
+    {{return $str}}
+{{end}}
+
+{{if and (reFind `^-b(ase)?r(eg(istration)?)?$` .Message.Content) (eq $baseReg.step 0)}}
+    {{$baseReg.Set "id" (sendMessageRetID nil (cembed
+        "title" "Base Registration"
+        "description" "On which platform is this location?\nXbox: <:Xbox:980137454428389387>\nSteam: <:Steam:980137536183758858>"
+        "color" 16776960
+    ))}}
+    {{addMessageReactions nil $baseReg.id "Xbox:980137454428389387" "Steam:980137536183758858"}}
+{{else if eq $baseReg.step 3}}
+    {{$msg := reReplace `((<a?:[\w~]{2,32}:\d{17,19}>)|[\x{1f1e6}-\x{1f1ff}]{2}|\p{So}\x{fe0f}?[\x{1f3fb}-\x{1f3ff}]?(\x{200D}\p{So}\x{fe0f}?[\x{1f3fb}-\x{1f3ff}]?)*|[#\d*]\x{FE0F}?\x{20E3})` .Message.Content ""}}
+    {{$baseReg.Set "coordinates" $msg}}
+    {{$baseReg.Set "step" 4}}
+    {{editMessage nil $baseReg.id (cembed
+        "title" "Base Registration"
+        "description" (print "Are you registering a base or an outpost?\n1️⃣ Base\n2️⃣ Outpost")
+    )}}
+    {{deleteAllMessageReactions nil $baseReg.id}}
+    {{addMessageReactions nil $baseReg.id "1️⃣" "2️⃣"}}
+{{end}}
+{{dbSet .User.ID "baseRegistration" $baseReg}}

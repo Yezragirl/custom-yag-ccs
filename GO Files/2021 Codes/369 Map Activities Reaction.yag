@@ -1,0 +1,70 @@
+{{/*Restock and Repin and Map Sweeps*/}}
+{{$logchannel := 653058600230584353}}
+{{$roleID := 588749231150465049}}
+{{$trainingchannel := 654151821039894547}}
+{{$channelname := .Channel.Name}}
+{{$convert := 3}}{{/*Number of Maps to complete to get ONE admin point*/}}
+{{$name := or .Member.Nick .User.Username}}
+{{$weekly := or (dbGet .User.ID "weekly").Value sdict}}
+{{$mc := (dbGet .User.ID "mapcount").Value}}
+{{$wmc := $weekly.Get "mapcount"}}
+{{$map := (dbGet 0 "ticketClaimerMaps").Value.Get .Reaction.Emoji.ID}}
+{{$reactions := (dbGet 0 "ticketReactionIDs").Value}}
+{{$ticket := or (dbGet .Channel.ID "ticket_control").Value sdict}}
+{{$allMatch := false}}
+{{$totalcount := 0}}
+{{$reactionsleft := 0}}
+{{$tickettype := ""}}
+{{if or (reFind `restock-and-repin$` $channelname) (reFind `map-sweeps$` $channelname)}}
+    {{if (reFind `restock-and-repin$` $channelname)}}
+        {{$tickettype = "Restock and Repin"}}
+    {{else if (reFind `map-sweeps$` $channelname)}}
+        {{$tickettype = "Map Sweep"}}
+    {{end}}
+    {{if .ReactionAdded}}
+        {{sendMessage $logchannel (print $name " completed the " $tickettype " for " $map ".")}}
+        {{$mc = add $mc 1}}
+        {{$wmc = add $wmc 1}}
+        {{if hasRoleID $roleID}} 
+            {{if eq (toInt $mc) $convert}}
+                {{$ps := dbIncr .User.ID "AdminPoints" 1}}
+                    {{sendMessage $logchannel (print $name " earned 1 point for Map Activities.")}}
+                    {{sendMessage $trainingchannel (print .User.Mention " earned 1 point for Map Activities." .User.Mention " now has " (str (toInt $ps)) " points.")}}
+                    {{dbSet .User.ID "mapcount" 0}}
+                {{else}}
+                    {{dbSet .User.ID "mapcount" $mc}}
+                {{end}}
+                {{$weekly.Set "mapcount" $wmc}}
+            {{end}}
+        {{else}}
+            {{sendMessage $logchannel (print $name " canceled the " $tickettype " for " $map ".")}}
+            {{$mc = sub $mc 1}}
+            {{$wmc = sub $wmc 1}}
+            {{if hasRoleID $roleID}} 
+                {{if eq (toInt $mc) -1}}
+                    {{$ps := dbIncr .User.ID "AdminPoints" -1}}
+                    {{sendMessage $logchannel (print $name " lost 1 point for undoing " $tickettype ". Map Count reset to " (sub $convert 1) ".")}}
+                    {{sendMessage $trainingchannel (print .User.Mention " lost 1 point for undoing " $tickettype ". Map Count reset to " (sub $convert 1) "." .User.Mention " now has " (str (toInt $ps)) " points.")}}
+                    {{dbSet .User.ID "mapcount" (sub $convert 1)}}
+                {{else}}
+                    {{dbSet .User.ID "mapcount" $mc}}
+                {{end}}
+                {{$weekly.Set "mapcount" $wmc}}
+            {{end}}
+        {{end}}
+        {{range (dbGet .Channel.ID "mapEmojis").Value}}
+            {{- $msg := getMessage nil . -}}
+            {{- range $msg.Reactions -}}
+               {{$totalcount = add $totalcount 1}}
+			{{- if and (in $reactions .Emoji.ID) (eq .Count 1)}}
+                    {{- $reactionsleft = add $reactionsleft 1 -}}
+                {{- end -}}
+            {{- end -}}
+        {{end}}
+        {{if and .ReactionAdded (eq $reactionsleft 0)}}
+           {{exec "tickets close" (print "All " $tickettype "s Complete")}}
+        {{end}}
+    {{end}}
+    {{dbSet .User.ID "weekly" $weekly}}
+
+

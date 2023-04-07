@@ -1,0 +1,115 @@
+||{{.CCID}}||
+{{/*Variables*/}}
+{{$tCat := 997232411542814790}} 
+{{$editRole := 997232747540131861}}
+{{$tribeReg := 999685730777440376}}
+{{$ccTribeReg := 174}}
+{{$ccRefreshReg := 164}}
+{{$ccClearBaseReg := 162}}
+{{$Reaction := .ExecData.Reaction}}
+{{/*End Variables*/}}
+{{if (eq .Channel.ParentID $tCat)}}{{/*IF CHANNEL PARENT*/}}
+	{{$reg := (dbGet .User.ID "reg").Value}}
+	{{if not $reg.tribe}}{{$reg.Set "tribe" "Unregistered"}}{{dbSet .User.ID "reg" $reg}}{{end}}
+	{{if not $reg.tribe2}}{{$reg.Set "tribe2" "Unregistered"}}{{dbSet .User.ID "reg" $reg}}{{end}}
+    {{$MsgID := .Reaction.MessageID}}
+    {{$tribejoin := ""}}
+    {{$tribeleave := ""}}
+    {{$tribes_db := (dbGet 0 "tribes").Value}}
+    {{$tribes := (cslice).AppendSlice $tribes_db}}
+    {{$members_new := cslice}}
+    {{$tribes_new := cslice}}
+    {{if .Message.Embeds}}
+    {{range (index .Message.Embeds 0).Fields -}}
+	{{$parts := reFindAllSubmatches `([^ ]+) (.+)` .Name -}}
+	{{$emojipart := index $parts 0 1 -}}{{$emojipart}}
+	{{if (eq $Reaction.Emoji.Name $emojipart)}}
+		{{$tribejoin = index $parts 0 2}}
+	{{end}}
+    {{end}}{{end}}
+
+{{$tribeBitsLookup := sdict "Edit First Tribe Join" (sdict "ordinal" "first" "key" "tribe") "Edit Second Tribe Join" (sdict "ordinal" "second" "key" "tribe2") "Edit Third Tribe Join" (sdict "ordinal" "third" "key" "tribe3")}}
+	
+	{{if $tribeBits := $tribeBitsLookup.Get (toString $reg.Q)}}{{/*IF TRIBEBITS EQUALS SOMETHING IN TRIBEBITSLOOKUP*/}}
+		{{if eq $tribejoin "Try Again"}}{{/*IF TRIBEJOIN EQUALS TRY AGAIN*/}}
+			{{execCC $ccTribeReg nil 0 (sdict "tribe" $tribeBits.ordinal "step" "join")}}
+		{{else}}{{/*IF TRIBEJOIN EQUALS TRY AGAIN*/}}
+			{{if eq $tribeBits.ordinal "first"}}{{/*IF ORDINAL EQUALS FIRST*/}}
+				{{$tribeleave = $reg.tribe}}
+            {{else if eq $tribeBits.ordinal "second"}}{{/*IF ORDINAL EQUALS FIRST*/}}
+                {{$tribeleave = $reg.tribe2}}
+			{{else}}{{/*IF ORDINAL EQUALS FIRST*/}}
+				{{$tribeleave = $reg.tribe3}}
+			{{end}}{{/*IF ORDINAL EQUALS FIRST*/}}
+				Tribe to Leave {{$tribeleave}}
+			{{if eq $tribeleave "Unregistered"}}{{/*IF TRIBELEAVE EQUALS UNREGISTERED*/}}
+				{{$dbkey := print "tribe_" (lower $tribejoin)}}
+				{{$reg.Set $tribeBits.key $tribejoin}}{{dbSet .User.ID "reg" $reg}}
+				{{$tribeinfo := sdict (dbGet 0 $dbkey).Value}}
+				{{$tribeinfo.Set "members" (((cslice).AppendSlice (or $tribeinfo.members cslice)).Append (toString .User.ID))}}
+				{{dbSet 0 $dbkey $tribeinfo}}
+				{{sendMessage nil (print "Added Tribe " $tribejoin " to your registration.")}}
+				{{sendMessage nil (print "Added " .User.Mention " to " $tribejoin " member roster.")}}
+				{{removeRoleID $editRole}}
+				{{execCC $ccRefreshReg nil 0 ""}}{{execCC $ccClearBaseReg nil 0 (sdict "dbkey" $dbkey)}}
+			{{else}}{{/*IF TRIBELEAVE EQUALS UNREGISTERED*/}}
+				{{$dbkey := print "tribe_" (lower     $tribeleave)}} 
+				{{$tribeinfo := or ((sdict (dbGet 0 $dbkey).Value) sdict)}}
+				{{$owner := $tribeinfo.owner}}
+				{{if $owner}}Owner Exists {{/*IF OWNER EXISTS*/}}
+					{{if eq (toString .User.ID) $owner}}I am owner.{{/*IF THEY ARE OWNER*/}}
+						{{- $members_converted := (cslice).AppendSlice (or $tribeinfo.members cslice) -}}
+						{{- if gt (len $members_converted) 0 -}}There are other tribe members.
+							You are the Owner of this tribe. You cannot leave this tribe until you have transferred ownership to another member. (NEED TO CODE SEND TO TRANSFER OWNERSHIP)
+						{{- else -}}There are no tribe members.
+                            {{$tribeinfo.Del "owner"}}
+                            {{dbSet 0 $dbkey $tribeinfo}}
+						{{end}}
+					{{else}}I am not the owner.{{/*IF THEY ARE OWNER*/}}
+						{{$members_converted := (cslice).AppendSlice $tribeinfo.members}}
+                        {{/*Range Over TribeLeave Members and Remove Player*/}}
+						{{- range $members_converted -}}
+							{{- if ne . $.User.ID -}}
+								{{- $members_new = $members_new.Append . -}}
+							{{- end -}}
+							{{$tribeinfo.Set "members" $members_new}}
+							{{dbSet 0 $dbkey $tribeinfo}}
+						{{end}}
+					{{end}}{{/*IF THEY ARE OWNER*/}}
+					{{sendMessage nil (joinStr "" .User.Mention ", ok, you have left " (toString     $tribeleave) ".")}}
+					{{$dbkey := print "tribe_" (lower $tribejoin)}}
+					{{$reg.Set $tribeBits.key $tribejoin}}{{dbSet .User.ID "reg" $reg}}
+					{{$tribeinfo := sdict (dbGet 0 $dbkey).Value}}
+					{{$tribeinfo.Set "members" (((cslice).AppendSlice (or $tribeinfo.members cslice)).Append (toString .User.ID))}}
+					{{dbSet 0 $dbkey $tribeinfo}}
+					Added Tribe {{$tribejoin}} to your registration.
+					Added {{.User.Mention}} to {{$tribejoin}} member roster.
+					{{removeRoleID $editRole}}
+					{{execCC $ccRefreshReg nil 0 ""}}{{execCC $ccClearBaseReg nil 1 (sdict "dbkey" $dbkey)}}
+				{{else}}No owner exists. {{/*IF OWNER EXISTS*/}}
+					{{$members_converted := (cslice).AppendSlice $tribeinfo.members}}
+					{{if gt (len $members_converted) 1}}There are other tribe members.
+                        {{/*Range Over TribeLeave Members and Remove Player*/}}
+						{{- range $members_converted -}}
+							{{- if ne . $.User.ID -}}
+								{{- $members_new = $members_new.Append . -}}
+							{{- end -}}
+							{{$tribeinfo.Set "members" $members_new}}
+							{{dbSet 0 $dbkey $tribeinfo}}
+						{{end}}
+					{{end}}
+					{{sendMessage nil (joinStr "" .User.Mention ", ok, you have left " (toString     $tribeleave) ".")}}
+					{{$dbkey := print "tribe_" (lower $tribejoin)}}
+					{{$reg.Set $tribeBits.key $tribejoin}}{{dbSet .User.ID "reg" $reg}}
+					{{$tribeinfo := sdict (dbGet 0 $dbkey).Value}}
+					{{$tribeinfo.Set "members" (((cslice).AppendSlice (or $tribeinfo.members cslice)).Append (toString .User.ID))}}
+					{{dbSet 0 $dbkey $tribeinfo}}
+					Added Tribe {{$tribejoin}} to your registration.
+					Added {{.User.Mention}} to {{$tribejoin}} member roster.
+					{{removeRoleID $editRole}}
+					{{execCC $ccRefreshReg nil 0 ""}}{{execCC $ccClearBaseReg nil 1 (sdict "dbkey" $dbkey)}}
+				{{end}}{{/*IF OWNER EXISTS*/}}
+			{{end}}{{/*IF TRIBELEAVE EQUALS UNREGISTERED*/}}
+		{{end}}{{/*IF TRIBEJOIN EQUALS TRY AGAIN*/}}
+	{{end}}{{/*IF TRIBEBITS EQUALS SOMETHING IN TRIBEBITSLOOKUP*/}}
+{{end}}{{/*IF CHANNEL PARENT*/}}

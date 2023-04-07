@@ -1,4 +1,4 @@
-{{if (eq .Channel.ParentID 635305499600093214)}}
+{{if (eq .Channel.ParentID 635305499600093214)}}||223||
 	{{$reg := (dbGet .User.ID "reg").Value}}
 	{{if not $reg.tribe}}{{$reg.Set "tribe" "Unregistered"}}{{dbSet .User.ID "reg" $reg}}{{end}}
 	{{if not $reg.tribe2}}{{$reg.Set "tribe2" "Unregistered"}}{{dbSet .User.ID "reg" $reg}}{{end}}
@@ -29,7 +29,7 @@
 			{{else}}
 				{{$tribesave = $reg.tribe2}}
 			{{end}}
-Tribesave {{$tribesave}}
+				Tribesave {{$tribesave}}
 			{{if eq $tribesave "Unregistered"}}
 				{{$dbkey := print "tribe_" (lower $tribeselect)}}
 				{{$reg.Set $tribeBits.key $tribeselect}}{{dbSet .User.ID "reg" $reg}}
@@ -37,9 +37,9 @@ Tribesave {{$tribesave}}
 				{{$tribeinfo.Set "members" (((cslice).AppendSlice (or $tribeinfo.members cslice)).Append (toString .User.ID))}}
 				{{dbSet 0 $dbkey $tribeinfo}}
 				{{sendMessage nil (print "Added Tribe " $tribeselect " to your registration.")}}
-				{{sendMessage nil (print "Added " .User.Mention " to " $tribeselect " member roster."}}
+				{{sendMessage nil (print "Added " .User.Mention " to " $tribeselect " member roster.")}}
 				{{removeRoleID 658469834589208616}}
-				{{execCC 74 nil 0 ""}}{{execCC 222 nil 0 ""}}
+				{{execCC 74 nil 0 ""}}{{execCC 347 nil 0 (sdict "dbkey" $dbkey)}}
 			{{else}}
 				{{$dbkey := print "tribe_" (lower $tribesave)}}key {{$dbkey}} 
 				{{$tribeinfo := or ((sdict (dbGet 0 $dbkey).Value) sdict)}}tribe info {{$tribeinfo}}
@@ -51,6 +51,8 @@ Tribesave {{$tribesave}}
 							You are the Owner of this tribe. You can not leave this tribe until you have transferred ownership to another member. 
 						{{else}}There are no tribe members.
 							Tribe has no members...deleting tribe {{$tribesave}}.
+							{{$delTribe := dbGet 0 (print "tribe_" (lower $tribesave))}}
+							{{deleteMessage 769590958131904532 $delTribe.reg}}
 							{{dbDel 0 (print "tribe_" (lower $tribesave))}}
 							{{- range $tribes -}}
 								{{- if ne . $tribesave -}}
@@ -67,7 +69,7 @@ Tribesave {{$tribesave}}
 							Added Tribe {{$tribeselect}} to your registration.
 							Added {{.User.Mention}} to {{$tribeselect}} member roster.
 							{{removeRoleID 658469834589208616}}
-							{{execCC 74 nil 0 ""}}
+							{{execCC 74 nil 0 ""}}{{execCC 347 nil 1 (sdict "dbkey" $dbkey)}}
 						{{end}}
 					{{else}}I am not the owner.
 						{{$members_converted := (cslice).AppendSlice $tribeinfo.members}}
@@ -88,7 +90,7 @@ Tribesave {{$tribesave}}
 					Added Tribe {{$tribeselect}} to your registration.
 					Added {{.User.Mention}} to {{$tribeselect}} member roster.
 					{{removeRoleID 658469834589208616}}
-					{{execCC 74 nil 0 ""}}
+					{{execCC 74 nil 0 ""}}{{execCC 347 nil 1 (sdict "dbkey" $dbkey)}}
 				{{else}}No owner exists. 
 					{{$members_converted := (cslice).AppendSlice $tribeinfo.members}}
 					{{if gt (len $members_converted) 1}}There are other tribe members.
@@ -101,6 +103,8 @@ Tribesave {{$tribesave}}
 						{{end}}
 					{{else}}There are no other tribe members. 
 						Tribe has no members, and no owner...deleting tribe {{$tribesave}}.
+						{{$delTribe := dbGet 0 (print "tribe_" (lower $tribesave))}}
+						{{deleteMessage 769590958131904532 $delTribe.reg}}
 						{{dbDel 0 (print "tribe_" (lower $tribesave))}}
 						{{- range $tribes -}}
 							{{- if ne . $tribesave -}}
@@ -118,7 +122,7 @@ Tribesave {{$tribesave}}
 					Added Tribe {{$tribeselect}} to your registration.
 					Added {{.User.Mention}} to {{$tribeselect}} member roster.
 					{{removeRoleID 658469834589208616}}
-					{{execCC 74 nil 0 ""}}
+					{{execCC 74 nil 0 ""}}{{execCC 347 nil 1 (sdict "dbkey" $dbkey)}}
 				{{end}}
 		
 

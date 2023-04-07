@@ -14,7 +14,7 @@
 	{{.reg.Set .var "Unregistered"}}
 	{{.reg.Set "Q" .Q}}{{dbSet .User.ID "reg" .reg}}
 	{{removeRoleID 658469834589208616}}
-	{{execCC 74 nil 0 ""}}{{execCC 73 nil 0 ""}}{{execCC 347 nil 0 (sdict "dbkey" $dbkey}}
+	{{execCC 74 nil 0 ""}}{{execCC 73 nil 0 ""}}{{execCC 347 nil 0 (sdict "dbkey" .dbkey)}}
 {{end}}
 
 {{if .ExecData}}
@@ -38,24 +38,25 @@
 		{{if eq $reg.tribe "Unregistered"}}
 			{{sendMessage nil "You can't leave a tribe you haven't registered yet. Please run `-regedit` again and join or create a tribe."}}
 		{{else}}
-			{{$dbkey := print "tribe_" (lower $reg.tribe)}}Tribe 1 Key: {{$dbkey}}
+			{{$dbkey := print "tribe_" (lower $reg.tribe)}}
 			{{$tribeinfo := sdict}}
 			{{$pass := false }}
 			{{with dbGet 0 $dbkey}}
 				{{$tribeinfo = sdict .Value}}
 				{{$pass = true}}
 			{{end}}
-			||Tribe 1 Info: {{$tribeinfo}}||
 			{{if $pass}}
 				{{$owner := $tribeinfo.owner}}
 				{{if $owner}}{{/*Owner Exists*/}}
 					{{if eq (toString .User.ID) $owner}}{{/*I am owner.*/}}
 					{{$members_converted := (cslice).AppendSlice (or $tribeinfo.members cslice)}}
 						{{if gt (len $members_converted) 0}}{{/*There are other tribe members.*/}}
-							{{sendMessage nil "You are the Owner of this tribe. You can not leave this tribe until you have transferred ownership to another member."}} ADD SEND TO TRIBE MANAGEMENT
+							{{sendMessage nil "You are the Owner of this tribe. You can not leave this tribe until you have transferred ownership to another member."}}{{execCC 226 nil 0 ""}}
 						{{else}}{{/*There are no tribe members.*/}}
 							{{sendMessage nil (print "Tribe has no members...deleting tribe " $reg.tribe ".")}}
-							{{dbDel 0 (print "tribe_" (lower $reg.tribe))}}
+							{{$delTribe := (dbGet 0 $dbkey).Value}}
+							{{deleteMessage 769590958131904532 $delTribe.reg}}
+							{{dbDel 0 $dbkey}}
 							{{- range $tribes -}}
 								{{- if ne . $reg.tribe -}}
 									{{- $tribes_new = $tribes_new.Append . -}}
@@ -64,18 +65,19 @@
 							{{dbSet 0 "tribes" $tribes_new}}
 						{{end}}
 					{{else}}{{/*I am not the owner.*/}}
-						{{$members_converted := (cslice).AppendSlice $tribeinfo.members}}
+						{{$members_converted := (cslice).AppendSlice (or $tribeinfo.members cslice)}}
 						{{- range $members_converted -}}
 							{{- if ne . (toString $.User.ID) -}}
 								{{- $members_new = $members_new.Append . -}}
 							{{- end -}}
 							{{$tribeinfo.Set "members" $members_new}}
 							{{dbSet 0 $dbkey $tribeinfo}}
+							{{execCC 347 nil 0 (sdict "dbkey" $dbkey)}}
 						{{end}}
+						{{execCC 347 nil 0 (sdict "dbkey" (print "tribe_" (lower $reg.tribe)))}}
 					{{end}}
 					{{sendMessage nil (joinStr "" .User.Mention ", ok, you have left " (toString $reg.tribe) ".")}}{{execCC 73 nil 0 ""}}
-				{{else}}{{/*No owner exists.*/}} 
-					{{$members_converted := (cslice).AppendSlice $tribeinfo.members}}
+					{{$members_converted := (cslice).AppendSlice (or $tribeinfo.members cslice)}}
 					{{if gt (len $members_converted) 1}}{{/*There are other tribe members.*/}}
 						{{- range $members_converted -}}
 							{{- if ne . (toString $.User.ID) -}}
@@ -83,10 +85,13 @@
 							{{- end -}}
 							{{$tribeinfo.Set "members" $members_new}}
 							{{dbSet 0 $dbkey $tribeinfo}}
+							{{execCC 347 nil 0 (sdict "dbkey" $dbkey)}}
 						{{end}}
 					{{else}}{{/*There are no other tribe members.*/}} 
-						{{sendMessage nil (print "Tribe has no members, and no owner...deleting tribe " $reg.tribe ".")}}
-						{{dbDel 0 (print "tribe_" (lower $reg.tribe))}}
+						{{/*{{sendMessage nil (print "Tribe has no members, and no owner...deleting tribe " $reg.tribe ".")}}
+						{{$delTribe := (dbGet 0 $dbkey).Value}}
+						{{deleteMessage 769590958131904532 $delTribe.reg}}
+						{{dbDel 0 $dbkey}}*/}}
 						{{- range $tribes -}}
 							{{- if ne . $reg.tribe -}}
 								{{- $tribes_new = $tribes_new.Append . -}}
@@ -99,21 +104,20 @@
 			{{else}}
 				{{sendMessage nil (joinStr "" .User.Mention ", ok, " (toString $reg.tribe) " cleared from your registration.")}}
 			{{end}}{{/*if pass*/}}
-			{{$temp := sdict "reg" $reg "Q" "First Tribe Leave" "var" "tribe" "User" .User}}
+			{{$temp := sdict "reg" $reg "Q" "First Tribe Leave" "var" "tribe" "User" .User "dbkey" (print "tribe_" (lower $reg.tribe))}}
 			{{template "leave complete" $temp}}
 		{{end}}
 	{{else if and (eq $tribeedit "second") (eq $step "leave")}}
-		{{if eq $tribe2 "Unregistered"}}
+		{{if eq $reg.tribe2 "Unregistered"}}
 			{{sendMessage nil "You can't leave a tribe you haven't registered yet. Please run `-regedit` again and join or create a tribe."}}
 		{{else}}
-			{{$dbkey := print "tribe_" (lower $tribe2)}}||Tribe 2 Key: {{$dbkey}}||
+			{{$dbkey := print "tribe_" (lower $reg.tribe2)}}
 			{{$tribeinfo := sdict}}
 			{{$pass := false }}
 			{{with dbGet 0 $dbkey}}
 				{{$tribeinfo = sdict .Value}}
 				{{$pass = true}}
 			{{end}}
-			||Tribe 2 Info: {{$tribeinfo}}||
 			{{if $pass}}
 				{{$owner := $tribeinfo.owner}}
 				{{if $owner}}{{/*Owner Exists*/}}
@@ -122,10 +126,12 @@
 						{{if gt (len $members_converted) 0}}{{/*There are other tribe members.*/}}
 							{{sendMessage nil "You are the Owner of this tribe. You can not leave this tribe until you have transferred ownership to another member."}} SEND TO TRIBE MANAGEMENT  
 						{{else}}{{/*There are no tribe members.*/}}
-							{{sendMessage nil (print "Tribe has no members...deleting tribe " $tribe2 ".")}}
-							{{dbDel 0 (print "tribe_" (lower $tribe2))}}
+							{{sendMessage nil (print "Tribe has no members...deleting tribe " $reg.tribe2 ".")}}
+							{{$delTribe := (dbGet 0 $dbkey).Value}}
+							{{deleteMessage 769590958131904532 $delTribe.reg}}
+							{{dbDel 0 $dbkey}}
 							{{- range $tribes -}}
-								{{- if ne . $tribe2 -}}
+								{{- if ne . $reg.tribe2 -}}
 									{{- $tribes_new = $tribes_new.Append . -}}
 								{{- end -}}
 							{{end}}
@@ -139,9 +145,10 @@
 							{{- end -}}
 							{{$tribeinfo.Set "members" $members_new}}
 							{{dbSet 0 $dbkey $tribeinfo}}
+							{{execCC 347 nil 0 (sdict "dbkey" $dbkey)}}
 						{{end}}
 					{{end}}
-					{{sendMessage nil (joinStr "" .User.Mention ", ok, you have left " (toString $tribe2) ".")}}
+					{{sendMessage nil (joinStr "" .User.Mention ", ok, you have left " (toString $reg.tribe2) ".")}}
 				{{else}}{{/*No owner exists.*/}} 
 				{{$members_converted := (cslice).AppendSlice $tribeinfo.members}}
 					{{if gt (len $members_converted) 1}}{{/*There are other tribe members.*/}}
@@ -151,23 +158,26 @@
 							{{- end -}}
 							{{$tribeinfo.Set "members" $members_new}}
 							{{dbSet 0 $dbkey $tribeinfo}}
+							{{execCC 347 nil 0 (sdict "dbkey" $dbkey)}}
 						{{end}}
 					{{else}}{{/*There are no other tribe members.*/}}
-						{{sendMessage nil (print "Tribe has no members, and no owner...deleting tribe "$tribe2 ".")}}
-						{{dbDel 0 (print "tribe_" (lower $tribe2))}}
+						{{sendMessage nil (print "Tribe has no members, and no owner...deleting tribe " $reg.tribe2 ".")}}
+						{{$delTribe := dbGet 0 $dbkey}}
+						{{deleteMessage 769590958131904532 $delTribe.reg}}
+						{{dbDel 0 $dbkey}}
 						{{- range $tribes -}}
-							{{- if ne . $tribe2 -}}
+							{{- if ne . $reg.tribe2 -}}
 								{{- $tribes_new = $tribes_new.Append . -}}
 							{{- end -}}
 						{{end}}
 						{{dbSet 0 "tribes" $tribes_new}}
 					{{end}}
-					{{sendMessage nil (joinStr "" .User.Mention ", ok, you have left " (toString $tribe2) ".")}}
+					{{sendMessage nil (joinStr "" .User.Mention ", ok, you have left " (toString $reg.tribe2) ".")}}
 				{{end}}
 			{{else}}
-				{{sendMessage nil (joinStr "" .User.Mention ", ok, " (toString $tribe2) " cleared from your registration.")}}
+				{{sendMessage nil (joinStr "" .User.Mention ", ok, " (toString $reg.tribe2) " cleared from your registration.")}}
 			{{end}}{{/*if pass*/}}
-			{{$temp := sdict "reg" $reg "Q" "Second Tribe Leave" "var" "tribe2" "User" .User "dbkey" $dbkey}}
+			{{$temp := sdict "reg" $reg "Q" "Second Tribe Leave" "var" "tribe2" "User" .User "dbkey" (print "tribe_" (lower $reg.tribe2))}}
 			{{template "leave complete" $temp}}
 		{{end}}
 	{{end}}

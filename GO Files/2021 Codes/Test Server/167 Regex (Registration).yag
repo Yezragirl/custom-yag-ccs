@@ -1,0 +1,110 @@
+||{{.CCID}}||
+{{/*Variables*/}}
+{{$ticketCat := 997232411542814790}} 
+{{$editingRole := 997232747540131861}}
+{{$yezRole := 645690789544067118}}
+{{$kidRole := 645690840752062484}}
+{{$adminReg := 999496167899533342}}
+{{$publicReg := 999496194046824458}}
+{{$adminError := 647785737336520724}}
+{{$ccRegCont := 173}}
+{{/*End Variables*/}}
+{{/*Regex .* in ticket channels, ignores support team, registered, and kids. This is the registration listener.*/}}
+{{if (eq .Channel.ParentID $ticketCat)}}
+    {{$badWords := (dbGet 0 "badWords").Value}}
+    {{$names := (dbGet 0 "names").Value}}
+    {{$reg := (dbGet .User.ID "reg").Value}}
+	{{$Q := $reg.Q}}{{$age := $reg.age}}{{$gt := $reg.gt}}{{$name := $reg.name}}{{$pin := $reg.pin}}{{$ref := $reg.ref}}
+    {{$parentguardian := $reg.parentguardian}}
+	{{if not $parentguardian}}
+        {{$parentguardian = "Not a Minor"}}
+        {{$reg.Set "parentguardian" $parentguardian}}
+    {{end}}
+    {{$tribe := $reg.tribe}}
+	{{if not $tribe}}
+        {{$tribe = "Unregistered"}}
+        {{$reg.Set "tribe" $tribe}}
+    {{end}}
+	{{if not $Q}}
+		{{$Q = "Edit Name"}}
+        {{$reg.Set "Q" $Q}}
+        {{dbSet .User.ID "reg" $reg}}
+		{{sendMessage nil (print .User.Mention ", how old are you?")}}
+	{{else}} 
+		{{if eq (toString $Q) "Age"}}
+			{{if reFind `\D` (toString .Message.Content)}}
+                {{sendMessage nil (print "Sorry " .User.Mention ", that's not a number. I'll ask again, how old are you?")}}
+			{{else if gt (toInt .Message.Content) 85}}
+                {{sendMessage nil (print "Sorry " .User.Mention ", that's an unrealistic number. I'll ask again, how old are you?")}}
+			{{else if lt (toInt .Message.Content) 5}}
+                {{sendMessage nil (print "Sorry " .User.Mention ", that's an unrealistic number. I'll ask again, how old are you?")}}
+			{{else}}
+				{{$age = toInt .Message.Content}}
+				{{$reg.Set "age" $age}}
+				{{if ge $age 18}}
+					{{$Q = "PT"}}
+                    {{$reg.Set "Q" $Q}}
+                    {{dbSet .User.ID "reg" $reg}}
+					{{$ptmsg := sendMessageRetID nil (print .User.Mention ", Please indicate which Platform you will be playing on? Use <:Xbox:980137454428389387> for Xbox only, <:Steam:980137536183758858> for Steam only, and <:XboxSteam:981771943176986714> for Both.")}}
+					{{addMessageReactions nil $ptmsg ":Xbox:980137454428389387" ":Steam:980137536183758858" ":XboxSteam:981771943176986714"}}
+				{{else}}
+					{{$Q = "ParentGuardian"}}{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+					{{$msg := sendMessageRetID nil (print .User.Mention ", is your Parent or Guardian a member of this cluster?")}}
+					{{addMessageReactions nil $msg ":yes:658376626639339533" ":no:658376639322783745"}}
+				{{end}}
+			{{end}}
+		{{else if eq (toString $Q) "GT"}}
+            {{$gt = (toString .Message.Content)}}
+            {{$reg.Set "gt" $gt}}
+            {{$Q = "Name"}}
+            {{$reg.Set "Q" $Q}}
+            {{dbSet .User.ID "reg" $reg}}
+            {{sendMessage nil (print .User.Mention ", what would you like to use as your In Game Name?")}}
+		{{else if eq (toString $Q) "Name"}}
+			{{if gt (len (toString .Message.Content)) 25}}
+                {{sendMessage nil (print "Sorry " .User.Mention ", that's too long for a name. I'll ask again, What would you like to use as your In Game Name?")}}
+			{{else if (in $names (toString .Message.Content))}}
+                {{sendMessage nil (print "Sorry " .User.Mention ", that name is already taken. Since names need to be unique, I'll ask again, what would you like to use as your In Game Name?")}}
+			{{else if reFind (print "(?i)" (joinStr "|" $badWords.StringSlice)) .Message.Content}}
+                {{sendMessage nil (print "Sorry " .User.Mention ", that contains some inappropriate words. While this IS an 18+ server, we allow the children of players to play. They have no access to the chat, but they can and do see your In Game Name, so we try to keep those at least PG13. So lets try again, what would you like to use as your In Game Name?")}}
+			{{else}}
+			    {{$name = (toString .Message.Content)}}
+			    {{$reg.Set "name" $name}}
+			    {{dbSet 0 "names" ($names.AppendSlice (cslice $name))}}
+			    {{if eq $parentguardian "Not a Minor"}}
+                    {{$Q = "Ref"}}
+			        {{$reg.Set "Q" $Q}}
+                    {{dbSet .User.ID "reg" $reg}}
+			        {{$msg := sendMessageRetID nil (print .User.Mention ", were you referred by one of our members?")}}
+			        {{addMessageReactions nil $msg ":yes:658376626639339533" ":no:658376639322783745"}}
+			    {{else}}
+                    {{$Q = "Pin"}}
+			        {{$reg.Set "Q" $Q}}
+                    {{dbSet .User.ID "reg" $reg}}
+                    {{sendMessage nil (print .User.Mention ", what 4 digit pin would you like used whenever a pin may be required? (Quest Vaults, or other situations.)")}}
+			    {{end}}	
+		    {{end}}
+		{{else if eq (toString $Q) "Ref2"}}
+            {{$ref = (toString (toString .Message.Content))}}
+            {{$reg.Set "ref" $ref}}
+            {{$Q = "Pin"}}
+            {{$reg.Set "Q" $Q}}
+            {{dbSet .User.ID "reg" $reg}}
+            {{sendMessage nil (print .User.Mention ", what 4 digit pin would you like used whenever a pin may be required? (Quest Vaults, or other situations.)")}}
+		{{else if eq (toString $Q) "Pin"}}
+            {{$pin = (toString .Message.Content)}}
+            {{$reg.Set "pin" $pin}}
+            {{$Q = "Starter"}}
+            {{$reg.Set "Q" $Q}}
+            {{dbSet .User.ID "reg" $reg}}
+            {{$msg := sendMessageRetID nil (print .User.Mention ", do you need a starter?")}}
+            {{addMessageReactions nil $msg ":yes:658376626639339533" ":no:658376639322783745"}}
+		{{else if eq (toString $Q) "ParentGuardian2"}}
+			{{$parentguardian = (toString .Message.Content)}}{{$reg.Set "parentguardian" $parentguardian}}{{$Q = "PT"}}{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+			{{$ptmsg := sendMessageRetID nil (print .User.Mention ", Please indicate which Platform you will be playing on? Use <:Xbox:980137454428389387> for Xbox only, <:Steam:980137536183758858> for Steam only, and <:XboxSteam:981771943176986714> for Both.")}}
+			{{addMessageReactions nil $ptmsg ":Xbox:980137454428389387" ":Steam:980137536183758858" ":XboxSteam:981771943176986714"}}
+		{{else if eq (toString $Q) "Done"}}
+			{{execCC $ccRegCont nil 0 ""}}
+		{{end}}
+	{{end}}
+{{end}}

@@ -18,6 +18,8 @@
 	{{$runner  := $event.runner}}
 	{{$participants := $event.participants}}
 	{{$waitlist := $event.waitlist}}
+	{{$graphic := $event.graphic}}{{if not $graphic}}{{$graphics := sdict "981650380163285022" "https://cdn.discordapp.com/attachments/665932077853704202/982096294451499018/unknown.png"  "580400941048528900" "https://cdn.discordapp.com/attachments/665932077853704202/982096249341763694/unknown.png" }}
+	{{$graphic = $graphics.Get $channel}}{{end}}
 	{{$tz := "America/New_York" }}
 	{{$location := (newDate 0 0 0 0 0 0 $tz).Location }} 
 	{{$timeloc := $time.In $location}}
@@ -53,11 +55,12 @@
 		(sdict "name" "Map" "value" (toString $mapname) "inline" true) 
         (sdict "name" "Date/Time" "value" (toString $start) "inline" false)
 		(sdict "name" "Time Until" "value" (joinStr "" "<t:" $time.Unix ":R>") "inline" false) 
-        (sdict "name" "Event Runner" "value" (toString (joinStr "" "```" $runnerslist "```")) "inline" false) 
-		(sdict "name" (joinStr "" "Participants " $pcount "/" $max) "value" (toString (joinStr "" "```" $participantslist "```")) "inline" false)
-		(sdict "name" "Waitlist" "value" (toString (joinStr "" "```" $waitlistlist "```")) "inline" false)) 
+        (sdict "name" "Event Runner" "value" (toString (joinStr "" "```\n" $runnerslist "```")) "inline" false) 
+		(sdict "name" (joinStr "" "Participants " $pcount "/" $max) "value" (toString (joinStr "" "```\n" $participantslist "```")) "inline" false)
+		(sdict "name" "Waitlist" "value" (toString (joinStr "" "```\n" $waitlistlist "```")) "inline" false)) 
     "footer" (sdict "text" "Event starts") 
-	"timestamp" $time }}
+	"timestamp" $time
+	"thumbnail" (sdict "url" $graphic) }}
 {{editMessage $channel (toInt64 $msgID) $embed}}
 {{addMessageReactions $channel (toInt64 $msgID) "🌟" "✅" "❔"}} 
 
@@ -77,6 +80,7 @@
 {{$event.Set "runner" $runner}}
 {{$event.Set "participants" $participants}}
 {{$event.Set "waitlist" $waitlist}}
+{{$event.Set "graphic" $graphic}}
 
 {{/*save sdict to db, save the current event being edited to db*/}}
 {{dbSet (toInt64 $msgID) "event" $event}}

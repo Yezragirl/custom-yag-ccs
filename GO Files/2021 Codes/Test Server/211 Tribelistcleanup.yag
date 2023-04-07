@@ -1,0 +1,11 @@
+{{/*Tribe List Clean Up*/}}
+{{$tribes := (dbGet 0 "tribes").Value}}
+{{$tribes_new := cslice}}
+{{range $tribes}}
+    {{$tribe := (dbGet 0 (joinStr "tribe_" (lower .)))}}
+    {{if $tribe}}
+        {{$tribes_new = $tribes_new.Append . }}
+    {{end}}
+{{end}}
+{{dbSet 0 "tribes" $tribes_new}}
+{{sendMessage nil "Done"}}

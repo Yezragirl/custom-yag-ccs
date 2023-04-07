@@ -72,7 +72,7 @@
 		   (sdict "name" "Discord" "value" "Our currency system is entirely Discord based, so having Discord is essential. **Leaving the Discord is seen as leaving the server.** If you leave the discord without contacting an admin, we will assume you have left, clearing your bases and confiscating your dinos for auction." )
 		   (sdict "name" "Multi-Platform" "value" "Yez's Ark Cluster has expanded! We are now a two platform Cluster! We have Xbox/Win 10 servers, and now we also have STEAM servers. To help differentiate Xbox from Steam here in the discord, we have labeled all Xbox specific channels with ❎ and Steam specific channels with ⏺️. Please use these when asking about a specific platform in a non-labeled channel." )
 		   (sdict "name" "_ _" "value" "We hope you enjoy your time here at Yez's Ark Cluster. If you need any assistance, you can head over to #make-a-ticket." ) ) }}
-   {{sendDM $embeddm}}
+   {{sendDM $embeddm}}{{execCC 213 nil 259200 ""}}
 		{{if .ExecData}}
 			{{if eq .ExecData.starter "none"}}
 			{{else}}

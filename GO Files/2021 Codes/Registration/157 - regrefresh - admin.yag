@@ -1,7 +1,12 @@
 {{/*regrefresh used to refresh registration posts for players*/}}
+{{$user := .User}}
+{{if .ExecData}}
+    {{$user = (userArg .ExecData.user)}}
+{{else}}
 {{$args := parseArgs 1 "regrefresh for who"
 (carg "userid" "user")}}
-{{$user := (userArg ($args.Get 0))}}
+{{$user = (userArg ($args.Get 0))}}
+{{end}}
 {{$reg := (dbGet $user.ID "reg").Value}}
 {{$graphics := sdict "Both" "https://cdn.discordapp.com/attachments/665932077853704202/982095282013618226/dual_logo_transparent.png" "Steam" "https://cdn.discordapp.com/attachments/665932077853704202/982096294451499018/unknown.png"  "Xbox" "https://cdn.discordapp.com/attachments/665932077853704202/982096249341763694/unknown.png" }}
 {{$gtnames := sdict "Both" "Gamer Tag/Steam Name" "Steam" "Steam Name"  "Xbox" "Gamer Tag" }}

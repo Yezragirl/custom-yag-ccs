@@ -1,0 +1,31 @@
+||{{.CCID}}||
+{{/*Variables*/}}
+{{$tCat := 997232411542814790}} 
+{{$editRole := 997232747540131861}}
+{{$baseRole := 997232827437424730}}
+{{$ccRegedit := 163}}
+{{$ccRefreshreg := 164}}
+{{$ccBaseregcont := 182}}
+{{$ccTriberefresh := 179}}
+{{$tribeReg := 999685730777440376}}
+{{$graphics := sdict "Both" "https://cdn.discordapp.com/attachments/665932077853704202/982095282013618226/dual_logo_transparent.png" "Steam" "https://cdn.discordapp.com/attachments/665932077853704202/982096294451499018/unknown.png"  "Xbox" "https://cdn.discordapp.com/attachments/665932077853704202/982096249341763694/unknown.png" }}
+{{$gtnames := sdict "Both" "Gamer Tag/Steam Name" "Steam" "Steam Name"  "Xbox" "Gamer Tag" }}
+{{$names := (dbGet 0 "names").Value}}
+{{$names_new := cslice}}
+{{$tribes := (dbGet 0 "tribes").Value}}
+{{$badWords := (dbGet 0 "badWords").Value}}
+{{/*End Variables*/}}
+{{if (eq .Channel.ParentID $tCat)}}
+{{$reg := (dbGet .User.ID "reg").Value}}
+{{if not $reg.tribe}}
+    {{$reg.Set "tribe" "Unregistered"}}
+    {{dbSet .User.ID "reg" $reg}}
+{{end}}
+{{if not $reg.tribe2}}
+    {{$reg.Set "tribe2" "Unregistered"}}
+    {{dbSet .User.ID "reg" $reg}}
+{{end}}
+{{if not $reg.tribe3}}
+    {{$reg.Set "tribe3" "Unregistered"}}
+    {{dbSet .User.ID "reg" $reg}}
+{{end}}

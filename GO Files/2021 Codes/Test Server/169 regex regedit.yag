@@ -1,0 +1,191 @@
+||{{.CCID}}||
+{{/*Variables*/}}
+{{$tCat := 997232411542814790}} 
+{{$editRole := 997232747540131861}}
+{{$baseRole := 997232827437424730}}
+{{$ccRegedit := 163}}
+{{$ccRefreshreg := 164}}
+{{$ccBaseregcont := 182}}
+{{$ccTriberefresh := 179}}
+{{$tribeReg := 999685730777440376}}
+{{$graphics := sdict "Both" "https://cdn.discordapp.com/attachments/665932077853704202/982095282013618226/dual_logo_transparent.png" "Steam" "https://cdn.discordapp.com/attachments/665932077853704202/982096294451499018/unknown.png"  "Xbox" "https://cdn.discordapp.com/attachments/665932077853704202/982096249341763694/unknown.png" }}
+{{$gtnames := sdict "Both" "Gamer Tag/Steam Name" "Steam" "Steam Name"  "Xbox" "Gamer Tag" }}
+{{$names := (dbGet 0 "names").Value}}
+{{$names_new := cslice}}
+{{$tribes := (dbGet 0 "tribes").Value}}
+{{$badWords := (dbGet 0 "badWords").Value}}
+{{/*End Variables*/}}
+{{if (eq .Channel.ParentID $tCat)}}
+{{$reg := (dbGet .User.ID "reg").Value}}
+{{if not $reg.tribe}}
+    {{$reg.Set "tribe" "Unregistered"}}
+    {{dbSet .User.ID "reg" $reg}}
+{{end}}
+{{if not $reg.tribe2}}
+    {{$reg.Set "tribe2" "Unregistered"}}
+    {{dbSet .User.ID "reg" $reg}}
+{{end}}
+{{if not $reg.tribe3}}
+    {{$reg.Set "tribe3" "Unregistered"}}
+    {{dbSet .User.ID "reg" $reg}}
+{{end}}
+{{$lowertribes := cslice}}{{$finds := cslice}}{{$out := (printf "%s\t%-18s\n" "Listing" "Tribe")}}{{$rank := 0}}{{$tname := "tribe"}}
+{{$rankemotes := sdict "1" "1️⃣" "2" "2️⃣" "3" "3️⃣" "4" "4️⃣" "5" "5️⃣" "6" "6️⃣" }}{{$emote := ""}}{{$foundMatch := false}}{{$lowerMC := lower .Message.Content}}
+{{$gtname := $gtnames.Get $reg.pt}}
+{{$url := $graphics.Get $reg.pt}}
+{{- range $tribes -}}{{- $lowertribes = $lowertribes.Append (lower .) -}}{{- end -}}
+{{if reFind `(?i)cancel` .Message.Content}}
+	{{$x := $reg.Set "Q" "Edit"}}
+	{{dbSet .User.ID "reg" $reg}}
+	{{execCC $ccRegedit nil 1 nil}}
+	{{sendMessage nil "Action cancelled."}}
+{{else if hasRoleID $baseRole}}
+	{{execCC $ccBaseregcont nil 0 ""}}
+{{else}}
+	{{if not $reg.name}}
+		{{sendMessage nil "You can't edit your registration. You don't have one yet."}}
+	{{else}}
+		{{if eq (toString $reg.Q) "Edit GT"}}
+			{{$reg.Set "gt" (toString .Message.Content)}}
+			{{$reg.Set "Q" "Edit"}}{{dbSet .User.ID "reg" $reg}}
+			{{sendMessage nil (joinStr "" $gtname " updated to " $reg.gt ".")}}
+			{{execCC $ccRegedit nil 0 ""}}{{execCC $ccRefreshreg nil 0 ""}}
+		{{else if eq (toString $reg.Q) "Edit Name"}}
+			{{if gt (len (toString .Message.Content)) 25}}{{sendMessage nil (joinStr "" "Sorry " .User.Mention ", that's too long for a name. I'll ask again, What would you like to use as your In Game Name?")}}
+			{{else if eq (toString .Message.Content) $reg.name}}{{sendMessage nil (joinStr "" "Sorry " .User.Mention ", that's already your name. I'll ask again, what would you like to use as your In Game Name? *If you want to keep your name as is, type `cancel`.*")}}
+			{{else if (in $names (toString .Message.Content))}}{{sendMessage nil (joinStr "" "Sorry " .User.Mention ", that name is already taken. Since names need to be unique, I'll ask again, what would you like to use as your In Game Name?")}}
+			{{else if reFind (print "(?i)" (joinStr "|" $badWords.StringSlice)) .Message.Content}}{{sendMessage nil (joinStr "" "Sorry " .User.Mention ", that contains some inappropriate words. While this IS an 18+ server, we allow the children of players to play. They have no access to the chat, but they can and do see your In Game Name, so we try to keep those at least PG13. So lets try again, what would you like to use as your In Game Name?")}}
+			{{else}}
+			{{$nameCheck := cslice}}
+			{{- range $names -}} 
+				{{- if ne . $reg.name -}}
+				{{- $names_new = $names_new.Append . -}}
+					{{- end -}}
+				{{end}}
+			{{$reg.Set "name" (toString .Message.Content)}}
+			{{dbSet 0 "names" ($names_new.AppendSlice (cslice $reg.name))}}
+			{{editNickname (toString $reg.name)}}
+			{{$reg.Set "Q" "Edit"}}{{dbSet .User.ID "reg" $reg}}
+			{{sendMessage nil (joinStr "" "Name updated to " $reg.name ".")}}
+			{{execCC $ccRegedit nil 0 ""}}{{execCC $ccRefreshreg nil 0 ""}}
+			{{end}}
+		{{else if eq (toString $reg.Q) "First Tribe Create"}}
+			{{- range $lowertribes -}}
+				{{- if not $foundMatch -}}
+					{{- if in . $lowerMC -}}
+						{{- $foundMatch = true -}}
+					{{- end -}}
+				{{- end -}}
+			{{- end -}}
+			{{if $foundMatch}}
+				{{sendMessage nil (joinStr "" "Sorry " .User.Mention ", that tribe name is already taken. Since Tribe names need to be unique, I'll ask again, what would you like to use as your Tribe Name?")}}
+			{{else}}
+				{{$reg.Set "tribe" (toString .Message.Content)}}
+				{{dbSet 0 "tribes" ($tribes.Append $reg.tribe)}}
+				{{dbSet 0 (joinStr "" "tribe_" (lower $reg.tribe)) (sdict "name" $reg.tribe "owner" (toString .User.ID))}}
+				{{$reg.Set "Q" "Edit"}}{{dbSet .User.ID "reg" $reg}}
+				{{sendMessage nil (joinStr "" "Tribe " $reg.tribe ", created. " .User.Mention " set as owner.")}}
+				{{removeRoleID $editRole}}
+				{{execCC $ccRefreshreg nil 0 ""}}{{execCC $ccRegedit nil 0 ""}}{{execCC $ccTriberefresh nil 0 (sdict "dbkey" (joinStr "" "tribe_" (lower $reg.tribe)))}}
+			{{end}}
+		{{else if eq (toString $reg.Q) "Second Tribe Create"}}
+			{{- range $lowertribes -}}
+				{{- if not $foundMatch -}}
+					{{- if in . $lowerMC -}}
+						{{- $foundMatch = true -}}
+					{{- end -}}
+				{{- end -}}
+			{{- end -}}
+			{{if $foundMatch}}
+				{{sendMessage nil (joinStr "" "Sorry " .User.Mention ", that tribe name is already taken. Since Tribe names need to be unique, I'll ask again, what would you like to use as your Tribe Name?")}}
+			{{else}}
+				{{$reg.Set "tribe2" (toString .Message.Content)}}
+				{{dbSet 0 "tribes" ($tribes.Append $reg.tribe2)}}
+				{{$reg.Set "Q" "Tribe PT"}}{{dbSet .User.ID "reg" $reg}}
+				{{sendMessage nil (joinStr "" "Tribe " $reg.tribe2 ", created. " .User.Mention " set as owner.")}}
+				{{removeRoleID $editRole}}
+				{{execCC $ccRefreshreg nil 0 ""}}{{execCC $ccRegedit nil 0 ""}}{{execCC $ccTriberefresh nil 0 (sdict "dbkey" (joinStr "" "tribe_" (lower $reg.tribe2)))}}
+				{{$color := randInt 111111 999999 }}
+				{{$embed := cembed 
+				"color" $color
+					"fields" (cslice 
+					(sdict "name" "Tribe Name" "value" $reg.tribe2 "inline" false) 
+					(sdict "name" "Owner" "value" .User.Mention "inline" false) 
+					(sdict "name" "Admins" "value" "None" "inline" false) 
+					(sdict "name" "Members" "value" "None" "inline" false) )
+					"thumbnail" (sdict "url" $url) }}
+				{{$msg := sendMessageRetID $tribeReg $embed}}
+				{{dbSet 0 (joinStr "" "tribe_" (lower $reg.tribe2)) (sdict "name" $reg.tribe2 "owner" (toString .User.ID) "reg" $msg)}}
+			{{end}}
+    	{{else if eq (toString $reg.Q) "First Tribe Join"}}
+			{{$finds = dbGetPattern 0 (print "tribe_%" (lower .Message.Content) "%") 5 0}}
+			{{$fields := cslice}}
+			{{$addEmotes := cslice}}
+			{{- range $finds -}}
+				{{- $rank = add $rank 1 -}}
+				{{- $tribeInfo := sdict .Value -}}
+				{{- $tname = $tribeInfo.name -}}
+				{{- $emote = $rankemotes.Get (toString $rank) -}}
+				{{- $addEmotes = $addEmotes.Append $emote -}}
+				{{- $fields = $fields.Append 
+				(sdict "name" (print $emote " " $tname) "value" "** **") -}}
+			{{- end -}}
+			{{$rank = add $rank 1}}
+			{{$emote = $rankemotes.Get (toString $rank)}}
+			{{$addEmotes = $addEmotes.Append $emote}}
+			{{$fields = $fields.Append (sdict "name" (print $emote " Try Again") "value" "Don't see what you wanted? Try your search again.")}}
+			{{$embed := cembed 
+				"title" "Which Tribe would you like to join?" 
+				"description" "Use the reactions to indicate the tribe you'd like to join." 
+				"fields" $fields
+				"color" 4645612}}
+			{{$msg := sendMessageRetID nil $embed}}
+			{{- range $addEmotes -}}
+				{{- addMessageReactions nil $msg . -}}
+			{{- end -}}
+			{{$reg.Set "Q" "Edit First Tribe Join"}}{{dbSet .User.ID "reg" $reg}}
+		{{else if eq (toString $reg.Q) "Second Tribe Join"}}
+			{{$finds = dbGetPattern 0 (print "tribe_%" (lower .Message.Content) "%") 5 0}}
+			{{$fields := cslice}}
+			{{$addEmotes := cslice}}
+			{{- range $finds -}}
+				{{- $rank = add $rank 1 -}}
+				{{- $tribeInfo := sdict .Value -}}
+				{{- $tname = $tribeInfo.name -}}
+				{{- $emote = $rankemotes.Get (toString $rank) -}}
+				{{- $addEmotes = $addEmotes.Append $emote -}}
+				{{- $fields = $fields.Append
+				(sdict "name" (print $emote " " $tname) "value" "** **")}}
+			{{- end}}
+			{{$rank = add $rank 1}}
+			{{$emote = $rankemotes.Get (toString $rank)}}
+			{{$addEmotes = $addEmotes.Append $emote}}
+			{{$fields = $fields.Append (sdict "name" (print $emote " Try Again") "value" "Don't see what you wanted? Try your search again.")}}
+			{{$embed := cembed 
+				"title" "Which Tribe would you like to join?" 
+				"description" "Use the reactions to indicate the tribe you'd like to join." 
+				"fields" $fields
+				"color" 4645612}}
+			{{$msg := sendMessageRetID nil $embed}}
+			{{range $addEmotes}}
+				{{- addMessageReactions nil $msg . -}}
+			{{end}}
+			{{$reg.Set "Q" "Edit Second Tribe Join"}}{{dbSet .User.ID "reg" $reg}}
+		{{else if eq (toString $reg.Q) "Edit Pin"}}
+			{{$reg.Set "pin" (toString .Message.Content)}}
+			{{$reg.Set "Q" "Edit"}}{{dbSet .User.ID "reg" $reg}}
+			{{sendMessage nil (joinStr "" "Pin updated to " $reg.pin ".")}}
+			{{execCC $ccRegedit nil 0 ""}}{{execCC $ccRefreshreg nil 0 ""}}
+		{{else if eq (toString $reg.Q) "Edit ParentGuardian"}}
+			{{$reg.Set "parentguardian" (toString .Message.Content)}}
+			{{$reg.Set "Q" "Edit"}}{{dbSet .User.ID "reg" $reg}}
+			{{sendMessage nil (joinStr "" "Parent/Guardian updated to " $reg.parentguardian ".")}}
+			{{execCC $ccRegedit nil 0 ""}}{{execCC $ccRefreshreg nil 0 ""}}
+		{{else if eq (toString $reg.Q) "Edit Age"}}
+			{{$msg := sendMessageRetID nil (joinStr "" .User.Mention ", did you have a birthday?")}}
+			{{addMessageReactions nil $msg ":yes:658376626639339533" ":no:658376639322783745"}}
+		{{end}}
+	{{end}}
+{{end}}
+{{end}}
+

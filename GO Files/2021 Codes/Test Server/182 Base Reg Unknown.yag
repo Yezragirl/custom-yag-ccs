@@ -1,0 +1,20 @@
+||{{.ccid}}||
+{{/*Variables*/}}
+{{/*End Variables*/}}
+
+{{$baseReg := sdict "step" 1 "id" 0}}
+{{$tribeedit := (dbGet .Channel.ID "tribeedit").Value}}{{$tribeedit}}
+{{$dbkey := print "tribe_" (lower $tribeedit)}}{{$dbkey}}
+{{$tribeinfo := sdict (dbGet 0 $dbkey).Value}}{{$tribeinfo}}
+
+{{with dbGet .User.ID "baseRegistration"}}
+    {{$baseReg = .Value}}
+{{end}}
+{{$baseReg}}
+{{removeRoleID 658469834589208616}}
+{{if eq $baseReg.step 3}}
+    {{$msg := reReplace `((<a?:[\w~]{2,32}:\d{17,19}>)|[\x{1f1e6}-\x{1f1ff}]{2}|\p{So}\x{fe0f}?[\x{1f3fb}-\x{1f3ff}]?(\x{200D}\p{So}\x{fe0f}?[\x{1f3fb}-\x{1f3ff}]?)*|[#\d*]\x{FE0F}?\x{20E3})` .Message.Content ""}}
+    {{$baseReg.Set "coordinates" $msg}}
+    {{$baseReg.Set "step" 4}}
+{{end}}
+{{dbSet .User.ID "baseRegistration" $baseReg}}

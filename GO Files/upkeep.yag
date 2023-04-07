@@ -1,0 +1,84 @@
+{{/*WeepingHoney*/}}
+{{deleteTrigger 10}}
+{{$args := parseArgs 2 "syntax: upkeep TC-Name *duration*"
+(carg "string" "name")
+(carg "duration" "duration")}}
+{{$farmersRole := 645690790823198758}}
+{{$buildersRole := 645690789544067118}}
+{{$membersRole := 649116404540506123}}
+{{$t := currentTime}}
+{{$tUnix := 1}}
+{{$name := ""}}
+{{$end := 1}}
+{{$reminder15 := 1}}
+{{$reminderMsg := ""}}
+{{$mID := 1}}
+{{ if not .ExecData }}
+    {{$t = currentTime.Add ($args.Get 1)}}
+    {{$name = upper ($args.Get 0)}} 
+    {{$tUnix = $t.Unix}}
+    {{$end = round (($t.Sub currentTime).Seconds)}}
+    {{$reminder15 = sub (sub $tUnix 900) currentTime.Unix}}
+{{ else }}
+    {{$db := (dbGet 999 .ExecData.name).Value}}
+    {{$t = $db.Get "t"}}
+    {{$name = $db.name}}
+    {{$reminderMsg = $db.Get "reminderMsg"}}
+{{$mID = .ExecData.MessageID}}
+{{ end }}
+
+{{$MessageHeader := joinStr "" "Upkeep for __**" $name "**__"}}
+{{define "post"}}
+    {{$ping := ""}}
+    {{range .ping}}
+        {{$ping = joinStr "" $ping "<@&" . ">,"}}
+    {{end}}
+    {{deleteMessage nil .reminderMsg}} 
+    {{$reminderMsg := sendMessageRetID nil (joinStr "" $ping " the upkeep for " .name " ends <t:" .t.Unix ":R>!")}}
+    {{dbSet 999 .name (sdict "name" .name "t" .t "reminderMsg" $reminderMsg)}}
+{{end}}
+
+{{if .ExecData}}
+    {{$mID := .ExecData.MessageID}}
+    {{if eq .ExecData.Reminder "End"}}
+        {{$embed := cembed 
+        "Title" $MessageHeader
+        "color" 16711680
+        "Description" (joinStr "" "Your upkeep ended <t:" $t.Unix ":R>.")
+        "footer" (sdict "text" $name) 
+        "timestamp" $t}}
+        {{editMessage nil  .ExecData.MessageID $embed}}
+        {{deleteAllMessageReactions nil .ExecData.MessageID}}
+        {{deleteMessage nil $reminderMsg}} 
+        {{sendMessage nil (joinStr "" "<@&" $membersRole ">, upkeep for " $name " has ended.")}}
+        {{dbDel 999 $name}}
+    {{else if eq .ExecData.Reminder "15"}}
+        {{$set := sdict "t" $t "ping" (cslice $farmersRole) "reminderMsg" $reminderMsg "name" $name}}
+        {{$reminderMsg = execTemplate "post" $set}}
+        {{scheduleUniqueCC .CCID nil 600 (joinStr "-" $name "5") (sdict  "name" $name "MessageID" $mID "Reminder" "5")}}
+    {{else if eq .ExecData.Reminder "5"}}
+        {{$set := sdict "t" $t "ping" (cslice $farmersRole $buildersRole) "reminderMsg" $reminderMsg "name" $name}}
+        {{$reminderMsg = execTemplate "post" $set}}
+        {{scheduleUniqueCC .CCID nil 300 (joinStr "-" $name "End") (sdict "name" $name "MessageID" $mID "Reminder" "End")}}
+
+    {{else}}
+        {{return}}
+    {{end}}
+{{else}}
+    {{$embed := cembed 
+	"Title" $MessageHeader
+	"color" 32768
+	"Description" (joinStr  "" "You're base will begin decaying at: <t:" $t.Unix ">, <t:" $t.Unix ":R>.")
+    "fields" (cslice 
+    (sdict "name" "How to Edit" "value" "To update this upkeep, repeat the set command using the name underlined above." "inline" false) 
+    (sdict "name" "How to Cancel" "value" "To cancel, react to this post with ❌." "inline" false))
+	"footer" (sdict "text" $name) 
+	"timestamp" $t}}
+{{$mID = sendMessageRetID nil $embed}}
+{{addMessageReactions nil $mID "❌"}}
+{{scheduleUniqueCC .CCID nil $reminder15 (joinStr "-" $name "15") (sdict  "name" $name "MessageID" $mID "Reminder" "15")}}
+{{dbSet 999 $name (sdict "name" $name "t" $t "reminderMsg" $reminderMsg)}}
+{{end}}
+
+
+

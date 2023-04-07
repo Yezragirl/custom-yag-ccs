@@ -1,0 +1,34 @@
+{{$data := sdict}}
+{{$clean := sdict}}
+{{if not .ExecData}}
+    {{range .CmdArgs}}
+            {{- $data.Set . 1 -}}
+    {{end}}
+    {{/*Step 1*/}}
+    {{range $i, $v := $data}}
+        {{if (getMember $i)}}
+              {{$clean.Set $i $v}}
+        {{else}}
+            {{sendMessage nil (joinStr "" (userArg $i).Mention " has already left the server.")}}
+        {{- end -}}
+    {{end}}
+{{else}}
+{{$clean = .ExecData.clean}}
+{{end}}
+
+{{/*Step 2*/}}
+{{$count := 0}}
+{{range $i, $v := $clean}}
+    {{- if lt $count 5}}
+        {{sendMessage nil (joinStr "" (userArg $i).Mention " is being kicked for Inactivity.")}}
+        {{- $kick := exec "kick" (toInt $i) "Inactivity"}}
+        {{- $clean.Del $i}}
+        {{- $count = add $count 1}}
+  {{- end -}}
+{{end}}
+
+{{if (len $clean)}}
+    {{execCC .CCID nil 10 (sdict "clean" $clean)}}
+{{else}}
+All done <@124400200327495680>!
+{{end}}

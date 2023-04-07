@@ -1,0 +1,6 @@
+{{$user := .ExecData.user}}
+{{$reg := (dbGet $user.ID "reg").Value}}
+{{$adminToDo := 647785737336520724}}
+{{if $reg}}
+{{$message := sendMessageRetID $adminToDo (joinStr ""  "Pay referral fee to " $reg.ref " for " $user.Mention)}}{{addMessageReactions $adminToDo $message "✔️" "❌"}}
+{{end}}

@@ -1,5 +1,9 @@
-{{if eq .Reaction.Emoji.Name "📌"}}
-        {{$msg := .ReactionMessage.Content}}
-        {{$newmsg := sendMessageRetID 573860427721605120 $msg}}
-        {{addMessageReactions 573860427721605120 $newmsg "✔️" "❌"}}
+{{/*Ticket Close Crystal and Push Pin*/}}
+{{if eq .Channel.ParentID 635305499600093214}}
+    {{if (eq .Reaction.Emoji.Name "gcrystal")}}
+        {{deleteAllMessageReactions nil .ReactionMessage.ID}}
+        {{exec "tickets close" "Picked up Items"}}
+    {{else if eq .Reaction.Emoji.Name "❓"}}
+        {{execCC 320 nil 0 "none"}}
+    {{end}}
 {{end}}

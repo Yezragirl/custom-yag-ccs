@@ -1,0 +1,82 @@
+||{{.CCID}}||
+{{/*Variables*/}}
+{{$ticketCat := 997232411542814790}} 
+{{$editingRole := 997232747540131861}}
+{{$yezRole := 645690789544067118}}
+{{$kidRole := 645690840752062484}}
+{{$adminReg := 999496167899533342}}
+{{$publicReg := 999496194046824458}}
+{{$adminError := 647785737336520724}}
+{{/*End Variables*/}}
+{{/*refreshreg should update the registration posts with any edited info. Must be run by the person whos REG is being edited.*/}}
+
+{{$reg := (dbGet .User.ID "reg").Value}}
+{{$Q := $reg.Q}}{{$admin := $reg.admin}}{{$public := $reg.public}}
+{{if not $reg.tribe}}{{$reg.Set "tribe" "Unregistered"}}{{dbSet .User.ID "reg" $reg}}{{end}}
+{{if not $reg.tribe2}}{{$reg.Set "tribe2" "Unregistered"}}{{dbSet .User.ID "reg" $reg}}{{end}}
+{{if not $reg.pt}}
+	{{if and (hasRoleName "Xbox") (hasRoleName "Steam")}}{{$reg.Set "pt" "Both"}}
+	{{else if hasRoleName "Xbox"}}{{$reg.Set "pt" "Xbox"}}
+	{{else}}{{$reg.Set "pt" "Steam"}}
+	{{end}}
+{{dbSet .User.ID "reg" $reg}}{{end}}
+   {{$graphics := sdict "Both" "https://cdn.discordapp.com/attachments/665932077853704202/982095282013618226/dual_logo_transparent.png" "Steam" "https://cdn.discordapp.com/attachments/665932077853704202/982096294451499018/unknown.png"  "Xbox" "https://cdn.discordapp.com/attachments/665932077853704202/982096249341763694/unknown.png" }}
+	{{$gtnames := sdict "Both" "Gamer Tag/Steam Name" "Steam" "Steam Name"  "Xbox" "Gamer Tag" }}
+   {{$gtname := $gtnames.Get $reg.pt}}
+   {{$url := $graphics.Get $reg.pt}}
+
+{{if and $public $admin}}
+   {{$deladmin := deleteMessage $adminReg (toInt64 $reg.admin) 0}}
+   {{$delpublic := deleteMessage $publicReg (toInt64 $reg.public) 0}}
+   {{if (hasRoleID $yezRole)}}{{/*Has Yezians Role*/}}
+      {{$color := randInt 111111 999999 }}
+      {{$embed := cembed 
+      "color" $color
+      "fields" (cslice 
+         (sdict "name" "In Game Name" "value" (toString $reg.name) ) 
+         (sdict "name" "Tribe Name" "value" (joinStr "/" (toString $reg.tribe) (toString $reg.tribe2)) ) )
+         "thumbnail" (sdict "url" $url) }}
+      {{$public = toString (sendMessageRetID $publicReg $embed)}}
+      {{$reg.Set "public" $public}}
+      {{editNickname (toString $reg.name)}}
+      {{$embed2 := cembed 
+         "color" $color
+         "fields" (cslice 
+         (sdict "name" "Discord Name" "value" .User.Username ) 
+         (sdict "name" "In Game Name" "value" (toString $reg.name) ) 
+         (sdict "name" $gtname "value" (toString $reg.gt) ) 
+         (sdict "name" "Referral" "value" (toString $reg.ref) ) 
+         (sdict "name" "Pin" "value" (toString $reg.pin) ) )
+         "thumbnail" (sdict "url" $url) }}
+      {{$admin = toString (sendMessageRetID $adminReg $embed2)}}
+      {{$reg.Set "admin" $admin}}{{dbSet .User.ID "reg" $reg}}
+	{{else if hasRoleID $kidRole}}{{/*Has Kids Role*/}}
+         {{$color := randInt 111111 999999 }}
+         {{$embed := cembed 
+            "color" $color
+            "fields" (cslice 
+            (sdict "name" "__***MINOR***__" "value" "_ _" ) 
+			(sdict "name" "In Game Name" "value" (toString $reg.name) )
+			(sdict "name" "Tribe Name" "value" (joinStr "/" (toString $reg.tribe) (toString $reg.tribe2)) )  )
+            "thumbnail" (sdict "url" $url)}}
+            {{$public = toString (sendMessageRetID $publicReg $embed)}}
+            {{$reg.Set "public" $public}}
+         {{editNickname (joinStr "-" $reg.name " (M)")}}
+         {{$embed2 := cembed 
+            "color" $color
+            "fields" (cslice 
+               (sdict "name" "Discord Name" "value" .User.Username ) 
+               (sdict "name" "__***MINOR***__" "value" (toString (toInt $reg.age)) ) 
+            (sdict "name" "In Game Name" "value" (toString $reg.name) ) 
+			(sdict "name" $gtname "value" (toString $reg.gt) )  
+			(sdict "name" "Tribe Name" "value" (joinStr "/" (toString $reg.tribe) (toString $reg.tribe2)) ) 
+            (sdict "name" "Parent/Guardian" "value" (toString $reg.parentguardian) )
+            (sdict "name" "Pin" "value" (toString $reg.pin) ))
+            "thumbnail" (sdict "url" $url) }}
+            {{$admin = toString (sendMessageRetID $adminReg $embed2)}}
+            {{$reg.Set "admin" $admin}}{{dbSet .User.ID "reg" $reg}}
+   {{end}}
+{{else}}
+{{/*{{sendMessage $adminError (joinStr "" "<@514993305075843132> " .User.Mention " doesn't have an active registration.")}}
+{{sendMessage nil (joinStr "" .User.Mention ", you don't have an active registration. Yez will have to fix it for you manually. Thanks for your patience.")}}*/}}
+{{end}}

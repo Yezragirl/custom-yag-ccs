@@ -10,7 +10,7 @@
 {{if eq $editor (toString .User.ID)}}
 	{{$evdb := (dbGet 0 "currenteventediting").Value }}
 	{{$db := dbGet (toInt64 $evdb) "event"}}
-	{{$event := sdict}}{{range $k,$v := $db.Value}}{{$event.Set $k $v}}{{end}}
+	{{$event := $db.Value}}
 
 	{{/*set variables*/}}
 	{{$number := $event.number}}
@@ -33,7 +33,8 @@
 	{{$msgID := (dbGet 0 "currenteventediting").Value}}
 	{{$tz := "America/New_York" }}
 	{{$location := (newDate 0 0 0 0 0 0 $tz).Location }} 
-	
+	{{$graphics := sdict "981650380163285022" "https://cdn.discordapp.com/attachments/665932077853704202/982096294451499018/unknown.png"  "580400941048528900" "https://cdn.discordapp.com/attachments/665932077853704202/982096249341763694/unknown.png" }}
+	{{$useGraphic := $graphics.Get $channel}}
 	
 	{{/*Questions*/}}
 	{{if eq (toString $step) "name"}}
@@ -81,7 +82,7 @@
 		{{$start = formatTime $time "Mon Jan 2, 2006 3:04 PM MST" }}
 		{{$step = "complete"}}
 		{{$editor = "None"}}
-               {{sendMessage nil "Event Setup Complete"}}
+        {{sendMessage nil "Event Setup Complete"}}
 	{{end}}
 
 
@@ -117,11 +118,12 @@
 		(sdict "name" "Map" "value" (toString $mapname) "inline" true) 
         (sdict "name" "Date/Time" "value" (toString $start) "inline" false)
 		(sdict "name" "Time Until" "value" (joinStr "" "<t:" $time.Unix ":R>") "inline" false) 
-        (sdict "name" "Event Runner" "value" (toString (joinStr "" "```" $runnerslist "```")) "inline" false) 
-		(sdict "name" (joinStr "" "Particiants " $pcount "/" $max) "value" (toString (joinStr "" "```" $participantslist "```")) "inline" false)
-		(sdict "name" "Waitlist" "value" (toString (joinStr "" "```" $waitlistlist "```")) "inline" false)) 
+        (sdict "name" "Event Runner" "value" (toString (joinStr "" "```\n" $runnerslist "```")) "inline" false) 
+		(sdict "name" (joinStr "" "Particiants " $pcount "/" $max) "value" (toString (joinStr "" "```\n" $participantslist "```")) "inline" false)
+		(sdict "name" "Waitlist" "value" (toString (joinStr "" "```\n" $waitlistlist "```")) "inline" false)) 
     "footer" (sdict "text" "Event starts") 
-	"timestamp" $time }}
+	"timestamp" $time 
+	"thumbnail" (sdict "url" $useGraphic)}}
 {{editMessage $channel (toInt64 $msgID) $embed}}
 {{addMessageReactions $channel (toInt64 $msgID) "🌟" "✅" "❔"}} 
 
@@ -153,7 +155,7 @@
 {{$event.Set "runner" $runner}}
 {{$event.Set "participants" $participants}}
 {{$event.Set "waitlist" $waitlist}}
-
+{{$event.Set "graphic" $useGraphic}}
 {{/*save sdict to db, save the current event being edited to db*/}}
 {{dbSet (toInt64 $msgID) "event" $event}}
 {{dbSet 0 "eventeditor" $editor}}

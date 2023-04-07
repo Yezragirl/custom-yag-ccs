@@ -38,7 +38,7 @@
                 {{else}}
                     {{dbSet .User.ID "tickets" $tc}}
                 {{end}}
-                 {{$weekly.Set "tickets" $wtc}}
+                {{$weekly.Set "tickets" $wtc}}
             {{else}}
                 {{if $ticket.claimer}}
                     {{if eq $ticket.claimer .User.ID}}
@@ -155,13 +155,13 @@
             {{- end -}}
         {{end}}
         {{if $allMatch}}
-            {{if and (reFind `\x{23fa}map-sweeps$` $c) (eq $count 2)}}
+            {{if and (reFind `\x{23fa}map-sweeps$` $c) (eq $count 3)}}
                 {{exec "tickets close" "All Map Sweeps Complete"}}
-            {{else if and (reFind `\x{274e}map-sweeps$` $c) (eq $count 24)}}
+            {{else if and (reFind `\x{274e}map-sweeps$` $c) (eq $count 25)}}
                 {{exec "tickets close" "All Map Sweeps Complete"}}
-            {{else if and (reFind `\x{274e}restock-and-repin$` $c) (eq $count 22)}}
+            {{else if and (reFind `\x{274e}restock-and-repin$` $c) (eq $count 23)}}
                 {{exec "tickets close" "All Restocks and Repins Complete"}}
-            {{else if and (reFind `\x{23fa}restock-and-repin$` $c) (eq $count 2)}}
+            {{else if and (reFind `\x{23fa}restock-and-repin$` $c) (eq $count 3)}}
                 {{exec "tickets close" "All Restocks and Repins Complete"}}
             {{end}}
         {{end}}

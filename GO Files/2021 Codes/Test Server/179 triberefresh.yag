@@ -1,0 +1,78 @@
+{{/*triberefresh should update the registration posts with any edited info. */}}
+{{$tribeReg := 999685730777440376}}
+{{$dbkey := ""}}
+{{$tribeinfo := sdict}}
+{{$memberslist := ""}}
+{{$adminslist := ""}}
+{{$tribes_db := (dbGet 0 "tribes").Value}}
+{{$tribes := (cslice).AppendSlice $tribes_db}}
+{{$members_new := cslice}}
+{{$tribes_new := cslice}}
+{{$post := "Yes"}}
+
+{{if .CmdArgs}} 	{{$dbkey = joinStr "" "tribe_" (lower .CmdArgs)}}
+{{else if .ExecData}} 	{{$dbkey = joinStr "" (lower .ExecData.dbkey)}}
+{{end}}
+
+{{$tribeinfo = (dbGet 0 $dbkey).Value}}
+{{$admins := or $tribeinfo.admins sdict}}
+{{$members := or $tribeinfo.members sdict}}
+
+{{if $tribeinfo.reg}}
+    {{$delpublic := deleteMessage $tribeReg (toInt64 $tribeinfo.reg) 0}}
+{{end}}
+
+{{if not ($tribeinfo.owner)}}
+    {{if eq (len $admins) 0}}
+        {{if eq (len $members) 0}}
+No Owner, No Admins, No Members. Deleting Tribe.
+            {{$delTribe := (dbGet 0 $dbkey).Value}}
+            {{if $delTribe}} $delTribe exists
+                {{- range $tribes -}}
+                    {{- if ne . $delTribe.name -}}
+                        {{- $tribes_new = $tribes_new.Append . -}}
+                    {{- end -}}
+                {{- end -}}
+                {{dbSet 0 "tribes" $tribes_new}}
+            {{end}}
+            {{$x := dbDel 0 $dbkey}}
+            {{$post = "No"}}
+        {{else}}
+No Owner, No Admins, Members. Promote First Member to Owner. (Not Coded Yet)
+        {{end}}
+    {{else}}
+No Owner, Admins. Promote First Admin to Owner. (Not Coded Yet)
+    {{end}}
+{{end}}
+
+{{if eq $post "Yes"}}
+	{{if eq (len $members) 0}}
+	    {{$memberslist = "No Members"}}
+	{{else}}
+	    {{- range $members -}}
+	        {{$who := userArg .}}
+	        {{$memberslist = (joinStr ", " $memberslist $who.Mention)}}
+	    {{- end}}
+	{{end}}
+	{{if eq (len $admins) 0}}
+    		{{$adminslist = "No Admins"}}
+	{{else}}
+    		{{- range $admins -}}
+        		{{$who := userArg .}}
+ 		       {{$adminslist = (joinStr ", " $adminslist $who.Mention)}}
+		{{- end}}
+	{{end}}
+
+    {{$color := randInt 111111 999999 }}
+    {{$embed := cembed 
+        "color" $color
+        "fields" (cslice 
+        (sdict "name" "Tribe Name" "value" (toString $tribeinfo.name) ) 
+        (sdict "name" "Owner" "value" (userArg $tribeinfo.owner).Mention ) 
+        (sdict "name" "Admins" "value" $adminslist ) 
+        (sdict "name" "Members" "value" $memberslist))
+        "thumbnail" (sdict "url" "https://cdn.discordapp.com/attachments/665932077853704202/988642543963086878/Home.png" )}}
+        {{$public := sendMessageRetID $tribeReg $embed}}
+        {{$tribeinfo.Set "reg" (toString $public)}}
+    {{dbSet 0 $dbkey $tribeinfo}}
+{{end}}

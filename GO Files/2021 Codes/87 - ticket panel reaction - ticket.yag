@@ -60,7 +60,7 @@
 	{{else}}
         {{$x := createTicket nil $name}}
         {{$opened.Set $name $x.ChannelID}}
-        {{dbSet $x.ChannelID "ticket_control" (sdict "old" (trimSpace $x.Title))}}
+        {{dbSet $x.ChannelID "ticket_control" (sdict "old" $x.Title "N" $x.LocalID)}}
         {{dbSet .User.ID "openedTickets" $opened}}
     {{end}}
 {{else}}

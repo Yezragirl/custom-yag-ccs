@@ -1,29 +1,67 @@
 {{/*triberefresh should update the registration posts with any edited info. */}}
-||Code 347||
-{{$tribeinfo := sdict (dbGet 0 "tribe_testing tribe").Value}}
-{{if $tribeinfo.public}}
-    {{$delpublic := deleteMessage 769590958131904532 (toInt64 $tribeinfo.public) 0}}
+{{$dbkey := ""}}
+{{$tribeinfo := sdict}}
+{{if .CmdArgs}}
+	{{$dbkey = joinStr "" .CmdArgs}}
+{{else if .ExecData}}
+	{{$dbkey = joinStr "" .ExecData.dbkey}}
+{{end}}
+{{$tribeinfo = (dbGet 0 $dbkey).Value}}
+{{$memberslist := ""}}
+{{$adminslist := ""}}
+{{if $tribeinfo.reg}}
+    {{$delpublic := deleteMessage 769590958131904532 (toInt64 $tribeinfo.reg) 0}}
 {{end}}
 {{$admins := or $tribeinfo.admins sdict}}
 {{$members := or $tribeinfo.members sdict}}
-{{$memberslist := ""}}
+{{$tribes_db := (dbGet 0 "tribes").Value}}
+{{$tribes := (cslice).AppendSlice $tribes_db}}
+{{$members_new := cslice}}
+{{$tribes_new := cslice}}
+{{$post := "Yes"}}
+{{if not ($tribeinfo.owner)}}
+    {{if eq (len $admins) 0}}
+        {{if eq (len $members) 0}}
+            No Owner, No Admins, No Members. Deleting Tribe.||347||
+            {{$delTribe := (dbGet 0 $dbkey).Value}}
+
+            {{- range $tribes -}}
+                {{- if ne . $delTribe.name -}}
+                    {{- $tribes_new = $tribes_new.Append . -}}
+                {{- end -}}
+            {{end}}
+            {{dbSet 0 "tribes" $tribes_new}}
+            {{$y := deleteMessage 769590958131904532 $delTribe.reg}}
+            {{$x := dbDel 0 $dbkey}}
+            {{$post = "No"}}
+        {{else}}
+        No Owner, No Admins, Members. Promote First Member to Owner.||347||
+        {{end}}
+    {{else}}
+        No Owner, Admins. Promote First Admin to Owner.||347||
+    {{end}}
+{{end}}
+
+
+
+
 {{if eq (len $members) 0}}
-	{{$memberslist = "No Members"}}
+    {{$memberslist = "No Members"}}
 {{else}}
-	{{- range $members -}}
-		{{$who := userArg .}}
-        {{$memberlist = (joinStr ", " $memberlist .)}}
-	{{- end}}
+    {{- range $members -}}
+        {{$who := userArg .}}
+        {{$memberslist = (joinStr ", " $memberslist $who.Mention)}}
+    {{- end}}
 {{end}}
-    {{$adminslist := ""}}
 {{if eq (len $admins) 0}}
-	{{$adminslist = "No Admins"}}
+    {{$adminslist = "No Admins"}}
 {{else}}
-	{{- range $admins -}}
-		{{$who := userArg .}}
-        {{$adminslist = (joinStr ", " $adminslist .)}}
-	{{- end}}
+    {{- range $admins -}}
+        {{$who := userArg .}}
+        {{$adminslist = (joinStr ", " $adminslist $who.Mention)}}
+    {{- end}}
 {{end}}
+{{if eq $post "Yes"}}||347||
     {{$color := randInt 111111 999999 }}
     {{$embed := cembed 
         "color" $color
@@ -34,5 +72,6 @@
         (sdict "name" "Members" "value" $memberslist))
         "thumbnail" (sdict "url" "https://cdn.discordapp.com/attachments/665932077853704202/988642543963086878/Home.png" )}}
         {{$public := sendMessageRetID 769590958131904532 $embed}}
-        {{$tribeinfo.Set "public" (toString $public)}}
-    {{dbSet 0 "tribe_testing tribe" $tribeinfo}}
+        {{$tribeinfo.Set "reg" (toString $public)}}
+    {{dbSet 0 $dbkey $tribeinfo}}
+{{end}}

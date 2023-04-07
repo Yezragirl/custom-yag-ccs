@@ -16,7 +16,7 @@
 {{$style := ""}}
 {{$mapname := ""}}
 {{$channel := ""}}
-    {{if reFind "createadmin" .Message.Content}}
+    {{if reFind "createsteam" .Message.Content}}
     {{$channel = "916060630925070446"}}
     {{else}}
     {{$channel = "580400941048528900"}}

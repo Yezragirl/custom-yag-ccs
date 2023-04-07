@@ -1,6 +1,5 @@
-{{/*lb shows xp leaderboard*/}}
 {{/*XP System Proper*/}}
-{{$out := (printf "%s\t%-18s\t%-5s\t%-10s\n" "Rank" "Name" "Level" "XP")}}
+{{$out := (printf "%s %-20s%-5s%10s\n" "Rank" "Name" "Level" "XP")}}
 {{$rank := 0}}
 {{$name := ""}}
 {{$pagenum := 1}}
@@ -9,8 +8,9 @@
 {{range dbTopEntries "XP" $entries 0}}
 {{$rank = add $rank 1}}
 {{$currentlevel = roundFloor (sqrt (fdiv (toInt .Value) 100))}}
-
-{{$out = (joinStr "" $out (printf "#%2d:\t%-18s\t%-5d\t%-10d\n" $rank .User.Username (toInt $currentlevel) (toInt .Value)))}}
+{{$name := or (getMember .User.ID).Nick .User.Username}}
+{{$clean := trimSpace (reReplace `((<a?:[\w~]{2,32}:\d{17,19}>)|[\x{1f1e6}-\x{1f1ff}]{2}|\p{So}\x{fe0f}?[\x{1f3fb}-\x{1f3ff}]?(\x{200D}\p{So}\x{fe0f}?[\x{1f3fb}-\x{1f3ff}]?)*|[#\d*]\x{FE0F}?\x{20E3})` $name "")}}
+{{$out = (joinStr "" $out (printf "#%2d: %-20s%-5d%10d\n" $rank $clean (toInt $currentlevel) (toInt .Value)))}}
 
 {{end}}
 {{$embed := cembed 

@@ -21,13 +21,14 @@
 {{$runner  := $event.runner}}
 {{$participants := $event.participants}}
 {{$waitlist := $event.waitlist}}
+{{$graphic := $event.graphic}}
 {{$tz := "America/New_York" }}
 {{$location := (newDate 0 0 0 0 0 0 $tz).Location }} 
 {{$timeloc := $time.In $location}}
 {{$timeLeft := (toDuration ($timeloc.Sub currentTime))}}
 {{$til := humanizeDurationSeconds $timeLeft}}
-{{$reminderplayerchannel := "573245421066125324"}}
-{{$reminderadminchannel := "573897276569813012"}}
+{{$reminderxboxchannel := "573245421066125324"}}
+{{$remindersteamchannel := "573245421066125324"}}
 
 {{$embed := cembed 
     "title" (joinStr "" "EVENT REMINDER! " $number " - **" $name "**")
@@ -41,10 +42,11 @@
         (sdict "name" "__**Date/Time**__" "value" (toString $start) "inline" false)
 		(sdict "name" "__**Time Until**__" "value" (joinStr "" "<t:" $time.Unix ":R>") "inline" false)) 
     "footer" (sdict "text" "Event starts") 
-	"timestamp" $time }}
+	"timestamp" $time
+    "thumbnail" (sdict "url" $graphic)}}
     
     {{if eq $channel "580400941048528900"}}
-	{{sendMessage $reminderplayerchannel $embed}}
+	{{sendMessage $reminderxboxchannel $embed}}
     {{else if eq $channel "916060630925070446"}}
-    {{sendMessage $reminderadminchannel $embed}}
+    {{sendMessage $remindersteamchannel $embed}}
     {{end}}

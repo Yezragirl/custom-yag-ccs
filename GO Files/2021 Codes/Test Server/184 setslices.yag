@@ -1,0 +1,9 @@
+{{$db :=  (cslice "Admin")}}
+{{dbSet 0 "tribes" $db}}
+{{$db}}
+{{$db2 :=  (cslice "Yez" "Roxxy" "Ellie")}}
+{{dbSet 0 "names" $db2}}
+{{$db2}}
+{{$db3 :=  (cslice "fuck" "cunt")}}
+{{dbSet 0 "badWords" $db3}}
+{{$db3}}

@@ -1,0 +1,24 @@
+{{$color := randInt 111111 999999 }}
+ {{$embed := cembed 
+ "color" $color
+	"Title" "How to Suggest an Improvement"
+	"color" $color
+	"Description" "We have 3 different Suggestion channels. Please use the right command to get your suggestion listed in the right place."
+    "fields" (cslice 
+    (sdict "name" "__**Entire Cluster (Xbox AND Steam)**__" "value" "To make suggestions that are for the entire community (discord changes, rule changes that apply to both platforms, etc.) use the following command.\n`-suggest` followed by your suggestion." "inline" false) 
+    (sdict "name" "__**How's It Work?**__" "value" "To make suggestion that only apply to the Xbox side of our community (map specific changes, rules that only affect Xbox, etc.) use the following command.\n`-xboxsuggest` followed by your suggestion." "inline" false) 
+     (sdict "name" "__**Tiers?**__" "value" "To make suggestion that only apply to the Steam side of our community (map specific changes, rules that only affect Steam, etc.) use the following command.\n`-steamsuggest` followed by your suggestion." "inline" false))
+	"footer" (sdict "text" "Yez's Ark Cluster")}}
+{{$msg := sendMessageRetID nil $embed}}
+
+
+{{$color := randInt 111111 999999 }}
+ {{$embed := cembed 
+ "color" $color
+	"Title" "No No List"
+	"color" $color
+	"Description" "The following dinos are **NOT** allowed to be *Sold in Player Shops*, *Cloned*, *Auctioned*, or *Insured*."
+    "fields" (cslice 
+    (sdict "name" "__**No No List**__" "value" "Untamable and/or Unpoddable Black List Dinos\nAlpha List Dinos\nClones\n200% Imprinted Dinos (Can be cloned and insured but the 200% imprint isn't included)\nAnything currently considered Broken (creates a Raptor Pod)" "inline" false) )
+	"footer" (sdict "text" "Yez's Ark Cluster")}}
+{{$msg := sendMessageRetID nil $embed}}
