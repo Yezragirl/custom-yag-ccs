@@ -117,6 +117,8 @@
 	{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
 
 {{else if eq $optionselect "Manage Tribe Bases"}} Transfering to Base Registration.
+	{{addRoleID 997232827437424730}}{{/*Base Reg Role*/}}
+	{{removeRoleID $tribeRole}}{{/*Tribe Management Role*/}}
 {{execCC $ccBaseRegex nil nil 0}}
 
 {{else if eq $Q "TribeMan"}}

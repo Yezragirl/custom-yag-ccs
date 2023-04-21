@@ -1,0 +1,113 @@
+{{/*Transfer or Run Base Registration*/}}
+Command -br or exec from Manage Tribe
+Set Q to BR
+    {{/*IF Transfer, select tribe based on tribe management, IF run Base Reg, check # of tribes they own, and if its more than 1, ask for which tribe*/}}
+    Same Check as ManageTribe
+    If more than 1 tribe
+        create embed asking which tribe
+        Set Q to BRTribe
+        else
+        Set Tribe to Managed Tribe
+    end
+
+    {{/*Load data and establish variables*/}}
+
+{{/*Q1: Platform, Reaction, if needed*/}}
+
+    {{/*Check Roles, if Both, Ask Question, otherwise assume its for the role they have*/}}
+
+{{/*Q2: Map, use SDICT to present a list of map options based on the platform selected, Reaction */}}
+
+    {{/*Check if they already have a location on that Map, if so, ask if they want to replace it, or cancel, Reaction*/}}    
+
+{{/*Q3: Server, use SDICT to present a list of servers based on platform and map selections, Reaction */}}
+
+{{/*Q4: Coords, regex*/}}
+
+{{/*Q5: Base or Outpost, Reaction*/}}
+
+{{/*Update Base Registration Post, Save all info back to TribeReg DB*/}}
+
+{{/*Ask if they would like to Registration another Tribe Location, Restart*/}}
+
+{{/* */}}
+
+{{/* */}}
+
+{{/* */}}
+
+{{/* */}}
+
+{{/* */}}
+
+{{/* */}}
+
+Data Structures
+
+{{$baseReg := sdict
+
+}}
+
+
+{{$servers := sdict
+"xbox" (cslice 
+    (sdict "name" "island" "servers" (cslice "refuge" "zelda" "fenris"))
+    (sdict "name" "center" "servers" (cslice "merlin" "elysian"))
+    (sdict "name" "valguero" "servers" (cslice "everest" "artemis"))
+    (sdict "name" "ragnarok" "servers" (cslice "haven" "manticore"))
+    (sdict "name" "scorched earth" "servers" (cslice "phoenix"))
+    (sdict "name" "aberration" "servers" (cslice "gryphon" "excelsior"))
+    (sdict "name" "extinction" "servers" (cslice "medusa" "hades"))
+    (sdict "name" "genesis 1" "servers" (cslice "beowulf"))
+    (sdict "name" "genesis 2" "servers" (cslice "forge" "orca"))
+    (sdict "name" "lost island" "servers" (cslice "jasper" "trebuchet"))
+    (sdict "name" "crystal isles" "servers" (cslice "osiris" "sanctuary"))
+    (sdict "name" "fjordur" "servers" (cslice "halkirk" "dresden"))
+    (sdict "name" "breeding map" "servers" (cslice "aphrodite"))
+    (sdict "name" "shop map" "servers" (cslice "zanzibar"))
+)
+"steam" (cslice
+    (sdict "name" "ragnarok" "servers" (cslice "arrakis"))
+    (sdict "name" "fjordur" "servers" (cslice "caladan"))
+    (sdict "name" "island" "servers" (cslice "topaz"))
+    (sdict "name" "aberration" "servers" (cslice "hagal"))
+    (sdict "name" "lost island" "servers" (cslice "nicodemus"))
+    (sdict "name" "extinction" "servers" (cslice "tarahell"))
+)
+}}
+
+{{$tribeReg := sdict
+"members" (cslice  Member IDs)
+"admins" (cslice  Admin IDs)
+,"name" Tribe Name
+"owner" Owner ID
+"reg" Reg Post ID
+"bases" (sdict
+    "basecount" Number of Bases
+    "outcount" Number of Outposts 
+    "xbox" (cslice 
+        (sdict "name" "island""servers" server "coords" coords "type" Base or Outpost)
+        (sdict "name" "center" "servers" server "coords" coords "type" Base or Outpost )
+        (sdict "name" "valguero""servers" server "coords" coords "type" Base or Outpost)
+        (sdict "name" "ragnarok" "servers" server "coords" coords "type" Base or Outpost)
+        (sdict "name" "scorched earth" "servers" server "coords" coords "type" Base or Outpost)
+        (sdict "name" "aberration" "servers" server "coords" coords "type" Base or Outpost)
+        (sdict "name" "extinction" "servers" server "coords" coords "type" Base or Outpost)
+        (sdict "name" "genesis 1" "servers" server "coords" coords "type" Base or Outpost)
+        (sdict "name" "genesis 2" "servers" server "coords" coords "type" Base or Outpost)
+        (sdict "name" "lost island" "servers" server "coords" coords "type" Base or Outpost)
+        (sdict "name" "crystal isles" "servers" server "coords" coords "type" Base or Outpost)
+        (sdict "name" "fjordur" "servers" server "coords" coords "type" Base or Outpost)
+        (sdict "name" "breeding map" "servers" server "coords" coords "type" Base or Outpost)
+        (sdict "name" "shop map" "servers" server "coords" coords "type" Base or Outpost)
+    )
+    "steam" (cslice
+        (sdict "name" "ragnarok" "servers" server "coords" coords "type" Base or Outpost)
+        (sdict "name" "fjordur" "servers" server "coords" coords "type" Base or Outpost)
+        (sdict "name" "island" "servers" server "coords" coords "type" Base or Outpost)
+        (sdict "name" "aberration" "servers" server "coords" coords "type" Base or Outpost)
+        (sdict "name" "lost island" "servers" server "coords" coords "type" Base or Outpost)
+        (sdict "name" "extinction" "servers" server "coords" coords "type" Base or Outpost)
+    )
+)
+}}

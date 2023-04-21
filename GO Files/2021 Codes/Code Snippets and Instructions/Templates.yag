@@ -1,0 +1,21 @@
+Usually data is passed through sdicts or something. Makes things easier. 
+{{define "example"}}
+This is a example. Something: {{.Something}} ; Another Thing: {{.Thing}}
+{{end}}
+{{template "example" (sdict "Something" "I don't know how to make examples lol" "Thing" "This is another thing I guess")}}
+
+This is a example. Something: I don't know how to make examples lol ; Another Thing: This is another thing I guess
+
+
+The data structure can also be assigned to a variable first.
+If you change template to execTemplate even the template name can be a variable
+So something like this also works 
+
+{{define "One"}}This is command one. {{.Something}} ; {{.Thing}}{{end}}
+
+{{define "Two"}}This is command two. {{.Something}} ; {{.Thing}}{{end}}
+
+{{define "Three"}}This is command three. {{.Something}} ; {{.Thing}}{{end}}
+
+    {{$command := index (shuffle (cslice "One" "Two" "Three")) 0}}{{$data := sdict "Something" "Value 1" "Thing" "Value 2"}}
+{{$silent := execTemplate $command $data}}

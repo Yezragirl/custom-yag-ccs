@@ -33,6 +33,10 @@
     "steam" (cslice
         (sdict "name" "ragnarok" "servers" (cslice "arrakis"))
         (sdict "name" "fjordur" "servers" (cslice "caladan"))
+	(sdict "name" "island" "servers" (cslice "topaz"))
+    (sdict "name" "aberration" "servers" (cslice "hagal"))
+    (sdict "name" "lost island" "servers" (cslice "nicodemus"))
+(sdict "name" "extinction" "servers" (cslice "tarahell"))
     )
 }}
 
@@ -112,8 +116,7 @@
             {{editMessage $cid $mid (cembed
                 "title" "Base Registration"
                 "description" (print "Please enter the coordinates of your base")
-                "color" 16776960
-            )}}
+                "color" 16776960)}}
         {{end}}
         {{dbSet .User.ID "baseRegistration" $baseReg}}
     {{else if eq $baseReg.step 0}}
