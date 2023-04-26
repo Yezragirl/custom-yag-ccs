@@ -1,0 +1,133 @@
+{{/* Set up data structure. Get Database if it exists instead */}}
+{{$regSettings := sdict
+    "Roles" (sdict
+    "tribeEditRole" 997232794520539249
+    "yezianRole" 645690789544067118
+    "baseRegRole" 997232827437424730
+    "editingRole" 997232747540131861
+    "kidRole" 645690840752062484
+    "regRole" 645690790240321571
+    "bothRole" 1003082680994373786
+    "steamRole" 1003082645187608636
+    "xboxRole" 1003082603877904394
+    "standingRole" 645691100417359882
+    )
+    "CCIDs" (sdict
+    "ccBaseregcont" 182
+    "ccBaseRegex" 160
+    "ccClearBaseReg" 162
+    "ccCont" 175
+    "ccRefreshReg" 164
+    "ccRegCont" 173
+    "ccRegedit" 163
+    "ccRegex" 167
+    "ccTicketAutoclose" 201
+    "ccTriberefresh" 179
+    "ccTribeReg" 174
+    "ccToDo" 207
+    )
+    "Channels" (sdict
+    "errorLog" 647785737336520724
+    "adminReg" 999496167899533342
+    "adminToDo" 647785737336520724
+    "adminAlerts" 647785737336520724
+    "kidChat" 647785737336520724
+    "mainChat" 647785737336520724
+    "publicReg" 999496194046824458
+    "ticketCat" 997232411542814790 
+    "tribeReg" 999685730777440376
+    )
+}}
+{{/* if $db := dbGet .Guild.ID "regSettings"}}
+    {{$regSettings := sdict $db.Value}}
+{{end */}}
+
+{{/* Set up description stuff */}}
+{{$details := sdict 
+"tribeEditRole" "Tribe Editing."
+"yezianRole" "Main Discord Access."
+"baseRegRole" "Base Editing."
+"editingRole" "Reg Editing."
+"kidRole" "'Kids' Channel Access."
+"regRole" "Password Channel Access."
+"bothRole" "Xbox and Steam Players"
+"steamRole" "Steam Players."
+"xboxRole" "Xbox Players."
+"standingRole" "While Registering."
+"ccBaseregcont" "CC ID for  'Base Reg Continued'."
+"ccBaseRegex" "CC ID for  'Base Reg Listener'."
+"ccClearBaseReg" "CC ID for  'Clear Base Reg'."
+"ccCont" "CC ID for  'Reg Edit Reaction Continued'."
+"ccRefreshReg" "CC ID for  'Refresh Reg'."
+"ccRegCont" "CC ID for  'Reg Continued'."
+"ccRegedit" "CC ID for  'Reg Edit'."
+"ccRegex" "CC ID for  'Reg Listener'."
+"ccTicketAutoclose" "CC ID for  'Ticket Auto Close'."
+"ccTriberefresh" "CC ID for  'Tribe Reg Refresh'."
+"ccTribeReg" "CC ID for  'Tribe Reg'."
+"ccToDo" "CC ID for  'Posting Referral Payouts'."
+"errorLog" "Channel ID for where Errors should be logged."
+"adminReg" "Channel ID for Admin View Only Reg Posts."
+"adminToDo" "Channel ID for Referral Payout Posts."
+"adminAlerts" "Channel ID for where Alerts should be logged."
+"kidChat" "Channel ID for Kids Chat."
+"mainChat" "Channel ID for Main Chat."
+"publicReg" "Channel ID for Public Reg Posts."
+"ticketCat" "Ticket Category ID."
+"tribeReg" "Channel ID for Tribe Reg Posts."
+}}
+{{$descs := sdict "Roles" "" "CCIDs" "" "Channels" ""}}
+{{range $k,$v := $regSettings}}
+    {{range $key,$value := $v}}
+        {{$descs.Set $k (print 
+            ($descs.Get $k) 
+            "__Name:__ `" 
+            $key 
+            "` - __Value:__ `" 
+            $value 
+            "`\n__Description:__\n" 
+            (or ($details.Get $key) "No desc given")
+            "\n\n"
+        )}}
+    {{end}}
+{{end}}
+
+{{$msg1 := sdict 
+    "content" "Config the following values below with `-config <name> <value>`" 
+    "embed" (sdict
+        "title" "Settings"
+        "description" "Configuration names and the values expected can be seen below."
+        "fields" (cslice
+            (sdict "name" "Role IDs" "value" $descs.Roles "inline" false)
+        )
+        "color" 0xFFFFFF
+    )
+}}
+{{$msg2 := sdict 
+    "content" "Config the following values below with `-config <name> <value>`" 
+    "embed" (sdict
+        "title" "Settings"
+        "description" "Configuration names and the values expected can be seen below."
+        "fields" (cslice
+            (sdict "name" "CC IDs" "value" $descs.CCIDs "inline" false)
+        )
+        "color" 0xFFFFFF
+    )
+}}
+{{$msg3 := sdict 
+    "content" "Config the following values below with `-config <name> <value>`" 
+    "embed" (sdict
+        "title" "Settings"
+        "description" "Configuration names and the values expected can be seen below."
+        "fields" (cslice
+            (sdict "name" "Channel/Category IDs" "value" $descs.Channels "inline" false)
+        )
+        "color" 0xFFFFFF
+    )
+}}
+
+{{sendMessage nil (complexMessage $msg1)}}
+
+{{sendMessage nil (complexMessage $msg2)}}
+
+{{sendMessage nil (complexMessage $msg3)}}

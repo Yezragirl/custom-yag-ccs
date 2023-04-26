@@ -1,4 +1,5 @@
--se -color "#388E3C" -title "Arkmart" -desc "If you want to place an order with the ArkMart, react to this panel with 1️⃣ below." -footer "Yez's Ark Cluster"
+-se -color "#388E3C" -title "Arkmart" -desc "If you want to place an order with the ArkMart,
+ react to this panel with 1️⃣ below." -footer "Yez's Ark Cluster"
 -se -color "#A54BD2" -title "Base Issues" -desc "If you need help with any Base Issues, react to this panel with the 3️⃣ below." -footer "Yez's Ark Cluster"
 -se -color "#3ADDA6" -title "Auction" -desc "If you want to ask a question about, or put in a proxy bid for either our Discord Auction or Live Auction, react to this panel with the 2️⃣ below." -footer "Yez's Ark Cluster"
 -se -color "#F3003A" -title "Dino Issues" -desc "If you need help with any Dino Issues, react to this panel with the 4️⃣ below." -footer "Yez's Ark Cluster"
