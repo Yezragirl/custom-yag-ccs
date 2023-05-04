@@ -317,7 +317,7 @@ len (toRune $x)  - for length of nickname
         {{deleteTrigger 1}}
 
 
-INdexing an 
+INdexing an Embed
 {{ $mID := sendMessageRetID nil (cembed "description" "by the way" "fields" (cslice (sdict "name" "DZ" "value" "likes cookies") ) ) }}
 {{ $embed := index (getMessage nil $mID).Embeds 0 | structToSdict }}
 {{ $lesFields := index $embed.Fields 0 }}
