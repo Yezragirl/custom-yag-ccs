@@ -1,0 +1,14 @@
+{{/*Admin Tickets*/}}
+{{$name := (dict
+    "1️⃣" "Map Sweeps"
+    "2️⃣" "restock and repin"
+    "3️⃣" "training"
+    "4️⃣" "violation"
+    "5️⃣" "admin"
+).Get .Reaction.Emoji.Name}}
+
+{{$x := createTicket nil $name}}
+{{dbSet $x.ChannelID "ticket_control" (sdict "old" $x.Title "N" $x.LocalID)}}
+
+{{deleteAllMessageReactions nil .ReactionMessage.ID}}
+{{addMessageReactions .Reaction.ChannelID .Reaction.MessageID "1️⃣" "2️⃣" "3️⃣" "4️⃣" "5️⃣"}}

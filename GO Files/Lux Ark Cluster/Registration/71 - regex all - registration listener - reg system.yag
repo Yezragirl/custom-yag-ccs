@@ -5,7 +5,7 @@
 {{$names_db := (dbGet 0 "names").Value}}
 {{$names := (cslice).AppendSlice $names_db}}
 {{$reg := (dbGet .User.ID "reg").Value}}
-	{{$Q := $reg.Q}}{{$admin := $reg.admin}}{{$age := $reg.age}}{{$gt := $reg.gt}}{{$name := $reg.name}}{{$pin := $reg.pin}}{{$public := $reg.public}}{{$ref := $reg.ref}}{{$platform := $reg.platform}}
+	{{$Q := $reg.Q}}{{$admin := $reg.admin}}{{$age := $reg.age}}{{$gt := $reg.gt}}{{$name := $reg.name}}{{$pin := $reg.pin}}{{$public := $reg.public}}{{$ref := $reg.ref}}
 {{$parentguardian := $reg.parentguardian}}
 	{{if not $parentguardian}}{{$parentguardian = "Not a Minor"}}{{$reg.Set "parentguardian" $parentguardian}}{{end}}{{$tribe := $reg.tribe}}
 	{{if not $tribe}}{{$tribe = "Unregistered"}}{{$reg.Set "tribe" $tribe}}{{end}}
@@ -21,9 +21,8 @@
 				{{$age = (toInt .Message.Content)}}
 				{{$reg.Set "age" $age}}
 				{{if ge $age 18}}
-					{{$Q = "PT"}}{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
-					{{$ptmsg := sendMessageRetID nil (print  .User.Mention ", Please indicate which Platform you will be playing on? Use <:Xbox:980137454428389387> for Xbox only, <:Steam:980137536183758858> for Steam only, and <:XboxSteam:981771943176986714> for Both.")}}
-					{{addMessageReactions nil $ptmsg ":Xbox:980137454428389387" ":Steam:980137536183758858" ":XboxSteam:981771943176986714"}}
+					{{$reg.Set "Q" "GT"}}{{dbSet .User.ID "reg" $reg}}
+					{{sendMessage nil (joinStr "" .User.Mention ", what is your Gamer Tag?")}}
 				{{else}}
 					{{$Q = "ParentGuardian"}}{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
 					{{$msg := sendMessageRetID nil (print  .User.Mention ", is your Parent or Guardian a member of this cluster?")}}
@@ -54,11 +53,13 @@
 {{addMessageReactions nil $msg ":yes:658376626639339533" ":no:658376639322783745"}}
 
 		{{else if eq (toString $Q) "ParentGuardian2"}}
-			{{$parentguardian = (toString .Message.Content)}}{{$reg.Set "parentguardian" $parentguardian}}{{$Q = "PT"}}{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
-			{{$ptmsg := sendMessageRetID nil (print  .User.Mention ", Please indicate which Platform you will be playing on? Use <:Xbox:980137454428389387> for Xbox only, <:Steam:980137536183758858> for Steam only, and <:XboxSteam:981771943176986714> for Both.")}}
-			{{addMessageReactions nil $ptmsg ":Xbox:980137454428389387" ":Steam:980137536183758858" ":XboxSteam:981771943176986714"}}
+			{{$parentguardian = (toString .Message.Content)}}{{$reg.Set "parentguardian" $parentguardian}}{{$Q = "GT"}}{{$reg.Set "Q" $Q}}{{dbSet .User.ID "reg" $reg}}
+			{{sendMessage nil (joinStr "" .User.Mention ", what is your Gamer Tag?")}}
 		{{else if eq (toString $Q) "Done"}}
 			{{execCC 214 nil 0 ""}}
 		{{end}}
 	{{end}}
 {{end}}
+
+
+

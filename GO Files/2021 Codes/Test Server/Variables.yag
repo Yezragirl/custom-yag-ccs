@@ -38,7 +38,7 @@
     "tribeReg" 999685730777440376
     )
 }}
-{{/* if $db := dbGet .Guild.ID "regSettings"}}
+{{/* if $db := dbGet 0 "regSettings"}}
     {{$regSettings := sdict $db.Value}}
 {{end */}}
 
@@ -54,18 +54,18 @@
 "steamRole" "Steam Players."
 "xboxRole" "Xbox Players."
 "standingRole" "While Registering."
-"ccBaseregcont" "CC ID for  'Base Reg Continued'."
-"ccBaseRegex" "CC ID for  'Base Reg Listener'."
-"ccClearBaseReg" "CC ID for  'Clear Base Reg'."
-"ccCont" "CC ID for  'Reg Edit Reaction Continued'."
-"ccRefreshReg" "CC ID for  'Refresh Reg'."
-"ccRegCont" "CC ID for  'Reg Continued'."
-"ccRegedit" "CC ID for  'Reg Edit'."
-"ccRegex" "CC ID for  'Reg Listener'."
-"ccTicketAutoclose" "CC ID for  'Ticket Auto Close'."
-"ccTriberefresh" "CC ID for  'Tribe Reg Refresh'."
-"ccTribeReg" "CC ID for  'Tribe Reg'."
-"ccToDo" "CC ID for  'Posting Referral Payouts'."
+"ccBaseregcont" "CCID for Base Reg Continued."
+"ccBaseRegex" "CCID for Base Reg Listener."
+"ccClearBaseReg" "CCID for Clear Base Reg."
+"ccCont" "CCID for Reg Edit Reaction Continued."
+"ccRefreshReg" "CCID for Refresh Reg."
+"ccRegCont" "CCID for Reg Continued."
+"ccRegedit" "CCID for Reg Edit."
+"ccRegex" "CCID for Reg Listener."
+"ccTicketAutoclose" "CC ID for Ticket Auto Close."
+"ccTriberefresh" "CC ID for Tribe Reg Refresh."
+"ccTribeReg" "CC ID for Tribe Reg."
+"ccToDo" "CC ID for  Posting Referral Payouts."
 "errorLog" "Channel ID for where Errors should be logged."
 "adminReg" "Channel ID for Admin View Only Reg Posts."
 "adminToDo" "Channel ID for Referral Payout Posts."
@@ -91,7 +91,6 @@
         )}}
     {{end}}
 {{end}}
-
 {{$msg1 := sdict 
     "content" "Config the following values below with `-config <name> <value>`" 
     "embed" (sdict

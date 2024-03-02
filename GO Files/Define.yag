@@ -1,0 +1,47 @@
+{{$search := (urlquery (joinStr " " .CmdArgs))}}
+{{$Title := ""}}
+{{$Desc := ""}}
+{{$URL := ""}}
+{{$thumb := ""}}
+{{$2 := ""}}
+ 
+{{$1 := sendMessageRetID nil (joinStr "" "**Looking up:** https://www.merriam-webster.com/dictionary/" $search)}}
+{{deleteTrigger 0}}
+ 
+{{ sleep 1 }}
+{{$check := getMessage nil $1}}
+{{if not $check.Embeds}}
+	{{editMessage nil $1 (joinStr "" "**Looking up:** https://www.urbandictionary.com/define.php?term=" $search)}}
+{{else}}
+	{{$Title = (index $check.Embeds 0).Title}}
+	{{$URL = (index $check.Embeds 0).URL}}
+	{{$Desc = (index $check.Embeds 0).Description}}
+		{{if (index $check.Embeds 0).Thumbnail}}
+			{{$thumb = (index $check.Embeds 0).Thumbnail}}
+			{{$2 = cembed "title" $Title "url" $URL "description" $Desc "thumbnail" (sdict "url" $thumb.URL)}}
+		{{else}}
+	{{$2 = cembed "title" $Title "url" $URL "description" $Desc }}
+{{end}}
+{{editMessage nil $1 (complexMessageEdit "content" "" "embed" $2)}}
+{{end}}
+ 
+ 
+{{$check = getMessage nil $1}}
+{{if not $check.Embeds}}
+	{{sleep 1}}
+	{{$check = getMessage nil $1}}
+		{{if not $check.Embeds}}
+			{{editMessage nil $1 (joinStr "" "Query Not Found: **" $search "**")}}
+		{{end}}
+{{else}}
+	{{$Title = (index $check.Embeds 0).Title}}
+	{{$URL = (index $check.Embeds 0).URL}}
+	{{$Desc = (index $check.Embeds 0).Description}}
+		{{if (index $check.Embeds 0).Thumbnail}}
+			{{$thumb = (index $check.Embeds 0).Thumbnail}}
+			{{$2 = cembed "title" $Title "url" $URL "description" $Desc "thumbnail" (sdict "url" $thumb.URL)}}
+		{{else}}
+	{{$2 = cembed "title" $Title "url" $URL "description" $Desc }}
+{{end}}
+{{editMessage nil $1 (complexMessageEdit "content" "" "embed" $2)}}
+{{end}}

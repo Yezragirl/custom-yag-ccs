@@ -3,10 +3,6 @@
 {{if not $reg.tribe}}{{$reg.Set "tribe" "Unregistered"}}{{dbSet .User.ID "reg" $reg}}{{end}}
 {{if not $reg.tribe2}}{{$reg.Set "tribe2" "Unregistered"}}{{dbSet .User.ID "reg" $reg}}{{end}}
 {{$color := randInt 111111 999999 }}
-{{$graphics := sdict "Both" "https://cdn.discordapp.com/attachments/665932077853704202/982095282013618226/dual_logo_transparent.png" "Steam" "https://cdn.discordapp.com/attachments/665932077853704202/982096294451499018/unknown.png"  "Xbox" "https://cdn.discordapp.com/attachments/665932077853704202/982096249341763694/unknown.png" }}
-{{$gtnames := sdict "Both" "Gamer Tag/Steam Name" "Steam" "Steam Name"  "Xbox" "Gamer Tag" }}
-{{$gtname := $gtnames.Get $reg.pt}}
-{{$url := $graphics.Get $reg.pt}}
 {{if (eq .Channel.ParentID 635305499600093214)}} 
 {{if (hasRoleID 607041870966685706)}}{{/*Has Registered Role*/}}
 {{if and (eq .Reaction.Emoji.Name "1️⃣") (eq (toString $reg.Q) "Edit")}}
@@ -94,8 +90,7 @@
 {{else if and (eq .Reaction.Emoji.Name "4️⃣") (eq  (toString $reg.Q) "Edit")}}
 {{$reg.Set "Q" "Edit PT"}}{{dbSet .User.ID "reg" $reg}}
 {{deleteAllMessageReactions nil $msgID}}
-{{$msg := sendMessageRetID nil (print  .User.Mention ", Please indicate which Platform you will be playing on? Use <:Xbox:980137454428389387> for Xbox only, <:Steam:980137536183758858> for Steam only, and <:XboxSteam:981771943176986714> for Both.")}}
-{{addMessageReactions nil $msg ":Xbox:980137454428389387" ":Steam:980137536183758858" ":XboxSteam:981771943176986714"}}
+
 {{else if or (and (eq .Reaction.Emoji.Name "5️⃣") (eq  (toString $reg.Q) "Edit"))}}
 {{$reg.Set "Q" "Edit Pin"}}{{dbSet .User.ID "reg" $reg}}
 {{deleteAllMessageReactions nil $msgID}}

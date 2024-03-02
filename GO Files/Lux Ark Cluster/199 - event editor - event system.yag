@@ -3,13 +3,12 @@
 {{$EventID := ""}}
 {{addRoleID 856607038872223764}}
 {{range dbTopEntries "event" 100 0}}
-{{$event := sdict}}{{range $k,$v := .Value}}{{$event.Set $k $v}}{{end}}
+{{$event := .Value}}
 {{if eq (toInt $event.number) (toInt $find) }}
 {{$EventID = (toString .UserID)}}
 {{end}}{{end}}
-{{$db := dbGet (toInt64 $EventID) "event"}}
-{{$event := sdict}}{{range $k,$v := $db.Value}}{{$event.Set $k $v}}{{end}}
- 
+{{$event := (dbGet (toInt64 $EventID) "event").Value}}
+
 {{$pcount := 0}}
 	{{$number := $event.number}}
 	{{$name := $event.name}}

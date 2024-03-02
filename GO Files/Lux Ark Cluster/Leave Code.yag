@@ -1,0 +1,39 @@
+{{$reg := (dbGet .User.ID "reg").Value}}
+{{$nameformatted := ""}}
+{{$Q := or $reg.Q "None"}}{{$admin := $reg.admin}}{{$age := or $reg.age 0}}{{$gt := or $reg.gt "None"}}{{$name := $reg.name}}{{$pin := or $reg.pin "0000"}}{{$public := $reg.public}}{{$ref := or $reg.ref "None"}}{{$parentguardian := or $reg.parentguardian "None"}}
+{{$tribe := or $reg.tribe "None"}}{{$tribe2 := or $reg.tribe2 "None"}}
+{{$names_db := (dbGet 0 "names").Value}}
+{{$join := (or (dbGet .User.ID "join").Value currentTime)}}
+{{$names := (cslice).AppendSlice $names_db}}
+{{$names_new := cslice}}
+{{if ($public)}}
+{{deleteMessage 658352884701724733 $public 86400}}
+{{end}}
+{{if $name}}
+    {{$nameformatted = $name}}
+    {{range $names}}
+    {{if ne . $name}}
+    {{$names_new = $names_new.Append .}}
+    {{end}}{{end}}
+{{dbSet 0 "names" $names_new}}
+{{else}}
+    {{$nameformatted = .User.Username}}
+{{end}}
+                {{$embed := cembed 
+                    "title" "Registration Lookup"
+                    "description" (joinStr "" $nameformatted " has left the discord. Here is their registration information. They have been a member since <t:" $join ":R>. Pod their dinos for auction and clear their bases if appropriate.")
+                    "fields" (cslice 
+                    (sdict "name" "Discord Name" "value" (or (toString $nameformatted) "NA") ) 
+                    (sdict "name" "In Game Name" "value" (or (toString (or $reg.name "")) "NA") ) 
+                    (sdict "name" "Tribe Name" "value" (or (joinStr "/" (toString $reg.tribe) (toString $reg.tribe2)) "NA") ) 
+                    (sdict "name" "Gamer Tag" "value" (or (toString $reg.gt) "NA")) 
+                    (sdict "name" "Pin" "value" (or (toString $reg.pin) "NA") )
+                    (sdict "name" "Age" "value" (or (toString (toInt $reg.age)) "NA") )
+                    (sdict "name" "Referred By" "value" (or (toString $reg.ref)) "NA"))
+                    "thumbnail" (sdict "url" (or (.User.AvatarURL "1024")) "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLkkJ5RNPUKPrinCaLsX6Zk1-96ZBdfcGW0mJuuUk&s")}}
+    {{$message := sendMessageRetID 573860427721605120 $embed}}
+    {{addMessageReactions 573860427721605120 $message "✔️" "❌"}}
+{{sendMessage 587858995012698137 (joinStr "" "Deleting registration information for " $nameformatted "...")}}
+{{dbDelMultiple (sdict "userID" .User.ID) 100 0}}
+{{exec "delrep" .User.ID}}
+{{$X := dbIncr 0 "newusers" -1}} 

@@ -13,8 +13,7 @@
 -se -color "#FDFFFD" -title "You leveled up!" -desc (joinStr "" "Congratulations " .User.Username ",\n you leveled up to **level " (toInt $newlevel) "**!\n\nFor more information on our XP system, type `?xp` in any channel.") 
 
 1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣🔟
-
-
+᲼᲼᲼᲼
 For restarting counting at 1.
 
 
@@ -336,3 +335,23 @@ INdexing an Embed
 {{cancelScheduledUniqueCC $mainCCID (joinStr "-" $name "1")}}
 {{cancelScheduledUniqueCC $mainCCID (joinStr "-" $name "End")}}
 Upkeep cancelled. 
+
+
+sort your topentries by whatever you want
+{{ $e := dbTopEntries "sortMe_" 100 0 }}
+{{ sendMessage nil (complexMessage "content" "Before:" "file" (json $e true)) }}
+{{ $c := cslice }}
+{{ range $e }}
+  {{- $c = $c.Append (structToSdict .) }}
+{{ end }}
+{{ $c = sort $c (sdict "key" "CreatedAt" "reverse" true) }} 
+{{ sendMessage nil (complexMessage "content" "After:" "file" (json $c true)) }}
+
+
+
+
+SDICT SORTER
+{{ $sdict := sdict "item0" 42 "item1" 33 "item2" 302  }}
+{{ $sorter := cslice }}
+{{ range $sdict }} {{ $sorter = $sorter.Append (sdict "item" . ) }} {{ end }}
+{{ sort $sorter (sdict "key" "item" "reverse" true) }}

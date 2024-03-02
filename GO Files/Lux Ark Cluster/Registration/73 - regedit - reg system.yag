@@ -1,0 +1,42 @@
+{{/*Regedit starts teh registration editing process*/}}
+{{if (eq .Channel.ParentID 635305499600093214)}} 
+{{addRoleID 658469834589208616}}
+{{removeRoleID 658469834589208616 300}}
+{{$reg := (dbGet .User.ID "reg").Value}}
+{{if not $reg.tribe}}{{$reg.Set "tribe" "Unregistered"}}{{dbSet .User.ID "reg" $reg}}{{end}}
+{{if not $reg.tribe2}}{{$reg.Set "tribe2" "Unregistered"}}{{dbSet .User.ID "reg" $reg}}{{end}}
+{{$color := randInt 111111 999999 }}
+{{$reg.Set "Q" "Edit"}}{{dbSet .User.ID "reg" $reg}}
+{{if hasRoleID 645404993863811072}}
+{{$embed := cembed 
+	"color" $color
+	"Title" "Registration Edit Menu"
+	"description" "Please select the registration information you would like to edit by reacting to the number associated with that piece of information."
+	"fields" (cslice 
+	(sdict "name" "Discord Name" "value" .User.String ) 
+	(sdict "name" ":one: In Game Name" "value" (toString $reg.name) ) 
+	(sdict "name" ":two: Tribe Name" "value" (joinStr "" $reg.tribe ", " $reg.tribe2)) 
+	(sdict "name" ":three: Gamer Tag" "value" (toString $reg.gt) ) 
+	(sdict "name" ":four: Pin" "value" (toString $reg.pin) )
+	(sdict "name" ":five: Age" "value" (toString (toInt $reg.age)) )
+	(sdict "name" ":six: Guardian/Parent" "value" (toString $reg.parentguardian) )
+	(sdict "name" ":seven: Done Editing" "value" "Use this to stop editing your registration information." ))}}
+	{{$msg := sendMessageRetID nil $embed}}
+	{{addMessageReactions nil $msg "1️⃣" "2️⃣" "3️⃣" "4️⃣" "5️⃣" "6️⃣" "7️⃣"}}
+{{else}}
+{{$reg.Set "Q" "Edit"}}{{dbSet .User.ID "reg" $reg}}
+{{$embed := cembed 
+	"color" $color
+	"Title" "Registration Edit Menu"
+	"description" "Please select the registration information you would like to edit by reacting to the number associated with that piece of information."
+	"fields" (cslice 
+	(sdict "name" "Discord Name" "value" .User.String) 
+	(sdict "name" ":one: In Game Name" "value" (toString $reg.name)) 
+	(sdict "name" ":two: Tribe Name" "value" (joinStr "" $reg.tribe ", " $reg.tribe2)) 
+	(sdict "name" ":three: Gamer Tag" "value" (toString $reg.gt)) 
+	(sdict "name" ":four: Pin" "value" (toString $reg.pin))
+	(sdict "name" ":five: Done Editing" "value" "Use this to stop editing your registration information." ))
+	"thumbnail" (sdict "url" $url)}}
+	{{$msg := sendMessageRetID nil $embed}}
+{{addMessageReactions nil $msg "1️⃣" "2️⃣" "3️⃣" "4️⃣" "5️⃣"}}
+{{end}}{{end}}

@@ -1,0 +1,43 @@
+{{/*Registration*/}}
+{{if (eq .Channel.ParentID 635305499600093214)}}
+{{$msgID := .ReactionMessage.ID}}
+{{$reg := (dbGet .User.ID "reg").Value}}
+{{$xbox := ": Stay tuned to this channel! A member of the <@&634598489732546588> will be along as soon as possible to give you the information on how to get your starter.\nIn the meantime, Please log into Yez's Haven to collect your starter. The Community Center there can be found on the plateau near castle, just east of Viking Bay at 19.0, 46.7. It can be reached by spawning at Jungle 2 and teleporting to the Community Center at the Blue Obelisk. Check your map. Starter pick up info will be provided shortly."}}
+{{if and (eq .Reaction.Emoji.ID 658376626639339533) (eq (toString $reg.Q) "Ref")}}{{/*Yes*/}}
+{{deleteAllMessageReactions nil $msgID}}
+{{$reg.Set "Q" "Ref2"}}{{dbSet .User.ID "reg" $reg}}
+{{sendMessage nil (joinStr "" .User.Mention ", who referred you?")}}
+{{else if and (eq .Reaction.Emoji.ID 658376639322783745) (eq (toString $reg.Q) "Ref")}}{{/*No*/}}
+{{deleteAllMessageReactions nil $msgID}}
+{{$reg.Set "Q" "Pin"}}{{$reg.Set "ref" "None"}}{{dbSet .User.ID "reg" $reg}}
+{{sendMessage nil (joinStr "" .User.Mention ", what 4 digit pin would you like used whenever a pin may be required? (Quest Vaults, or other situations.)")}}
+{{else if and (eq .Reaction.Emoji.ID 658376626639339533) (eq (toString $reg.Q) "Starter")}}{{/*Yes*/}}
+{{deleteAllMessageReactions nil $msgID}}
+{{$reg.Set "Q" "Done"}}{{dbSet .User.ID "reg" $reg}}
+{{execCC 71 nil 0 ""}}
+{{sendMessageNoEscape nil (print .User.Mention $xbox )}}
+{{else if and (eq .Reaction.Emoji.ID 658376639322783745) (eq (toString $reg.Q) "Starter")}}{{/*No*/}}
+{{deleteAllMessageReactions nil $msgID}}
+{{$reg.Set "Q" "Done"}}{{dbSet .User.ID "reg" $reg}}
+{{execCC 71 nil 0 (sdict "starter" "none")}}
+{{sendMessage nil "You are off and running! The <#613585635026141185> channel should now be visible to you. This channel will close in 60 seconds."}} {{sleep 60}}
+{{exec "tickets close" "Registration Complete-No Starter Needed"}}
+{{else if and (eq .Reaction.Emoji.ID 658376626639339533) (eq (toString $reg.Q) "ParentGuardian")}}{{/*Yes*/}}
+{{deleteAllMessageReactions nil $msgID}}
+{{$reg.Set "Q" "ParentGuardian2"}}{{dbSet .User.ID "reg" $reg}}
+{{sendMessage nil (joinStr "" .User.Mention ", who is your parent/guardian?")}}
+{{else if and (eq .Reaction.Emoji.ID 658376639322783745) (eq (toString $reg.Q) "ParentGuardian")}}{{/*No*/}}
+{{deleteAllMessageReactions nil $msgID}}
+{{sendMessage nil (joinStr "" .User.Mention ": I'm sorry, but this cluster is for 18+ only. Please come back when you are over 18.")}}
+{{sendMessage 573897276569813012 (joinStr "" .User.Mention " is being kicked for being " $reg.age ". Please take note in case they attempt to register again and lie.\n<@&573210843840249889>")}}
+{{sleep 10}}
+{{execAdmin "kick" .User.ID "Under age."}}
+{{execAdmin "tickets close underage"}}
+
+{{else if (eq .Reaction.Emoji.Name "gcrystal")}}
+{{deleteAllMessageReactions nil $msgID}}
+{{exec "tickets close" "Picked up Items"}}
+
+
+{{end}}
+{{end}}

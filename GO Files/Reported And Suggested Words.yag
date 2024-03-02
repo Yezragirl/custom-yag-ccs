@@ -1,0 +1,56 @@
+{{$word := "test"}}
+{{$title := "Error"}}
+{{$text := ""}}
+{{$color := 1}}
+{{$search := "Error"}}
+{{$emoji := cslice}}
+{{$logChannel := 1142173785009696799}}
+{{$desc := ""}}
+{{$embed := cembed}}
+{{if .ExecData}}
+    {{$word = .ExecData.word}}
+    {{$search = (urlquery $word)}}
+    {{if eq .ExecData.reason "add"}}
+        {{$title = "Suggested Word Notification"}}
+        {{$text = "To Add this word to the word list, please use the ✅ below.\nOtherwise, to remove this notification, please use the 🗑️.\nNo action is required to maintain this record."}}
+        {{$emoji = (cslice "✅" "🗑️")}}
+        {{$color = 999985}}
+    {{else if eq .ExecData.reason "remove"}}
+        {{$title = "Reported Word Notification"}}
+        {{$text = "To Remove this word to the word list, please use the ❌ below.\nOtherwise, to remove this notification, please use the 🗑️.\nNo action is required to maintain this record."}}
+        {{$color = 10038562}}
+        {{$emoji = (cslice "❌" "🗑️")}}
+    {{end}}
+{{end}}
+
+{{$1 := sendMessageRetID $logChannel (joinStr "" "**Looking up:** https://www.merriam-webster.com/dictionary/" $search)}}
+{{ sleep 1 }}
+{{$check := getMessage $logChannel $1}}
+{{if not $check.Embeds}}
+	{{editMessage $logChannel $1 (joinStr "" "**Looking up:** https://www.urbandictionary.com/define.php?term=" $search)}}
+{{else}}
+	{{$desc = (index $check.Embeds 0).Description}}
+{{end}}
+{{$check = getMessage $logChannel $1}}
+{{if not $check.Embeds}}
+	{{sleep 1}}
+	{{$check = getMessage $logChannel $1}}
+		{{if not $check.Embeds}}
+			{{$desc = "Query Not Found"}}
+		{{end}}
+{{else}}
+	{{$desc = (index $check.Embeds 0).Description}}
+{{end}} 
+{{deleteMessage $logChannel $1}}
+        {{$embed := cembed 
+            "title" $title 
+            "description" (joinStr "" "# " (upper $word))
+            "color" $color
+            "fields" (cslice
+            (sdict "name" "Definition" "value" $desc "inline" false)
+            (sdict "name" "Would you like to..." "value" $text "inline" false))
+            "footer" (sdict
+            "text" (print "Command triggered by " .User.String "."))
+            "thumbnail" (sdict "url" "https://imgur.com/IqMruBg.png") }}
+            {{$msg := sendMessageRetID $logChannel $embed}}{{sleep 1}}
+            {{addMessageReactions $logChannel $msg $emojis}}

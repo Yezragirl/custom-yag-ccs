@@ -8,15 +8,10 @@
 {{$user = (userArg ($args.Get 0))}}
 {{end}}
 {{$reg := (dbGet $user.ID "reg").Value}}
-{{$graphics := sdict "Both" "https://cdn.discordapp.com/attachments/665932077853704202/982095282013618226/dual_logo_transparent.png" "Steam" "https://cdn.discordapp.com/attachments/665932077853704202/982096294451499018/unknown.png"  "Xbox" "https://cdn.discordapp.com/attachments/665932077853704202/982096249341763694/unknown.png" }}
-{{$gtnames := sdict "Both" "Gamer Tag/Steam Name" "Steam" "Steam Name"  "Xbox" "Gamer Tag" }}
 {{if eq $reg.parentguardian "NA"}}{{$reg.Set "parentguardian" "Not a Minor"}}{{dbSet $user.ID "reg" $reg}}{{end}}
 {{if not $reg.tribe}}{{$reg.Set "tribe" "Unregistered"}}{{dbSet $user.ID "reg" $reg}}{{end}}
 {{if not $reg.tribe2}}{{$reg.Set "tribe2" "Unregistered"}}{{dbSet $user.ID "reg" $reg}}{{end}}
-{{if not $reg.pt}}{{if and (hasRoleName "Xbox") (hasRoleName "Steam")}}{{$reg.Set "pt" "Both"}}{{else if hasRoleName "Xbox"}}{{$reg.Set "pt" "Xbox"}}{{else}}{{$reg.Set "pt" "Steam"}}{{end}}{{dbSet $user.ID "reg" $reg}}{{end}}
 {{$nick := (getMember $user.ID).Nick}}
-{{$gtname := $gtnames.Get $reg.pt}}
-{{$url := $graphics.Get $reg.pt}}
 {{if not $nick}}
     {{if not $reg.name}}
     {{$reg.Set "name" $user.Username}}{{dbSet $user.ID "reg" $reg}}
@@ -30,9 +25,9 @@
         "color" $color
         "fields" (cslice 
         (sdict "name" "In Game Name" "value" (toString $reg.name) "inline" false) 
-        (sdict "name" $gtname "value" (toString $reg.gt) "inline" false) 
+        (sdict "name" "Gamer Tag" "value" (toString $reg.gt) "inline" false) 
         (sdict "name" "Tribe Name" "value" (joinStr "/" (toString $reg.tribe) (toString $reg.tribe2)) "inline" false) )
-        "thumbnail" (sdict "url" $url) }}
+        "thumbnail" (sdict "url" ($user.AvatarURL "1024"))}}
     {{if $reg.public}}
         {{deleteMessage 658352884701724733 $reg.public}}
         {{sendMessage nil "Existing Public Registration Deleted."}}
@@ -45,10 +40,10 @@
         "fields" (cslice 
         (sdict "name" "Discord Name" "value" (toString $user.Username) "inline" false) 
         (sdict "name" "In Game Name" "value" (toString $reg.name) "inline" false) 
-        (sdict "name" $gtname "value" (toString $reg.gt) "inline" false) 
+        (sdict "name" "Gamer Tag" "value" (toString $reg.gt) "inline" false) 
         (sdict "name" "Referral" "value" (toString $reg.ref) "inline" false) 
         (sdict "name" "Pin" "value" (toString $reg.pin) "inline" false) )
-        "thumbnail" (sdict "url" $url) }}
+        "thumbnail" (sdict "url" ($user.AvatarURL "1024"))}}
     {{if $reg.admin}}
         {{deleteMessage 658354135221141533 $reg.admin}}
         {{sendMessage nil "Existing Admin Registration Deleted."}}
@@ -64,8 +59,8 @@
         (sdict "name" "__***MINOR***__" "value" "_ _" "inline" false) 
         (sdict "name" "In Game Name" "value" (toString $reg.name) "inline" false)
         (sdict "name" "Tribe Name" "value" (joinStr "/" (toString $reg.tribe) (toString $reg.tribe2)) "inline" false)  
-        (sdict "name" $gtname "value" (toString $reg.gt) "inline" false) )
-        "thumbnail" (sdict "url" $url) }}
+        (sdict "name" "Gamer Tag" "value" (toString $reg.gt) "inline" false) )
+        "thumbnail" (sdict "url" ($user.AvatarURL "1024"))}}
     {{if $reg.public}}
         {{deleteMessage 658352884701724733 $reg.public}}
         {{sendMessage nil "Existing Public Registration Deleted."}}
@@ -79,11 +74,11 @@
         (sdict "name" "Discord Name" "value" $user.Username "inline" false) 
         (sdict "name" "__***MINOR***__" "value" (toString $reg.age) "inline" false) 
         (sdict "name" "In Game Name" "value" (toString $reg.name) "inline" false) 
-        (sdict "name" $gtname "value" (toString $reg.gt) "inline" false)  
+        (sdict "name" "Gamer Tag" "value" (toString $reg.gt) "inline" false)  
         (sdict "name" "Tribe Name" "value" (joinStr "/" (toString $reg.tribe) (toString $reg.tribe2)) "inline" false) 
         (sdict "name" "Parent/Guardian" "value" (toString $reg.parentguardian) "inline" false)
         (sdict "name" "Pin" "value" (toString $reg.pin) "inline" false))
-        "thumbnail" (sdict "url" $url) }}
+        "thumbnail" (sdict "url" ($user.AvatarURL "1024"))}}
     {{if $reg.admin}}
         {{deleteMessage 658354135221141533 $reg.admin}}
         {{sendMessage nil "Existing Admin Registration Deleted."}}

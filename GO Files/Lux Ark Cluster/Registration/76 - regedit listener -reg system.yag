@@ -10,16 +10,12 @@
         {{$reg.Set "tribe2" "Unregistered"}}
         {{dbSet .User.ID "reg" $reg}}
     {{end}}
-	{{$graphics := sdict "Both" "https://cdn.discordapp.com/attachments/665932077853704202/982095282013618226/dual_logo_transparent.png" "Steam" "https://cdn.discordapp.com/attachments/665932077853704202/982096294451499018/unknown.png"  "Xbox" "https://cdn.discordapp.com/attachments/665932077853704202/982096249341763694/unknown.png" }}
-	{{$gtnames := sdict "Both" "Gamer Tag/Steam Name" "Steam" "Steam Name"  "Xbox" "Gamer Tag" }}
 	{{$names := (dbGet 0 "names").Value}}
     {{$names_new := cslice}}
 	{{$tribes := (dbGet 0 "tribes").Value}}
     {{$badWords := (dbGet 0 "badWords").Value}}
 	{{$lowertribes := cslice}}{{$finds := cslice}}{{$out := (printf "%s\t%-18s\n" "Listing" "Tribe")}}{{$rank := 0}}{{$tname := "tribe"}}
 	{{$rankemotes := sdict "1" "1️⃣" "2" "2️⃣" "3" "3️⃣" "4" "4️⃣" "5" "5️⃣" "6" "6️⃣" }}{{$emote := ""}}{{$foundMatch := false}}{{$lowerMC := lower .Message.Content}}
-	{{$gtname := $gtnames.Get $reg.pt}}
-	{{$url := $graphics.Get $reg.pt}}
 	{{- range $tribes -}}{{- $lowertribes = $lowertribes.Append (lower .) -}}{{- end -}}
 	{{if reFind `(?i)cancel` .Message.Content}}
 		{{$x := $reg.Set "Q" "Edit"}}
@@ -99,8 +95,7 @@
 						(sdict "name" "Tribe Name" "value" $reg.tribe2 "inline" false) 
 						(sdict "name" "Owner" "value" .User.Mention "inline" false) 
 						(sdict "name" "Admins" "value" "None" "inline" false) 
-						(sdict "name" "Members" "value" "None" "inline" false) )
-						"thumbnail" (sdict "url" $url) }}
+						(sdict "name" "Members" "value" "None" "inline" false) ) }}
 					{{$msg := sendMessageRetID 769590958131904532 $embed}}
 					{{dbSet 0 (joinStr "" "tribe_" (lower $reg.tribe2)) (sdict "name" $reg.tribe2 "owner" (toString .User.ID) "reg" $msg)}}
 				{{end}}
